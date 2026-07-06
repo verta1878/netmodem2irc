@@ -1,0 +1,22 @@
+NetModem/32 — Authors and Credits
+=================================
+
+Original author
+---------------
+Dedrick Allen (Allen Software)
+  - NetModem/32 v2.0, the virtual COM port / FOSSIL driver and Telnet server.
+  - Copyright (C) 1997-2001 Dedrick Allen / Allen Software.
+  - Released under the GNU General Public License v2.
+  - Original contact of record: drip@cris.com / http://www.allensoftware.com
+    (historical; likely no longer active)
+
+Recovery and revival
+--------------------
+  - Driver source recovered from the Ecstasy BBS (xtcbox.org) forum database
+    backup, where Dedrick originally released it.
+  - Original GUI blueprint recovered from the NetModem/32 v2.0 alpha-3 installer.
+  - Revival: new Free Pascal / Lazarus GUI, replacing the original proprietary
+    ShortcutBar component so the project builds entirely from free tools.
+
+If you are Dedrick Allen, or know how to reach him, we'd be glad to credit or
+hand over as he prefers. This project preserves his work under the license he chose.

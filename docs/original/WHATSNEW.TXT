@@ -1,0 +1,67 @@
+-----------------------------------------------------------------------------
+ May 24, 2000 - 8:00pm EST - Release v2.0 Alpha 3
+
+ Listed below are the following additions/fixes/improvments/etc:
+ ---------------------------------------------------------------------
+ |        |  * - Fix            i - Improvement      r - Removed     |
+ | Legend |                                                          |
+ |        |  + - Addition       c - Changed          & - Comment     |
+ ---------------------------------------------------------------------
+
+    * - Hopefully fixed an uploading issue. If not send me email with the
+        name of the telnet client being used.
+    * - Fixed issues in the configuration application when reconfiguring
+        the drivers and the server application.
+    i - No longer have to reboot after reconfiguring NetModem.
+    * - Fixed several problems with the Comport/UART emulator.
+    + - Added support for more AT commands. Check the ATCOMNDS.TXT file
+        for a list of currently supported AT commands.
+    i - Improved CPU utilization and lowered memory requirements.
+    + - Added self clean-up code. Deallocates resources in an timely
+        and orderly fashion to reduce overhead and increase stability.
+    i - Improved error-recovery. The server will attempt to automatically
+        recover from a connection error.
+    + - Added crash-guard code to the drivers to help prevent crashes and
+        BSOD's (Blue Screen Of Death).
+    + - Added NetFOSSIL/32 v2.0. 32bit Revision Level 5 FOSSIL driver with
+        support for the SuperSet functions (1Ch - 21h) defined by
+        Raymond L. Gwinn.
+    c - Changed the configuration utility to allow FOSSIL emulation types.
+    * - Other miscellaneous fixes and additions.
+-----------------------------------------------------------------------------
+ August 30, 1999 - 2:00am EST - Release v2.0 Alpha 2
+
+ Listed below are the following additions/fixes/improvments/etc:
+ ---------------------------------------------------------------------
+ |        |  * - Fix            i - Improvement      r - Removed     |
+ | Legend |                                                          |
+ |        |  + - Addition       c - Changed          & - Comment     |
+ ---------------------------------------------------------------------
+
+    c - New Installer/Uninstaller.
+    + - Add the ability to update the configuration without having to reboot.
+        You still need to reboot once after initial install of the program.
+    i - Improved how DOS applications use the CPU when file xfers are started.
+    * - Fixed problems with the 16550 UART emulation.
+    + - Added more AT command support. List of currently supported AT commands
+        are in the file named ATCOMNDS.TXT in the directory in which you
+        installed NetModem/32.
+    * - Fixed echoing of all recieved characters from the remote end.
+    * - Fixed hardware flow control problems which would halt I/O.
+    + - Added upload support.
+    + - Added download support to the DEMO.
+    i - Speed increase.
+    i - Optimized I/O code and threading code.
+    * - Other minor bug fixes.
+-----------------------------------------------------------------------------
+ August 11, 1999 - 7:22pm EST - Release v2.0 Alpha 1
+
+ Listed below are the following additions/fixes/improvments/etc:
+ ---------------------------------------------------------------------
+ |        |  * - Fix            i - Improvement      r - Removed     |
+ | Legend |                                                          |
+ |        |  + - Addition       c - Changed          & - Comment     |
+ ---------------------------------------------------------------------
+
+    - First initial release of v2.0
+-----------------------------------------------------------------------------

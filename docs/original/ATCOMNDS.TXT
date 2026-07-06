@@ -1,0 +1,72 @@
+                        List of supported AT commands.
+                        ------------------------------
+ 
+           All commands issued to the NetModem must be preceeded with
+         "AT" just like any normal Hayes compatible modem. The maximum
+          length of a single AT command string issued is 40 characters.
+           The best init string is usually "ATZ", unless you know what
+            specific settings you need.
+
+
+      NOTE:  * = Default for that particular command.
+
+
+      +++ -  Sets the NetModem into command mode for entering AT commands
+             while still online.
+
+       A  -  Answer incoming connection
+
+       E  -  Echo
+            *E0 - Echo off
+             E1 - Echo on
+
+       H  -  H0 - Go on hook/Terminate connection
+             H1 - Go off hook. Attempts of a remote connect will
+                  get a "NO CARRIER"
+
+       O  -  O0 - Go online
+             O1 - Go online and retrain
+
+       Q  -  Modem responses
+            *Q0 - Responses on
+             Q1 - Responses off
+
+       Z  -  Reset modem to default settings
+           
+      &C  -  Data Carrier Detect (DCD) mode
+             &C0 - DCD Override (DCD always reports carrier)
+            *&C1 - Normal DCD operations (DCD according to carrier)
+                   
+      &D  -  Data Terminal Ready (DTR) mode
+             &D0 - Ignore/Override DTR (DTR Always high)
+             &D1 - Reserved
+            *&D2 - Normal DTR operations (Disconnect when DTR goes low)
+
+      &I  -  Received data software flow control
+            *&I0 - Flow control disabled
+             &I1 - XON/XOFF go to modem and remote
+             &I2 - XON/XOFF go to local modem only
+
+      &K  -  Data compression
+             &K0 - Data compression disabled
+            *&K1 - Auto enable/disable
+             &K2 - Data compression enabled
+
+      &R  -  Received data hardware flow control
+             &R0 - Reserved
+             &R1 - Ignore/Override RTS
+            *&R2 - Received data only on RTS
+
+      &S  -  Data Set Ready (DSR) mode
+            *&S0 - Ignore/Override DSR (DSR Always high)
+             &S1 - Modem controls DSR (DSR follows raising/lowering of DTR)
+
+      &Y  -  Break handling
+             &Y0 - Destructive, but dont send BREAK to remote
+            *&Y1 - Destructive, expedited (send BREAK to remote)
+             &Y2 - Nondestructive, expedited (send BREAK to remote)
+             &Y3 - Nondestructive, unexpedited (dont send BREAK to remote)
+
+      -------------------------------------------------------------
+
+      
