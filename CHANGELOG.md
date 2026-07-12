@@ -1,5 +1,17 @@
 # Changelog
 
+## M1 — engine integrated (this update)
+- Added the tested emulation engine (engine/): UART, FOSSIL, Telnet transport,
+  AT commands, multinode, Synapse + named-pipe links, server bridge.
+- NM_ServerBridge wires the engine to the server's CM_* messages and the
+  driver TIOStruct byte IO (ServiceDriverIO).
+- Bundled Ararat Synapse (libs/synapse/, modified-BSD).
+- Preserved Dedrick Allen's original FILE_ID.DIZ (history/).
+- Test suite: 11 programs, 0 failures, on FPC 2.6.4 + 3.2.2.
+- Retired WIN32COM.PAS to attic/ (ELECOM author-deprecated).
+- Full MainForm integration documented (docs/netmodem2irc_M1_COMPLETE.md).
+
+
 All notable changes to NetModem/32 are recorded here. Format follows
 [Keep a Changelog](https://keepachangelog.com/). This file has two parts: the
 **revival history** (this repository's work) and the **original release history**

@@ -1,3 +1,55 @@
+# netmodem2irc
+
+Revival of Dedrick Allen's **NetModem/32** (32-bit FOSSIL Telnet server, 1997-2001)
+for modern Windows, with a portable, tested Pascal modem-emulation engine.
+
+## Status: M1 COMPLETE — engine integrated
+
+The tested emulation engine is wired into the server. Full data path
+(CM_* messages + driver TIOStruct byte-glue) is built and TESTED:
+**11 test programs, 0 failures, verified on stock FPC 2.6.4 and FPC 3.2.2.**
+
+```
+engine/        the emulation engine (Pascal) — UART, FOSSIL, Telnet transport,
+               AT commands, multinode, Synapse + named-pipe links, server bridge
+engine/test/   the test suite (run: sh engine/test/run-tests.sh)
+libs/synapse/  bundled Ararat Synapse (modified-BSD, GPLv2-compatible)
+server/        Lazarus GUI (LCL) — wire per docs/netmodem2irc_M1_COMPLETE.md
+config/        Lazarus config tool
+common/        driver interface (TNetModemDriver, TIOStruct, CM_* messages)
+driver/src/    Dedrick's original 9x VxD source (experimental branch)
+history/       Dedrick's original FILE_ID.DIZ + facts
+attic/         retired files (kept, not deleted)
+docs/          engineering docs, specs, milestone, roadmap
+```
+
+### Engine (tested)
+- **NM_UART16550** — 16550 UART emulation
+- **NM_Fossil** — FOSSIL INT 14h (init signature $1954)
+- **NetTransport** — Telnet transport, IAC/BINARY, binary-safe (0xFF via IAC IAC)
+- **NM_ATCommand** — Hayes AT, ATDT<host> dial
+- **NM_Node** — per-node object + multinode manager (comports 3-99, as the original)
+- **NM_SynapseLink** — real Synapse TCP socket link (compile-verified)
+- **NM_NamedPipeLink** — named-pipe link (virtual-COM driver seam)
+- **NM_ServerBridge** — wires the engine to the server's CM_* + TIOStruct IO
+
+### Build (GUI) — Lazarus 1.2.6 + LCL
+Add engine/ and libs/synapse/ to the project unit path. Build the server with
+`-dHAS_SYNAPSE` for real sockets. See **docs/netmodem2irc_M1_COMPLETE.md** for the
+exact MainForm wiring, and **docs/BUILD.md** for the original build notes.
+
+### Roadmap
+M1 (engine integrated) DONE. Next: M2 (builds on Windows), M3 (it connects —
+live Telnet session), M4 (virtual COM: Option A driver), M5 (installer + release).
+See **docs/netmodem2irc_RELEASE_ROADMAP.md**.
+
+### Honest status
+The emulation engine is tested (compile + behavior). The Synapse networked path
+and named-pipe real I/O are compile-verified but need a Windows runtime test.
+The 9x VxD (driver/src) is experimental (needs the DDK + 9x linker work).
+
+---
+
 # NetModem/32 v2.0
 
 A 32-bit virtual COM port / FOSSIL driver and Telnet server for classic Windows,
