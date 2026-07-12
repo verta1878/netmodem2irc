@@ -231,10 +231,18 @@ begin
       end;
 
   else
-    { X00-superset screen/cursor/keyboard functions (11h-17h) and any others
-      are recognized but are no-ops in a pure serial<->socket bridge (they
-      concern local console, not the wire). Mark handled so callers don't fault. }
-    R.Handled := True;
+    begin
+      { FOSSIL functions run 00h..1Bh (standard) plus the X00 SuperSet 1Ch..21h.
+        Functions in-range that we don't specifically act on (e.g. screen/cursor
+        console functions) are still OURS — recognize them as no-ops so callers
+        don't fault. But functions OUTSIDE the FOSSIL range are NOT ours: leave
+        Handled=false so a real INT 14h driver chains to the previous handler
+        instead of falsely claiming them. }
+      if R.AH <= $21 then
+        R.Handled := True
+      else
+        R.Handled := False;
+    end;
   end;
 end;
 

@@ -40,11 +40,19 @@ type
     FMode : TModemMode;
     FLine : string;           // accumulating command line
     FEcho : Boolean;          // ATE1 = echo on
+    { extended &-command settings (from the original ATCOMNDS.TXT) }
+    FDCDMode : Byte;          // &C: 0=override(always on), 1=normal
+    FDTRMode : Byte;          // &D: 0=ignore, 2=normal(hang up on DTR drop)
+    FSoftFlow: Byte;          // &I: 0=off, 1=both, 2=local
+    FHardFlow: Byte;          // &R: 1=ignore RTS, 2=data on RTS
+    FDSRMode : Byte;          // &S: 0=always on, 1=follows DTR
+    FBreakHandling: Byte;     // &Y: 0/1/2/3 break behavior
     FVerbose : Boolean;       // ATV1 = word result codes
     FQuiet : Boolean;         // ATQ1 = suppress result codes
     FDefaultPort : Word;
     procedure EmitStr(const S: string);
     procedure EmitResult(const AWord: string; ANum: Integer);
+    procedure DoAmpersand(ACmd: Char; AParam: Byte);
     procedure DoCommandLine(const ALine: string);
     function  ParseDial(const AArg: string; out AHost: string; out APort: Word): Boolean;
   public
@@ -55,6 +63,9 @@ type
       if command mode, AT bytes are consumed here. }
     { Force online mode (used for INBOUND connections — no AT dial needed). }
     procedure ForceOnline;
+    { Emit RING to the guest (an incoming call is present). A BBS answers with
+      ATA, or auto-answers per S0. }
+    procedure SignalRing;
     property Mode: TModemMode read FMode;
     property DefaultPort: Word read FDefaultPort write FDefaultPort;
   end;
@@ -78,7 +89,9 @@ begin
   FTrans := ATrans;
   FMode := mmCommand;
   FLine := '';
-  FEcho := True;       // modems default to echo on in command mode
+  FEcho := True;
+  FDCDMode := 1; FDTRMode := 2; FSoftFlow := 0;   { the * defaults from ATCOMNDS }
+  FHardFlow := 2; FDSRMode := 0; FBreakHandling := 1;       // modems default to echo on in command mode
   FVerbose := True;    // default V1 = word codes
   FQuiet := False;
   FDefaultPort := 23;  // telnet
@@ -126,6 +139,15 @@ begin
   else
     AHost := s;
   Result := AHost <> '';
+end;
+
+{ Return the numeric parameter at position p (0 if none/not a digit). }
+function AmpParam(const s: string; p: Integer): Byte;
+begin
+  if (p >= 1) and (p <= Length(s)) and (s[p] in ['0'..'9']) then
+    AmpParam := Ord(s[p]) - Ord('0')
+  else
+    AmpParam := 0;
 end;
 
 procedure TATModem.DoCommandLine(const ALine: string);
@@ -185,11 +207,36 @@ begin
       'A': begin  { answer — no inbound in dial mode; ack } end;
       'Z': begin  { reset } FEcho:=True; FVerbose:=True; FQuiet:=False; FTrans.HangUp; FMode:=mmCommand; end;
       'O': begin  { return online } if FTrans.BinaryMode or True then FMode:=mmOnline; end;
+      '&': begin  { extended commands: &C, &D, &I, &R, &S, &Y — record the setting }
+             if i < Length(u) then
+             begin
+               DoAmpersand(UpCase(u[i+1]), AmpParam(u, i+2));
+               Inc(i);              // skip the letter after &
+               if (i < Length(u)) and (u[i+1] in ['0'..'9']) then Inc(i); // skip digit
+             end;
+           end;
       '0'..'9': ; { parameter digits consumed by their command }
     end;
     Inc(i);
   end;
   EmitResult('OK', RC_OK);
+end;
+
+procedure TATModem.DoAmpersand(ACmd: Char; AParam: Byte);
+begin
+  { Record the extended-command settings. Over a Telnet bridge most are
+    cosmetic (no real RS-232 lines), but faithful modems ACCEPT them and a BBS
+    init string like AT&C1&D2 must succeed. &D and &C affect our carrier/hangup
+    semantics; the rest are stored for completeness. }
+  case ACmd of
+    'C': FDCDMode := AParam;        // Data Carrier Detect mode
+    'D': FDTRMode := AParam;        // Data Terminal Ready mode
+    'I': FSoftFlow := AParam;       // software (XON/XOFF) flow control
+    'R': FHardFlow := AParam;       // hardware (RTS) flow control
+    'S': FDSRMode := AParam;        // Data Set Ready mode
+    'Y': FBreakHandling := AParam;  // break handling
+    'F': begin FEcho:=True; FVerbose:=True; FQuiet:=False; end; // &F = factory defaults
+  end;
 end;
 
 procedure TATModem.ATFeed(B: Byte);
@@ -216,6 +263,13 @@ end;
 procedure TATModem.ForceOnline;
 begin
   FMode := mmOnline;
+end;
+
+procedure TATModem.SignalRing;
+begin
+  { emit the RING result code to the guest, exactly as a modem does on an
+    incoming call. RC_RING = 2 (Hayes standard). }
+  EmitResult('RING', RC_RING);
 end;
 
 end.

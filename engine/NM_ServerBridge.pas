@@ -69,6 +69,14 @@ type
     { CM_SEND_REMOTE_BREAK: send a Telnet BREAK to the remote. }
     procedure OnSendRemoteBreak(NodeIndex: Integer);
 
+    { Inbound-call lifecycle (the original's core purpose — a caller Telnets in):
+      RingNode  = a caller connected; signal RING to the node (emit "RING" to the
+                  BBS, raise the ring indicator).
+      AnswerCheck = has the BBS answered (ATA / auto-answer)? Returns True when the
+                  node is online and the call is established. }
+    procedure RingNode(NodeIndex: Integer);
+    function  AnswerCheck(NodeIndex: Integer): Boolean;
+
     { CM_WILL_BINARY / CM_WONT_BINARY: drive Telnet BINARY negotiation. }
     procedure OnBinary(NodeIndex: Integer; AWill: Boolean);
 
@@ -281,6 +289,28 @@ begin
   Result := ServiceNodeIO(NodeIndex, io);
   AReceived := io.Received;
   AHXFilled := io.HXFilled;
+end;
+
+procedure TServerBridge.RingNode(NodeIndex: Integer);
+var node: TNetModemNode;
+begin
+  node := FNodes.NodeByIndex(NodeIndex);
+  if node = nil then Exit;
+  { A caller has connected. Emit RING to the BBS (via the modem/AT layer) so
+    the BBS knows there's an incoming call to answer. The AT layer's inbound
+    path raises the ring; a BBS with auto-answer (ATS0>0) or ATA then answers. }
+  node.Modem.SignalRing;
+end;
+
+function TServerBridge.AnswerCheck(NodeIndex: Integer): Boolean;
+var node: TNetModemNode;
+begin
+  Result := False;
+  node := FNodes.NodeByIndex(NodeIndex);
+  if node = nil then Exit;
+  { The call is answered once the node is online (BBS issued ATA or auto-answered,
+    or we forced online for a straight inbound connect). }
+  Result := node.Online;
 end;
 
 end.
