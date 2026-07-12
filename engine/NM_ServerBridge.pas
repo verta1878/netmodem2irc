@@ -29,7 +29,7 @@ interface
 
 uses
   SysUtils,
-  NM_UART16550, NM_Fossil, NetTransport, NM_ATCommand, NM_Node
+  NM_UART16550, NM_Fossil, NetTransport, NM_ATCommand, NM_Node, NM_SeamProtocol
   {$IFDEF HAS_SYNAPSE}, NM_SynapseLink{$ENDIF};
 
 type
@@ -50,6 +50,7 @@ type
   TServerBridge = class
   private
     FNodes: TNodeManager;
+    FSeam  : TSeamParser;   { parses driver-link bytes into seam frames }
     FDefaultPort: Word;
     function MakeLink: ISocketLink;
   public
@@ -94,6 +95,14 @@ type
       gets back the counts. No manual mapping needed in the GUI. RXPtr/HXPtr are
       the (possibly 32-bit) buffer pointers from TIOStruct.
       Returns True if the node exists; out params are the consumed/produced counts. }
+    { Feed raw bytes from a driver link (the FOSSIL TSR's pipe/socket): parse
+      them into seam frames and route each to the right node operation. This is
+      how the future FOSSIL TSR drives the server — it speaks NM_SeamProtocol
+      frames; the bridge consumes them here. Returns the number of frames handled. }
+    function FeedDriverBytes(const Buf; Len: Integer): Integer;
+    { Route a single already-parsed seam frame to the matching node operation. }
+    procedure HandleSeamFrame(const Frame: TSeamFrame);
+
     function ServiceDriverIO(NodeIndex: Integer;
                              RXPtr: Pointer; RXLen: LongWord;
                              HXPtr: Pointer; HXLen: LongWord;
@@ -124,11 +133,13 @@ constructor TServerBridge.Create;
 begin
   inherited Create;
   FNodes := TNodeManager.Create;
+  FSeam := TSeamParser.Create;
   FDefaultPort := 23;   { Telnet }
 end;
 
 destructor TServerBridge.Destroy;
 begin
+  FSeam.Free;
   FNodes.Free;
   inherited Destroy;
 end;
@@ -311,6 +322,48 @@ begin
   { The call is answered once the node is online (BBS issued ATA or auto-answered,
     or we forced online for a straight inbound connect). }
   Result := node.Online;
+end;
+
+procedure TServerBridge.HandleSeamFrame(const Frame: TSeamFrame);
+var
+  node: TNetModemNode;
+  i: Integer;
+begin
+  case Frame.Msg of
+    smConnect:
+      begin
+        { a caller connected on this node -> ring it (inbound lifecycle) }
+        RingNode(Frame.NodeIndex);
+        FNodes.MarkActive(Frame.NodeIndex);   { switch: node is now live }
+      end;
+    smDisconnect:
+      OnDisconnectNode(Frame.NodeIndex);
+    smBreak:
+      OnSendRemoteBreak(Frame.NodeIndex);
+    smData:
+      begin
+        { data bytes the DOS side wrote -> feed into the node (to the wire) }
+        node := FNodes.NodeByIndex(Frame.NodeIndex);
+        if node <> nil then
+          for i := 0 to High(Frame.Payload) do
+            node.GuestWrite(Frame.Payload[i]);
+      end;
+    smCarrierUp, smCarrierDn, smKeepAlive:
+      ; { informational / no node-state change needed here }
+  end;
+end;
+
+function TServerBridge.FeedDriverBytes(const Buf; Len: Integer): Integer;
+var
+  fr: TSeamFrame;
+begin
+  Result := 0;
+  FSeam.Feed(Buf, Len);
+  while FSeam.NextFrame(fr) do
+  begin
+    HandleSeamFrame(fr);
+    Inc(Result);
+  end;
 end;
 
 end.

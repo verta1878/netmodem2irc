@@ -99,15 +99,20 @@ type
   { The emulated 16550 state. Mirrors NETMODEM.INC UARTStruct, plus the two
     ring buffers that on 9x were the VxD's TX/RX buffers. }
   TUart16550 = record
-    { registers }
+    { 16550 registers — standard datasheet mnemonics, kept as-is so the code matches
+      any UART reference a reader has open:
+        IER Interrupt Enable      IIR Interrupt Identification   FCR FIFO Control
+        LCR Line Control          MCR Modem Control              LSR Line Status
+        MSR Modem Status          SCR Scratch                    DLL Divisor Latch Low
+        DLM Divisor Latch High }
     IER, IIR, FCR, LCR, MCR, LSR, MSR, SCR, DLL, DLM : Byte;
     { rings (RBR reads pull from RX; THR writes push to TX) }
-    RX : TByteRing;       // bytes from the network, guest reads via RBR
-    TX : TByteRing;       // bytes from the guest, server sends to network
+    RX : TByteRing;       // ReceiveRing:  bytes from the network, guest reads via RBR
+    TX : TByteRing;       // TransmitRing: bytes from the guest, server sends to network
     { modem/line state reflected into MSR }
-    Online  : Boolean;    // carrier present -> MSR_DCD
-    Ringing : Boolean;    // incoming call   -> MSR_RI
-    FifoOn  : Boolean;    // FCR bit0
+    Online  : Boolean;    // carrier present -> MSR_DCD (data carrier detect)
+    Ringing : Boolean;    // incoming call   -> MSR_RI  (ring indicator)
+    FifoOn  : Boolean;    // FCR bit0 (FIFO enabled)
   end;
   PUart16550 = ^TUart16550;
 
@@ -118,25 +123,25 @@ function  RingGet(var R: TByteRing; out B: Byte): Boolean;// false if empty
 function  RingFree(const R: TByteRing): Word;
 
 { --- UART lifecycle --- }
-procedure UartReset(var U: TUart16550);
+procedure UartReset(var Uart: TUart16550);
 
 { --- the guest-side register interface (what the virtual COM layer calls) --- }
 { Read a UART register at the given offset (0..7). Honors DLAB. }
-function  UartReadReg(var U: TUart16550; Offset: Byte): Byte;
+function  UartReadReg(var Uart: TUart16550; Offset: Byte): Byte;
 { Write a UART register at the given offset (0..7). Honors DLAB. }
-procedure UartWriteReg(var U: TUart16550; Offset: Byte; Value: Byte);
+procedure UartWriteReg(var Uart: TUart16550; Offset: Byte; Value: Byte);
 
 { --- the network-side interface (what the Telnet server calls) --- }
 { Server delivers a byte received from the socket into RX (guest will read it). }
-function  UartNetToGuest(var U: TUart16550; B: Byte): Boolean;
+function  UartNetToGuest(var Uart: TUart16550; B: Byte): Boolean;
 { Server drains a byte the guest wrote to TX (to send over the socket). }
-function  UartGuestToNet(var U: TUart16550; out B: Byte): Boolean;
+function  UartGuestToNet(var Uart: TUart16550; out B: Byte): Boolean;
 
 { --- status helpers --- }
-procedure UartSetCarrier(var U: TUart16550; AOnline: Boolean);
-procedure UartSetRing(var U: TUart16550; ARinging: Boolean);
-procedure UartRecomputeLSR(var U: TUart16550);
-procedure UartRecomputeMSR(var U: TUart16550);
+procedure UartSetCarrier(var Uart: TUart16550; AOnline: Boolean);
+procedure UartSetRing(var Uart: TUart16550; ARinging: Boolean);
+procedure UartRecomputeLSR(var Uart: TUart16550);
+procedure UartRecomputeMSR(var Uart: TUart16550);
 
 implementation
 
@@ -170,163 +175,163 @@ begin
   Result := RING_SIZE - R.Count;
 end;
 
-procedure UartReset(var U: TUart16550);
+procedure UartReset(var Uart: TUart16550);
 begin
-  RingClear(U.RX);
-  RingClear(U.TX);
-  U.IER := 0;
-  U.IIR := IIR_NONE;
-  U.FCR := 0;
-  U.LCR := $03;          // 8N1 default (word length 8, no parity, 1 stop)
-  U.MCR := 0;
-  U.SCR := 0;
-  U.DLL := $01;          // 115200 default divisor low (cosmetic over TCP)
-  U.DLM := $00;
-  U.Online  := False;
-  U.Ringing := False;
-  U.FifoOn  := False;
-  UartRecomputeLSR(U);
-  UartRecomputeMSR(U);
+  RingClear(Uart.RX);
+  RingClear(Uart.TX);
+  Uart.IER := 0;
+  Uart.IIR := IIR_NONE;
+  Uart.FCR := 0;
+  Uart.LCR := $03;          // 8N1 default (word length 8, no parity, 1 stop)
+  Uart.MCR := 0;
+  Uart.SCR := 0;
+  Uart.DLL := $01;          // 115200 default divisor low (cosmetic over TCP)
+  Uart.DLM := $00;
+  Uart.Online  := False;
+  Uart.Ringing := False;
+  Uart.FifoOn  := False;
+  UartRecomputeLSR(Uart);
+  UartRecomputeMSR(Uart);
 end;
 
 { LSR reflects the ring state: DR if RX has data, THRE/TEMT if TX has room. }
-procedure UartRecomputeLSR(var U: TUart16550);
+procedure UartRecomputeLSR(var Uart: TUart16550);
 begin
-  U.LSR := 0;
-  if U.RX.Count > 0 then
-    U.LSR := U.LSR or LSR_DR;
-  if RingFree(U.TX) > 0 then
-    U.LSR := U.LSR or LSR_THRE;
-  if U.TX.Count = 0 then
-    U.LSR := U.LSR or LSR_TEMT;
+  Uart.LSR := 0;
+  if Uart.RX.Count > 0 then
+    Uart.LSR := Uart.LSR or LSR_DR;
+  if RingFree(Uart.TX) > 0 then
+    Uart.LSR := Uart.LSR or LSR_THRE;
+  if Uart.TX.Count = 0 then
+    Uart.LSR := Uart.LSR or LSR_TEMT;
 end;
 
 { MSR reflects modem state: DCD from Online, RI from Ringing. CTS/DSR are held
   asserted (a virtual modem is always "ready"). Delta bits are set by the
   set-carrier / set-ring helpers when state changes. }
-procedure UartRecomputeMSR(var U: TUart16550);
+procedure UartRecomputeMSR(var Uart: TUart16550);
 begin
   { preserve delta bits (low nibble), rebuild status bits (high nibble) }
-  U.MSR := U.MSR and $0F;
-  U.MSR := U.MSR or MSR_CTS or MSR_DSR;
-  if U.Online then
-    U.MSR := U.MSR or MSR_DCD;
-  if U.Ringing then
-    U.MSR := U.MSR or MSR_RI;
+  Uart.MSR := Uart.MSR and $0F;
+  Uart.MSR := Uart.MSR or MSR_CTS or MSR_DSR;
+  if Uart.Online then
+    Uart.MSR := Uart.MSR or MSR_DCD;
+  if Uart.Ringing then
+    Uart.MSR := Uart.MSR or MSR_RI;
 end;
 
-procedure UartSetCarrier(var U: TUart16550; AOnline: Boolean);
+procedure UartSetCarrier(var Uart: TUart16550; AOnline: Boolean);
 begin
-  if U.Online <> AOnline then
+  if Uart.Online <> AOnline then
   begin
-    U.Online := AOnline;
-    U.MSR := U.MSR or MSR_DDCD;   // signal delta-DCD (carrier changed)
+    Uart.Online := AOnline;
+    Uart.MSR := Uart.MSR or MSR_DDCD;   // signal delta-DCD (carrier changed)
   end;
-  UartRecomputeMSR(U);
+  UartRecomputeMSR(Uart);
 end;
 
-procedure UartSetRing(var U: TUart16550; ARinging: Boolean);
+procedure UartSetRing(var Uart: TUart16550; ARinging: Boolean);
 begin
-  if U.Ringing <> ARinging then
+  if Uart.Ringing <> ARinging then
   begin
-    U.Ringing := ARinging;
-    U.MSR := U.MSR or MSR_TERI;   // trailing-edge ring indicator
+    Uart.Ringing := ARinging;
+    Uart.MSR := Uart.MSR or MSR_TERI;   // trailing-edge ring indicator
   end;
-  UartRecomputeMSR(U);
+  UartRecomputeMSR(Uart);
 end;
 
-function UartReadReg(var U: TUart16550; Offset: Byte): Byte;
+function UartReadReg(var Uart: TUart16550; Offset: Byte): Byte;
 var
   DLAB: Boolean;
   B: Byte;
 begin
-  DLAB := (U.LCR and LCR_DLAB) <> 0;
+  DLAB := (Uart.LCR and LCR_DLAB) <> 0;
   case Offset of
     0: if DLAB then
-         Result := U.DLL
+         Result := Uart.DLL
        else
        begin
          { RBR — pull next received byte from RX ring }
-         if RingGet(U.RX, B) then
+         if RingGet(Uart.RX, B) then
            Result := B
          else
            Result := 0;
-         UartRecomputeLSR(U);
+         UartRecomputeLSR(Uart);
        end;
     1: if DLAB then
-         Result := U.DLM
+         Result := Uart.DLM
        else
-         Result := U.IER;
+         Result := Uart.IER;
     2: begin
          { IIR — report highest-priority pending cause (LAYER_A_SPEC §2) }
          Result := IIR_NONE;
-         if ((U.IER and IER_RDA) <> 0) and (U.RX.Count > 0) then
+         if ((Uart.IER and IER_RDA) <> 0) and (Uart.RX.Count > 0) then
            Result := IIR_RDA
-         else if ((U.IER and IER_THRE) <> 0) and (RingFree(U.TX) > 0) then
+         else if ((Uart.IER and IER_THRE) <> 0) and (RingFree(Uart.TX) > 0) then
            Result := IIR_THRE;
-         if U.FifoOn then
+         if Uart.FifoOn then
            Result := Result or IIR_FIFO;
        end;
-    3: Result := U.LCR;
-    4: Result := U.MCR;
+    3: Result := Uart.LCR;
+    4: Result := Uart.MCR;
     5: begin
-         UartRecomputeLSR(U);
-         Result := U.LSR;
+         UartRecomputeLSR(Uart);
+         Result := Uart.LSR;
        end;
     6: begin
-         Result := U.MSR;
+         Result := Uart.MSR;
          { reading MSR clears the delta (low-nibble) bits }
-         U.MSR := U.MSR and $F0;
+         Uart.MSR := Uart.MSR and $F0;
        end;
-    7: Result := U.SCR;
+    7: Result := Uart.SCR;
   else
     Result := 0;
   end;
 end;
 
-procedure UartWriteReg(var U: TUart16550; Offset: Byte; Value: Byte);
+procedure UartWriteReg(var Uart: TUart16550; Offset: Byte; Value: Byte);
 var
   DLAB: Boolean;
 begin
-  DLAB := (U.LCR and LCR_DLAB) <> 0;
+  DLAB := (Uart.LCR and LCR_DLAB) <> 0;
   case Offset of
     0: if DLAB then
-         U.DLL := Value
+         Uart.DLL := Value
        else
        begin
          { THR — push byte to TX ring for the server to send }
-         RingPut(U.TX, Value);
-         UartRecomputeLSR(U);
+         RingPut(Uart.TX, Value);
+         UartRecomputeLSR(Uart);
        end;
     1: if DLAB then
-         U.DLM := Value
+         Uart.DLM := Value
        else
-         U.IER := Value and $0F;
+         Uart.IER := Value and $0F;
     2: begin
          { FCR — FIFO control }
-         U.FCR := Value;
-         U.FifoOn := (Value and $01) <> 0;
-         if (Value and $02) <> 0 then RingClear(U.RX);  // clear RX FIFO
-         if (Value and $04) <> 0 then RingClear(U.TX);  // clear TX FIFO
+         Uart.FCR := Value;
+         Uart.FifoOn := (Value and $01) <> 0;
+         if (Value and $02) <> 0 then RingClear(Uart.RX);  // clear RX FIFO
+         if (Value and $04) <> 0 then RingClear(Uart.TX);  // clear TX FIFO
        end;
-    3: U.LCR := Value;
-    4: U.MCR := Value;   // note: DTR drop is handled by the transport layer
+    3: Uart.LCR := Value;
+    4: Uart.MCR := Value;   // note: DTR drop is handled by the transport layer
     5: ;                 // LSR is read-only
     6: ;                 // MSR is read-only
-    7: U.SCR := Value;
+    7: Uart.SCR := Value;
   end;
 end;
 
-function UartNetToGuest(var U: TUart16550; B: Byte): Boolean;
+function UartNetToGuest(var Uart: TUart16550; B: Byte): Boolean;
 begin
-  Result := RingPut(U.RX, B);
-  UartRecomputeLSR(U);
+  Result := RingPut(Uart.RX, B);
+  UartRecomputeLSR(Uart);
 end;
 
-function UartGuestToNet(var U: TUart16550; out B: Byte): Boolean;
+function UartGuestToNet(var Uart: TUart16550; out B: Byte): Boolean;
 begin
-  Result := RingGet(U.TX, B);
-  UartRecomputeLSR(U);
+  Result := RingGet(Uart.TX, B);
+  UartRecomputeLSR(Uart);
 end;
 
 end.

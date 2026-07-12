@@ -34,3 +34,54 @@ DOS FOSSIL TSR  <--NM_SeamProtocol frames over NamedPipeLink/socket-->  server
 The TSR wraps INT 14h data/control into seam frames; the server unwraps them into
 TNodeManager operations (data -> node rings, smConnect -> RingNode, smDisconnect
 -> disconnect, etc.). Both sides use this one unit, so the wire format can't drift.
+
+---
+
+## UPDATE: the driver-side SENDER completes the loop (NM_SeamSender)
+
+The seam now has BOTH halves, built and tested:
+- SERVER receive: TServerBridge.FeedDriverBytes (raw bytes -> frames -> node ops).
+- DRIVER send:   NM_SeamSender (FOSSIL/UART activity -> frames -> a byte sink).
+
+NM_SeamSender wraps the TSR's activity into frames and pushes them to a TByteSink
+callback (the real TSR points this at its pipe/socket write; tests point it at a
+buffer). Methods: SendData/SendByte (smData), SendConnect, SendDisconnect,
+SendBreak, SendKeepAlive. Target-independent — the i8086 TSR reuses it unchanged.
+
+### Full-loop verification (test_seam_roundtrip, 6/6)
+Driver sender emits frames -> exact bytes fed to the server -> correct node ops:
+- SendConnect -> server rings the node.
+- SendData("HELO") -> reaches the node -> queued to the wire.
+- ALL 256 byte values (incl 0xA5 SYNC) survive the full loop — binary-clean e2e.
+- SendBreak -> server handles remote break.
+- SendDisconnect -> server removes the node.
+"FULL DRIVER<->SERVER SEAM LOOP VERIFIED."
+
+### What this means for i8086
+The FOSSIL TSR's network conversation is now fully built and proven. When i8086
+lands, the TSR plugs its real pipe/socket write into the TByteSink callback; every
+layer above is already tested. The only new code left is the thin real-mode
+ISR/residency wrapper — the driver<->server messaging is done.
+
+---
+
+## Naming for readability (tremedy2c)
+
+The frame's fields and the frame variable are named to explain themselves, so the
+code reads in plain language instead of cryptic shorthand:
+- `TSeamFrame.NodeIndex` (was `Node`) — it is an ADDRESS (which comport/node the
+  message is for, 0..98), not a node object. Naming it `NodeIndex` matches the
+  functions that consume it (`NodeByIndex(Frame.NodeIndex)`) and stops readers
+  wondering whether it holds a node.
+- The handler parameter is `Frame` (was a bare `F`) — no more guessing whether
+  `F` meant "fossil" or something else; it is the seam frame being handled.
+
+Now the routing reads as plain intent, e.g.:
+  `RingNode(Frame.NodeIndex);`  /  `node := FNodes.NodeByIndex(Frame.NodeIndex);`
+
+Reminder of the terms:
+- **seam / joint** — the boundary where the two separate pieces meet and hand off:
+  the FOSSIL driver (DOS / INT 14h) and the server (network / Telnet). A seam is a
+  clean, visible join, not a tangle.
+- **seam frame** — one complete message passed across that boundary (SYNC, TYPE,
+  NodeIndex, LEN, PAYLOAD, CHECK). It is a MESSAGE ABOUT a node, not a node itself.

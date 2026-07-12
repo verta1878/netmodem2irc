@@ -36,8 +36,25 @@ const
 
 type
   { message types on the seam }
+  { TSeamMsg — the TYPE of a seam frame (what the frame means).
+    A seam frame is one message between the FOSSIL driver and the server. Exactly
+    ONE type below is a DATA frame (carries a payload); the rest are CONTROL
+    signals (no payload, they just report an event on the line).
+
+      smData      DATA. Payload = actual bytes flowing to/from the node's wire —
+                  characters the DOS program wrote, or bytes arriving from the
+                  remote. This is the ONLY type with a payload. All traffic rides
+                  in smData frames.
+      smConnect   CONTROL. A caller connected on this node. Server->driver this
+                  becomes a RING the BBS answers; driver->server it starts the
+                  node's inbound lifecycle.
+      smDisconnect CONTROL. Hang up / carrier lost on this node -> close it.
+      smCarrierUp  CONTROL. Carrier detect raised (line went online).
+      smCarrierDn  CONTROL. Carrier detect dropped (line went offline).
+      smBreak      CONTROL. A serial BREAK was sent/received on this node.
+      smKeepAlive  CONTROL. Heartbeat / no-op — keeps an idle link alive. }
   TSeamMsg = (
-    smData      = 0,   // payload = data bytes for/from the node's wire
+    smData      = 0,   // DATA: payload = bytes for/from the node's wire
     smConnect   = 1,   // control: a caller connected (server->driver: RING)
     smDisconnect= 2,   // control: hang up / carrier lost
     smCarrierUp = 3,   // control: carrier raised
@@ -46,11 +63,25 @@ type
     smKeepAlive = 6    // no-op heartbeat
   );
 
-  { A parsed frame. }
+  { A parsed seam frame — one decoded message.
+      Msg     : which kind of message (see TSeamMsg). Tells you whether Payload
+                is meaningful (smData) or the frame is a control signal.
+      NodeIndex : WHICH comport/node this frame is addressed to — the address.
+                Valid range
+                is 0 .. NM_MAX_NODES-1 (0..98). A multinode server runs up to 99
+                lines; every frame names its line here so the server knows which
+                node's wire to route to (switch-style addressing: the frame
+                carries its own destination).
+                NOTE: NodeIndex is a Byte (0..255), which can exceed NM_MAX_NODES,
+                so
+                consumers MUST range-check it before using it as an index (the
+                value came off the wire and is not trusted). See NodeByIndex.
+      Payload : the data bytes, only meaningful when Msg = smData; empty otherwise.
+                Length is carried by the frame's LEN field (16-bit, 0..65535). }
   TSeamFrame = record
-    Msg     : TSeamMsg;
-    Node    : Byte;
-    Payload : array of Byte;
+    Msg       : TSeamMsg;   // which kind of message (data or a control signal)
+    NodeIndex : Byte;       // WHICH comport/node this message is addressed to (0..98)
+    Payload   : array of Byte;  // the bytes, meaningful only when Msg = smData
   end;
 
   { Incremental parser — feed it bytes as they arrive; it emits complete frames.
@@ -63,13 +94,13 @@ type
     { Feed raw bytes from the link. }
     procedure Feed(const Buf; Len: Integer);
     { Try to extract one complete frame. Returns True + fills F if one is ready. }
-    function NextFrame(out F: TSeamFrame): Boolean;
+    function NextFrame(out Frame: TSeamFrame): Boolean;
     procedure Reset;
   end;
 
 { Build a frame into a byte buffer (returns the total length written).
   Dest must have room for 6 + PayloadLen bytes. }
-function BuildFrame(Msg: TSeamMsg; Node: Byte;
+function BuildFrame(Msg: TSeamMsg; NodeIndex: Byte;
                     const Payload; PayloadLen: Integer;
                     var Dest): Integer;
 
@@ -84,7 +115,7 @@ begin
   Result := 6 + PayloadLen;
 end;
 
-function BuildFrame(Msg: TSeamMsg; Node: Byte;
+function BuildFrame(Msg: TSeamMsg; NodeIndex: Byte;
                     const Payload; PayloadLen: Integer;
                     var Dest): Integer;
 var
@@ -93,11 +124,20 @@ var
   i: Integer;
   chk: Byte;
 begin
+  { GUARD (qwkpoll lesson): LEN is a 16-bit field on the wire. If PayloadLen
+    exceeds what 16 bits can hold, encoding it would truncate LEN while copying
+    the full payload -> writer/reader desync (silent corruption past the boundary).
+    Refuse instead of corrupting. Callers chunk large data (see NM_SeamSender). }
+  if (PayloadLen < 0) or (PayloadLen > $FFFF) then
+  begin
+    Result := 0;      { invalid: caller must chunk to <= 65535 }
+    Exit;
+  end;
   d := @Dest;
   p := @Payload;
   d[0] := SEAM_SYNC;
   d[1] := Byte(Ord(Msg));
-  d[2] := Node;
+  d[2] := NodeIndex;   // address: which node this frame is for
   d[3] := Byte(PayloadLen and $FF);
   d[4] := Byte((PayloadLen shr 8) and $FF);
   for i := 0 to PayloadLen - 1 do
@@ -145,7 +185,7 @@ begin
   SetLength(FBuf, remain);
 end;
 
-function TSeamParser.NextFrame(out F: TSeamFrame): Boolean;
+function TSeamParser.NextFrame(out Frame: TSeamFrame): Boolean;
 var
   len, need, i: Integer;
   chk: Byte;
@@ -172,16 +212,16 @@ begin
     { bad frame — drop the SYNC and resync }
     Drop(1);
     { try again recursively on the remaining buffer }
-    Result := NextFrame(F);
+    Result := NextFrame(Frame);
     Exit;
   end;
 
   { good frame — build the result }
-  F.Msg  := TSeamMsg(FBuf[1]);
-  F.Node := FBuf[2];
-  SetLength(F.Payload, len);
+  Frame.Msg       := TSeamMsg(FBuf[1]);
+  Frame.NodeIndex := FBuf[2];               // the address that came off the wire
+  SetLength(Frame.Payload, len);
   for i := 0 to len - 1 do
-    F.Payload[i] := FBuf[5 + i];
+    Frame.Payload[i] := FBuf[5 + i];
 
   Drop(need);
   Result := True;

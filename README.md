@@ -55,7 +55,9 @@ The 9x VxD (driver/src) is experimental (needs the DDK + 9x linker work).
 A 32-bit virtual COM port / FOSSIL driver and Telnet server for classic Windows,
 letting DOS and 16-bit BBS door games talk over TCP/IP as if through a modem.
 
-Originally written by **Dedrick Allen** (Allen Software), 1997–2001, and released
+Originally written by **Dedrick Allen** (handle **mag69**, Allen Software),
+1997–2001, who gave the source to this project's maintainer (a NetModem beta
+tester) to carry forward. Released
 under the GNU General Public License v2. This repository preserves his original
 driver source and revives the project with a new, open GUI built in Free Pascal /
 Lazarus — replacing the proprietary component the original GUI depended on, so the

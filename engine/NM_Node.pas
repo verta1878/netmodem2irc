@@ -44,6 +44,7 @@ type
     FTrans : TNetTransport;
     FModem : TATModem;
     FLink  : ISocketLink;
+    FManager: TObject;   { back-ref for switch self-activation (TNodeManager) }
     FState : TNodeState;
     function GetOnline: Boolean;
   public
@@ -77,13 +78,22 @@ type
     property Online: Boolean read GetOnline;
     property Uart: TUart16550 read FUart;   // for the virtual-COM register bridge
     property Modem: TATModem read FModem;
+    property Manager: TObject read FManager write FManager;
   end;
 
   { Holds many nodes — the multinode server core. }
+  { Switch-style routing: instead of sweeping all NM_MAX_NODES slots each tick
+    (hub behavior — cost scales with total slots), the manager keeps a compact
+    list of ACTIVE (online) nodes and services only those (cost scales with
+    active traffic). AddNode/Disconnect keep the active list in sync. }
   TNodeManager = class
   private
     FNodes: array[0..NM_MAX_NODES-1] of TNetModemNode;
+    FActive: array[0..NM_MAX_NODES-1] of TNetModemNode;  { switch: live nodes only }
+    FActiveCount: Integer;
     FCount: Integer;
+    procedure AddActive(N: TNetModemNode);
+    procedure RemoveActive(N: TNetModemNode);
   public
     constructor Create;
     destructor Destroy; override;
@@ -93,6 +103,8 @@ type
     procedure RemoveNode(AIndex: Integer);
     { Pump every active node once (the server's main tick). }
     procedure PumpAll;
+    procedure MarkActive(AIndex: Integer);   { switch: note a node as live }
+    property ActiveCount: Integer read FActiveCount;   { live-node count (switch) }
     property Count: Integer read FCount;
   end;
 
@@ -130,6 +142,8 @@ begin
     BBS/door sees a call. The transport still handles Telnet negotiation on pump. }
   UartSetCarrier(FUart, True);
   FState := nsOnline;
+  if FManager <> nil then
+    TNodeManager(FManager).MarkActive(FIndex);   { switch: auto-activate on connect }
   FModem.ForceOnline;   { inbound: already connected, go straight to online mode }
   { proactively offer BINARY so 8-bit data is clean from the start }
   FTrans.NegotiateBinary;
@@ -189,6 +203,7 @@ end;
 destructor TNodeManager.Destroy;
 var i: Integer;
 begin
+  FActiveCount := 0;   { SWITCH SAFETY: clear active list before freeing nodes }
   for i := 0 to NM_MAX_NODES-1 do
     if FNodes[i] <> nil then FNodes[i].Free;
   inherited Destroy;
@@ -198,10 +213,15 @@ function TNodeManager.AddNode(AIndex: Integer; ALink: ISocketLink): TNetModemNod
 begin
   Result := nil;
   if (AIndex < 0) or (AIndex >= NM_MAX_NODES) then Exit;
-  if FNodes[AIndex] <> nil then FNodes[AIndex].Free;
+  if FNodes[AIndex] <> nil then
+  begin
+    RemoveActive(FNodes[AIndex]);   { SWITCH SAFETY: purge dangling ref before free }
+    FNodes[AIndex].Free;
+  end;
   FNodes[AIndex] := TNetModemNode.Create(AIndex, ALink);
   Inc(FCount);
   Result := FNodes[AIndex];
+  if Result <> nil then Result.Manager := Self;
 end;
 
 function TNodeManager.NodeByIndex(AIndex: Integer): TNetModemNode;
@@ -216,18 +236,63 @@ procedure TNodeManager.RemoveNode(AIndex: Integer);
 begin
   if (AIndex >= 0) and (AIndex < NM_MAX_NODES) and (FNodes[AIndex] <> nil) then
   begin
+    RemoveActive(FNodes[AIndex]);   { SWITCH SAFETY: drop from active list BEFORE
+                                      freeing, so PumpAll never derefs freed memory }
     FNodes[AIndex].Free;
     FNodes[AIndex] := nil;
     Dec(FCount);
   end;
 end;
 
-procedure TNodeManager.PumpAll;
+procedure TNodeManager.AddActive(N: TNetModemNode);
 var i: Integer;
 begin
-  for i := 0 to NM_MAX_NODES-1 do
-    if (FNodes[i] <> nil) and (FNodes[i].State = nsOnline) then
-      FNodes[i].Pump;
+  for i := 0 to FActiveCount-1 do
+    if FActive[i] = N then Exit;          { already active }
+  if FActiveCount < NM_MAX_NODES then
+  begin
+    FActive[FActiveCount] := N;
+    Inc(FActiveCount);
+  end;
+end;
+
+procedure TNodeManager.RemoveActive(N: TNetModemNode);
+var i, j: Integer;
+begin
+  for i := 0 to FActiveCount-1 do
+    if FActive[i] = N then
+    begin
+      for j := i to FActiveCount-2 do
+        FActive[j] := FActive[j+1];       { compact — no holes }
+      Dec(FActiveCount);
+      Exit;
+    end;
+end;
+
+procedure TNodeManager.MarkActive(AIndex: Integer);
+begin
+  if (AIndex >= 0) and (AIndex < NM_MAX_NODES) and (FNodes[AIndex] <> nil) then
+    AddActive(FNodes[AIndex]);
+end;
+
+{ SWITCH: service only the active (live) nodes. A node that hangs up is dropped
+  from the active list so idle/dead slots cost nothing. Cost scales with the
+  number of LIVE connections, not the 99-slot capacity. }
+procedure TNodeManager.PumpAll;
+var i: Integer; n: TNetModemNode;
+begin
+  i := 0;
+  while i < FActiveCount do
+  begin
+    n := FActive[i];
+    if (n <> nil) and (n.State = nsOnline) then
+    begin
+      n.Pump;
+      Inc(i);
+    end
+    else
+      RemoveActive(n);   { drop dead/offline node; do NOT advance i (compacted) }
+  end;
 end;
 
 end.

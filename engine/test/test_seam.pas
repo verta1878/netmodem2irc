@@ -20,7 +20,7 @@ begin
   Check(n = FrameSize(2), 'frame size correct');
   parser.Feed(buf[0], n);
   Check(parser.NextFrame(f), 'frame parsed');
-  Check((f.Msg = smData) and (f.Node = 3) and (Length(f.Payload)=2), 'header correct');
+  Check((f.Msg = smData) and (f.NodeIndex = 3) and (Length(f.Payload)=2), 'header correct');
   Check((f.Payload[0]=Ord('H')) and (f.Payload[1]=Ord('i')), 'payload correct');
 
   writeln('== BINARY SAFETY: payload with all 256 byte values incl SYNC ($A5) ==');
@@ -44,8 +44,8 @@ begin
   n := BuildFrame(smConnect, 1, payload[0], 0, buf[0]);
   n := n + BuildFrame(smData, 2, payload[0], 3, buf[n]);
   parser.Feed(buf[0], n);
-  Check(parser.NextFrame(f) and (f.Msg=smConnect) and (f.Node=1), 'first frame (connect)');
-  Check(parser.NextFrame(f) and (f.Msg=smData) and (f.Node=2), 'second frame (data)');
+  Check(parser.NextFrame(f) and (f.Msg=smConnect) and (f.NodeIndex=1), 'first frame (connect)');
+  Check(parser.NextFrame(f) and (f.Msg=smData) and (f.NodeIndex=2), 'second frame (data)');
   Check(not parser.NextFrame(f), 'no third frame');
 
   writeln('== RESYNC: garbage before a valid frame ==');
@@ -54,7 +54,7 @@ begin
   parser.Feed(buf[0], 3);
   n := BuildFrame(smData, 9, payload[0], 2, buf[0]);
   parser.Feed(buf[0], n);
-  Check(parser.NextFrame(f) and (f.Node=9), 'resynced past garbage to valid frame');
+  Check(parser.NextFrame(f) and (f.NodeIndex=9), 'resynced past garbage to valid frame');
 
   writeln('== control frames (carrier/hangup/break) ==');
   n := BuildFrame(smCarrierUp, 4, payload[0], 0, buf[0]);

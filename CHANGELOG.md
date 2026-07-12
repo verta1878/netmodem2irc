@@ -97,3 +97,11 @@ both are kept.*
 *A later 2.0 alpha 3 build (the recovered installer, dated 2000-05-24) is the
 newest original release located so far. A "beta 4" was mentioned but has not been
 found. If it surfaces, its notes belong above the alpha-3 entry.*
+
+## Readability pass (in progress)
+- Renamed the seam frame's `Node` field to `NodeIndex` and the handler variable
+  `F` to `Frame` (self-explaining: `RingNode(Frame.NodeIndex)`).
+- NM_UART16550: parameter/var `U` -> `Uart` consistently; the register record now
+  documents all datasheet mnemonics (IER/LCR/LSR/...) once at its definition, and
+  RX/TX carry explicit ReceiveRing/TransmitRing names. Datasheet names kept as the
+  identifiers (so code matches any UART reference). 23 tests, 0 failures.

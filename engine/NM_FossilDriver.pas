@@ -49,13 +49,12 @@ type
   and is fully host-testable. Returns True if the function was recognized. }
 function DispatchFrame(var U: TUart16550; var F: TInt14Frame): Boolean;
 
-{$IFDEF DOS_TARGET}
-{ Install / remove the real INT 14h handler (go32v2/DOS only). These wrap the
-  interrupt vector; the handler calls DispatchFrame on the resident UART. Built
-  only for the DOS target under fpc264irc. }
+{ Install / remove the FOSSIL driver. On the DOS build these wrap the real INT 14h
+  interrupt vector and go TSR-resident (the handler calls DispatchFrame on the
+  resident UART). On the host build they are no-ops, so the TSR orchestration
+  (NM_TSR) builds and is testable everywhere. Always declared. }
 procedure InstallFossil(var U: TUart16550);
 procedure RemoveFossil;
-{$ENDIF}
 
 implementation
 
@@ -108,6 +107,19 @@ procedure RemoveFossil;
 begin
   { SetIntVec($14, PrevInt14);  -- restore on unload }
   ResidentU := nil;
+end;
+{$ELSE}
+{ ---- host build: no real interrupt vector to hook ----
+  These are no-ops so NM_TSR's orchestration compiles and is testable on any host.
+  The real residency is exercised only on the DOS (i8086/go32v2) build. }
+procedure InstallFossil(var U: TUart16550);
+begin
+  { host: nothing to hook; the UART is driven directly by tests/DispatchFrame }
+end;
+
+procedure RemoveFossil;
+begin
+  { host: nothing to restore }
 end;
 {$ENDIF}
 
