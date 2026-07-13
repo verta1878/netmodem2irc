@@ -1,34 +1,21 @@
 # attic/ — retired files (kept, not deleted)
 
-Files retired from active use but deliberately preserved. Nothing here is built
-or shipped; kept so history and dead-ends stay visible. See the rule below.
+Files here are superseded or no longer part of the build, but preserved rather than
+deleted (nothing that had a place is thrown away). Each entry says WHY it's retired.
 
-## Rule for retiring a file
-Record: what it was, when/why retired, what replaced it. Keep content intact
-(it's an artifact — don't "fix" it here).
+## Contents
+- **WIN32COM.PAS** — the old ELECOM Win32 comms unit, retired when the ELECOM port
+  moved to the FPC-target units (FOS_COM / win32_pending). Superseded, kept for
+  reference.
+- **netmodem2irc_CREDITS.md** — an early, shorter credits file. Superseded by the
+  fuller CREDITS.md at the repo root (which credits the same chain — Dedrick Allen,
+  mag69, Antonio Rico/Reapern66 — plus Synapse, ELECOM, com0com/com2tcp, FPC, etc.).
+  Retired to avoid a duplicate/inconsistent credits file. NOT referenced anywhere.
 
-## Retired files
-| File | Retired | Reason | Replaced by |
-|------|---------|--------|-------------|
-| WIN32COM.PAS | (ELECOM) by author, ~2000-01 | Author (Maarten Bekers) deprecated it: the unit's own header says "This unit is not supported anymore... The next release of EleCOM will not include WIN32COM.PAS anymore." Retired to keep the ELECOM source clean. | W32SNGL.PAS |
-
-## Historical note — the Virtual Pascal → Free Pascal migration
-ELECOM (and much of the BBS/FidoNet Pascal world) was written to compile on BOTH
-**Virtual Pascal** (VP/VPC — a 32-bit OS/2+Win32 Pascal compiler by Vitaly
-Miryanov / Allan Mertner, very popular for OS/2 and BBS software) AND early
-**Free Pascal** (0.99.x). Around FPC 0.99.x / 1.0 (late 1990s–early 2000s),
-Virtual Pascal lost active development, and Free Pascal became its successor —
-32-bit, multi-platform, TP-dialect-compatible, and able to target OS/2 + Win32 as
-VP did. That is why ELECOM's source is full of `{$IFDEF VirtualPascal}` forks and
-the `WINDEF.FPC` include (which made FPC's Win32 API declarations match what VP
-and Delphi expected).
-
-Relevance to porting: the `{$IFDEF VirtualPascal}` blocks are effectively DEAD
-CODE for a modern FPC build and can eventually be simplified away once the FPC
-path is confirmed working. WINDEF.FPC in particular may be redundant/harmful on
-modern FPC (whose stock `Windows` unit is now correct) — untangling it is the
-central task of getting ELECOM building on modern NT.
-
-## NOT retired (explicitly kept in active source)
-- driver/src/VMM.INC (netmodem 9x) — was briefly SUSPECTED corrupt but is VALID
-  (CRLF line endings, not corruption). Stays in active source.
+## Deliberately NOT retired (kept in place — these are NOT old junk)
+- **docs/original/** (ATCOMNDS.TXT, README.TXT, WHATSNEW.TXT) — Dedrick Allen's
+  ORIGINAL NetModem documentation. Primary-source historical preservation; the
+  point of the project. Stays.
+- **docs/MILESTONE_netmodem2irc.md, docs/netmodem2irc_M1_COMPLETE.md** — historical
+  milestone docs still REFERENCED by README and the M2 build guide. Kept.
+- **history/** (Dedrick's FILE_ID.DIZ + facts) — primary source. Stays.

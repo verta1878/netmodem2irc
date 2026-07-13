@@ -105,3 +105,31 @@ found. If it surfaces, its notes belong above the alpha-3 entry.*
   documents all datasheet mnemonics (IER/LCR/LSR/...) once at its definition, and
   RX/TX carry explicit ReceiveRing/TransmitRing names. Datasheet names kept as the
   identifiers (so code matches any UART reference). 23 tests, 0 failures.
+
+## README refreshed
+- Status updated to reflect current state: 26 tests (was 11), server+driver sides
+  complete, new units listed (seam protocol/sender, TSR skeleton, config/apply).
+- Credit, story, and history sections left intact.
+- Synapse (modified-BSD, GPLv2-compatible) confirmed as the optional real TCP
+  backend (-dHAS_SYNAPSE) and kept bundled.
+
+## Housekeeping: retired superseded duplicate
+- Moved netmodem2irc_CREDITS.md (early, shorter credits) to attic/ — superseded by
+  the fuller root CREDITS.md, not referenced anywhere.
+- Deliberately KEPT in place: docs/original/ (Dedrick's original NetModem docs —
+  primary source), referenced milestone docs, history/. attic/README.md logs why.
+
+## Core hardening complete (audit + concrete link)
+- NetTransport audit: fixed a latent IAC-doubling bound (was safe only by one slot
+  of incidental slack; now explicitly reserves room for the doubled byte). Inbound
+  Telnet state machine audited clean (hostile SB/escaped-FF/unknown handled safely).
+- NM_ATCommand audit: fixed ParseDial port wrap (Word() cast silently wrapped
+  e.g. 70000->4464; now range-checks 1..65535, falls back to default).
+- FOSSIL audit (earlier this cycle): Fn 06h DTR both directions; Fn 18h/19h block
+  I/O implemented; Fn 1Bh GET_INFO wired to fill the struct; Fn 0Fh flow control
+  honest return.
+- NM_ServerLink: concrete TServerLink — TLoopbackServerLink (host-testable, real
+  link object for the full driver<->server loop) + TSynapseServerLink (real TCP,
+  HAS_SYNAPSE). Driver now proven against a real transport, not just a fake.
+- Whole byte path audited end to end: door -> FOSSIL -> seam -> transport -> wire.
+- 33 tests, 0 failures (FPC 2.6.4 + 3.2.2). Pascal core complete and airtight.

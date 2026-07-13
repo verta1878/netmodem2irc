@@ -174,12 +174,15 @@ begin
        In Telnet BINARY, a literal 0xFF byte must be doubled (IAC IAC) so it
        isn't seen as a command. This protects 8-bit data. }
   n := 0;
-  while (n < High(outbuf)) and UartGuestToNet(FUart^, b) do
+  { BOUND SAFETY: one iteration can write TWO bytes (doubled IAC), so require room
+    for both (n <= High(outbuf)-1) before writing. The old bound n < High(outbuf)
+    only avoided overflow incidentally (one slot of slack); this makes it explicit. }
+  while (n <= High(outbuf) - 1) and UartGuestToNet(FUart^, b) do
   begin
     outbuf[n] := b; Inc(n);
     if b = TELNET_IAC then
     begin
-      { double the IAC }
+      { double the IAC — room guaranteed by the loop bound }
       outbuf[n] := TELNET_IAC; Inc(n);
     end;
   end;

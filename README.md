@@ -3,15 +3,22 @@
 Revival of Dedrick Allen's **NetModem/32** (32-bit FOSSIL Telnet server, 1997-2001)
 for modern Windows, with a portable, tested Pascal modem-emulation engine.
 
-## Status: M1 COMPLETE — engine integrated
+## Status: server + driver sides complete and tested (sandbox)
 
-The tested emulation engine is wired into the server. Full data path
-(CM_* messages + driver TIOStruct byte-glue) is built and TESTED:
-**11 test programs, 0 failures, verified on stock FPC 2.6.4 and FPC 3.2.2.**
+Both the server side and the driver side are built and tested in Pascal. The
+emulation engine, server bridge, FOSSIL driver logic, driver<->server seam
+protocol (both directions), the TSR resident-program skeleton, and per-node
+configuration are all done and covered by tests:
+**33 test programs, 0 failures, verified on stock FPC 2.6.4 and FPC 3.2.2.**
+
+Remaining work is outside the pure-Pascal core: the real-mode i8086 TSR wrapper
+(pending the fpc264irc DOS backport) and the Windows/Lazarus GUI build (M2).
 
 ```
 engine/        the emulation engine (Pascal) — UART, FOSSIL, Telnet transport,
-               AT commands, multinode, Synapse + named-pipe links, server bridge
+               AT commands, multinode (switch-style), Synapse + named-pipe links,
+               server bridge, driver<->server seam protocol + sender, TSR
+               skeleton, per-node config
 engine/test/   the test suite (run: sh engine/test/run-tests.sh)
 libs/synapse/  bundled Ararat Synapse (modified-BSD, GPLv2-compatible)
 server/        Lazarus GUI (LCL) — wire per docs/netmodem2irc_M1_COMPLETE.md
@@ -31,7 +38,14 @@ docs/          engineering docs, specs, milestone, roadmap
 - **NM_Node** — per-node object + multinode manager (comports 3-99, as the original)
 - **NM_SynapseLink** — real Synapse TCP socket link (compile-verified)
 - **NM_NamedPipeLink** — named-pipe link (virtual-COM driver seam)
-- **NM_ServerBridge** — wires the engine to the server's CM_* + TIOStruct IO
+- **NM_ServerBridge** — wires the engine to the server's CM_* + TIOStruct IO;
+  switch-style node servicing (services active nodes, not a full-slot sweep)
+- **NM_SeamProtocol / NM_SeamSender** — the driver<->server seam: framed,
+  binary-clean, node-addressed messages; sender wraps driver activity into frames
+- **NM_TSR** — the FOSSIL TSR resident-program skeleton (Startup/Pump/Shutdown),
+  wiring UART + FOSSIL dispatch + seam sender; i8086 fills in the real-mode wrapper
+- **NM_Config / NM_ConfigApply** — per-node comport/host/port config: parse,
+  validate (bounds-checked), and apply to the server
 
 ### Build (GUI) — Lazarus 1.2.6 + LCL
 Add engine/ and libs/synapse/ to the project unit path. Build the server with
@@ -39,14 +53,21 @@ Add engine/ and libs/synapse/ to the project unit path. Build the server with
 exact MainForm wiring, and **docs/BUILD.md** for the original build notes.
 
 ### Roadmap
-M1 (engine integrated) DONE. Next: M2 (builds on Windows), M3 (it connects —
-live Telnet session), M4 (virtual COM: Option A driver), M5 (installer + release).
+M1 (engine integrated) DONE. Driver side (seam + TSR skeleton) and config: DONE,
+tested. Next: M2 (builds on Windows/Lazarus), i8086 real-mode TSR wrapper (pending
+the fpc264irc DOS backport), M3 (it connects — live Telnet session), M4 (virtual
+COM: Option A driver), M5 (installer + release).
 See **docs/netmodem2irc_RELEASE_ROADMAP.md**.
 
 ### Honest status
-The emulation engine is tested (compile + behavior). The Synapse networked path
-and named-pipe real I/O are compile-verified but need a Windows runtime test.
-The 9x VxD (driver/src) is experimental (needs the DDK + 9x linker work).
+The Pascal core (engine, bridge, switch, seam both directions, TSR skeleton,
+config) is tested — compile + behavior — on FPC 2.6.4 and 3.2.2. The full
+driver<->server seam loop is proven end to end with a fake link. The Synapse
+networked path is optional (-dHAS_SYNAPSE) and compile-verified but needs a live
+runtime test. What remains needs work outside the pure-Pascal core: the i8086
+real-mode TSR wrapper (INT 14h ISR + residency + a real pipe/socket link) and the
+Windows/Lazarus GUI build. The 9x VxD (driver/src) is Dedrick's original,
+experimental.
 
 ---
 

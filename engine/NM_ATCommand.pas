@@ -68,6 +68,8 @@ type
     procedure SignalRing;
     property Mode: TModemMode read FMode;
     property DefaultPort: Word read FDefaultPort write FDefaultPort;
+    { test accessor for the private dial parser (unit tests) }
+    function TestParseDial(const AArg: string; out AHost: string; out APort: Word): Boolean;
   end;
 
 const
@@ -122,6 +124,7 @@ function TATModem.ParseDial(const AArg: string; out AHost: string; out APort: Wo
 var
   s: string;
   cp: Integer;
+  prt: LongInt;   // wide parse before range-check (avoid Word wrap)
 begin
   s := AArg;
   { strip a leading T or P (tone/pulse dial modifier) }
@@ -134,11 +137,24 @@ begin
   if cp > 0 then
   begin
     AHost := Copy(s, 1, cp-1);
-    APort := Word(StrToIntDef(Copy(s, cp+1, Length(s)), FDefaultPort));
+    { Parse the port into a WIDE signed int first, then range-check 1..65535.
+      Do NOT cast straight to Word: Word() wraps silently (e.g. 70000 -> 4464),
+      which would connect to a different port than dialled. Reject out-of-range
+      by falling back to the default, same discipline as the config parser. }
+    prt := StrToIntDef(Copy(s, cp+1, Length(s)), FDefaultPort);
+    if (prt >= 1) and (prt <= 65535) then
+      APort := Word(prt)
+    else
+      APort := FDefaultPort;   // out-of-range port -> default, never a wrapped value
   end
   else
     AHost := s;
   Result := AHost <> '';
+end;
+
+function TATModem.TestParseDial(const AArg: string; out AHost: string; out APort: Word): Boolean;
+begin
+  Result := ParseDial(AArg, AHost, APort);
 end;
 
 { Return the numeric parameter at position p (0 if none/not a digit). }
