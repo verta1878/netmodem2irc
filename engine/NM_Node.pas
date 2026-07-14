@@ -77,6 +77,9 @@ type
     property State: TNodeState read FState;
     property Online: Boolean read GetOnline;
     property Uart: TUart16550 read FUart;   // for the virtual-COM register bridge
+    { The ISR must dispatch on the RESIDENT UART (not a by-value copy), so expose
+      it by pointer — same reason NM_TSR exposes UartPtr. }
+    function UartPtr: PUart16550;
     property Modem: TATModem read FModem;
     property Manager: TObject read FManager write FManager;
   end;
@@ -134,6 +137,11 @@ end;
 function TNetModemNode.GetOnline: Boolean;
 begin
   Result := FUart.Online;
+end;
+
+function TNetModemNode.UartPtr: PUart16550;
+begin
+  Result := @FUart;
 end;
 
 procedure TNetModemNode.ConnectInbound;
