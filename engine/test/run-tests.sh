@@ -24,5 +24,18 @@ for t in test_uart test_fossil test_transport test_atcommand test_synapse_stub t
     echo "  $t: FAIL"; fails=$((fails+1))
   fi
 done
+# test_synapse_tail needs -dNM_SOCKET_TEST (the tail buffer test accessors).
+# NM_SynapseLink must be recompiled WITH this define so the test accessors exist.
+echo -n "  test_synapse_tail: "
+$FPC -Mobjfpc -dNM_SOCKET_TEST -vw -Fu"$SRC" -FE"$OUT" "$SRC/NM_SynapseLink.pas" >/dev/null 2>&1
+$FPC -Mobjfpc -dNM_SOCKET_TEST -vw -Fu"$OUT" -Fu"$SRC" -FE"$OUT" "$SRC/test/test_synapse_tail.pas" >/dev/null 2>&1
+if [ -f "$OUT/test_synapse_tail" ]; then
+  chmod +x "$OUT/test_synapse_tail"
+  "$OUT/test_synapse_tail" | grep -q "VERIFIED" \
+    && echo "PASS" || { echo "FAIL"; fails=$((fails+1)); }
+else
+  echo "COMPILE_FAIL"; fails=$((fails+1))
+fi
+
 echo "=== done: $fails failure(s) ==="
 exit $fails

@@ -133,3 +133,15 @@ found. If it surfaces, its notes belong above the alpha-3 entry.*
   HAS_SYNAPSE). Driver now proven against a real transport, not just a fake.
 - Whole byte path audited end to end: door -> FOSSIL -> seam -> transport -> wire.
 - 33 tests, 0 failures (FPC 2.6.4 + 3.2.2). Pascal core complete and airtight.
+
+## Config format decision: text file is canonical
+- netmodem2irc standardizes on a plain TEXT config file (node <index> <host>
+  <port>), parsed + validated by NM_Config (tested). Chosen over the registry
+  because newer Windows adds registry access-flag/ACL complexity (WOW64
+  redirection, UAC virtualization) that a text file avoids — the text format works
+  identically from NT4 onward, is portable, and is directly inspectable by a sysop.
+- The original NETMODEM.CPL used HKLM\Software\Allen Software\NetModem. Registry
+  mirroring (for the original IOCTL-03 reload behavior) may be added LATER, once
+  the text-file path is fully tested. Text file is the source of truth.
+- Added design-stage i8086 TSR scaffolds (NM_Int14ISR, NM_TSRResident) + the
+  M2/NT4 build runbook and CPL config design docs. 33 tests, 0 failures.

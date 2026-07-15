@@ -156,3 +156,18 @@ GUI is being rebuilt against them.
 GNU General Public License v2 — see [`LICENSE`](LICENSE). Original driver
 Copyright © 1997–2001 Dedrick Allen / Allen Software. New Lazarus GUI and revival
 work © the NetModem revival contributors, also under GPLv2.
+
+## Configuration
+
+netmodem2irc is configured with a plain text file, one node per line:
+
+    node 3 bbs.example.com 23
+    node 4 chat.example.org 6667
+
+`NM_Config` parses and validates it (node index 0–99, port 1–65535, host
+non-empty; bad lines rejected). Text is the canonical config format — it avoids the
+registry access-flag/ACL complexity of newer Windows and works identically from
+NT4 onward. A Lazarus config utility (config/, rebuilt from Dedrick's original
+NETMODEM.CPL) provides a GUI; a Control Panel (.cpl) applet is planned (see
+docs/netmodem2irc_cpl_config_design.md). Registry mirroring may be added later,
+once the text path is fully tested.
