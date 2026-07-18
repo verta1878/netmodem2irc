@@ -1,0 +1,149 @@
+beta15 - released August 8, 1997 at 12:30am
+-> re-did the file xfer routines. file xfers work %100 up and down. But
+   not from unix/linux shells. this is because transfers make sent characters
+   that unix/linux thinks is the telnet escape code (usually ^]) but with
+   non-unix clients, such as slip/cslip/ppp telnet clients, which is what most
+   people use for telnet anyway, file xfers work fully and fast. also be
+   sure your xfer protocols use fossil comms. some bbs programs like remoteaccess
+   do, and if yours doesnt I have included CEXYZ a X,Y, and ZModem protocol
+   package which supports fossil comms. please read the docs to this and dont
+   send me email asking me about it cuz i dont support this program. FDSZ
+   (FOSSIL DSZ) didnt seem to perform very well. maybe in NetModem/32 it will
+   have built in protocols. ;)
+-------------------------------------------------------------------------
+beta14 - released August 3, 1997 at 7:30pm
+-> starting compiling on a 486 because NetModem would experience lockups for
+   no appearant reason. Discovered Pentiums don't compile the x86 instruction
+   set correctly for some assembly routines. hopefully this will fix the
+   lockups. If not, oh well. :)
+-------------------------------------------------------------------------
+beta13 - released June 21, 1997 at 1:00pm
+-> so many people had problems of b10-12 locking up. I thought I would try
+   and see if I could fix them. If not, oh well. :) Be sure to tell your bbs
+   software to toggle the DTR to hangup.
+-------------------------------------------------------------------------
+beta12 - released June 7, 1997 at 1:30am
+-> this will probably be the last version of 16bit netmodem. I am tired
+   of people not following instructions and then emailing me with thier
+   problems then i have to try and code around thier system problems. if
+   this version locks up on your system. then too bad. wait until netmodem/32.
+-------------------------------------------------------------------------
+beta11 - released June 6, 1997 at 12:30am
+-> Current version of NetModem is now FREEWARE! ignore all pricing info.
+   NetModem/32 will NOT be freeware!
+   removed the 50 call limit until the final. fix minor bugs and uploads.
+-------------------------------------------------------------------------
+beta10 - released June 2, 1997 at 1:00am
+-> Downloads work %100, but will only be in the registered version.
+   If you are willing to deal with only downloads at the moment and would
+   like to register now, contact me EMail at drip@cris.com (1 Node only).
+   fixed the problem with doors locking up, you should have NO lockups now
+   because of ANY kind of doors that you have setup correctly. Still working
+   on file uploads as they are a little tricky. the FOSSIL driver now takes
+   less memory as %95 is in pure assembler and other parts are in inline code.
+   I am still optimizing the FOSSIL driver for even more speed. I am also
+   working on NetModem/32. I have not yet set registration prices for it yet.
+   When I start accepting registrations for NetModem registered users wont
+   will only have an upgrade fee of $5 (I may or may not have an upgrade fee)
+   This is because programming software and development kits, and such, are 
+   so expensive that its crazy for a young person like me to be able to afford
+   a decent package. Again, I may or may NOT have an upgrade fee.
+-------------------------------------------------------------------------
+beta9 - released May 29, 1997 at 11:30pm
+-> Ice Doors lock up. Its the Ice Software authors fault, I have traced it to it.
+   File transfers still do not fully work %100. I decided to release b9
+   because so many people begged me for it, and it would give me more
+   time to work on b10 with fully functional file xfers. Now compatible
+   with more BBS programs that can use a FOSSIL. I haven't tested PCBoard,
+   but i added some code which should help with it. If a BBS software does
+   not work, then EMail be the name and the problem its having. Your first
+   init string MUST be ATZH0| if it is not things will go wrong. You can
+   use ATH1 to take the server offline and ATH0 to go back online.
+   Added FOSSIL Rev.5 Function 10h - Control C/K Checking & Enable/Disable
+   transmitter but it was hard to code this and control the I/O with it....
+   NetModem now works with Windows 3.11/3.x fixed some problems for Win3.1x.
+   changed the I/O routines for an improvment in speed. NetModem/32 may
+   not be able to use these routines, so I am not sure how its I/O speed
+   will turn out yet. fixed some problems that if 2 fossil drivers were
+   loaded they would clash even if they werent using the same com port.
+   thats now fixed. you may load NetFOSSIL and another FOSSIL driver as long
+   as they DON'T use the same com port. fix other small bugs in the
+   FOSSIL driver. fixed the problem of receiving junk strings on RING,
+   and CONNECT XXX messages. Added a new GUI. added support for CTS/RTS
+   hardware flow control and XOn/XOff software flow control.Added support for
+   Multiple RING's. it will RING 5 times, after that the server will display
+   "BBS not ready, try later". I was forced to re-add the Extended/Superset
+   FOSSIL functions because some BBS software use them to initialize, and
+   because of this I lowered the unregistered connection limit back to 50.
+   Sorry :( . Added support for COM ports 3-20 instead of 4-20 because some
+   software dont support com ports pass 4. Increased the FOSSIL TX/RX Buffer
+   sizes from 1024k to 2048k. Fixed major bug where charactors would be lost
+   coming from the BBS software to the FOSSIL because work was being done to
+   the buffers which made it not see new characters coming in. Used more
+   32Bit instructions and more Assembly where possible for speed. And other
+   fixes and small additions I may have forgotten. Added documentation.
+   NetModem now has a Web page at "www.cris.com/~drip". This version is
+   pretty close to final. If any bugs are reported I will fix them and
+   release b10 as the final, I am now accepting registrations for the 1
+   node version only, because Multi-Node versions are still in the works
+   and with the amount of coding they will require, I am sure it will have
+   its bugs/problems, not to mention how the speed will be I am not sure how
+   the server will handle 2 or 8 nodes. as of right now I dont plan on making
+   a Multi-Node NetModem, but there will be a Multi-Node NetModem/32. The
+   reason for this is while NetModem uses alot of 32bit instructions its
+   still compiled in 16bit. so I dont know if it will be fast enough to
+   handle 8 nodes, 2 maybe but not 8. if enough people request I will make
+   a 2 node version of NetModem but the 8 node support will be in NetModem/32
+   and if NetModem/32 can handle it I will add more node support. The 2 node
+   version probably wont be as hard as the 8 node version. Hopefully I can
+   get it to run 8 nodes with-out ANY slowdown. So if you would like to
+   register the 1 Node contact me via EMail at drip@cris.com for registration
+   information.
+-------------------------------------------------------------------------
+beta8 - released April 21, 1997 at 2:00am
+-> fixed some fossil bugs, and the server lag bug, and changed
+   the GUI. %70 new code in the server. speed of netmodem server is about
+   %40 faster. and some other cool enhancements. You can now use 'X' to
+   close the server...
+-------------------------------------------------------------------------
+beta7 - released April 19, 1997 at 8:15pm
+-> fixed a problem where current sockets would freeze if someone telneted
+   in and the BBS wasnt loaded.(Thanks E) The server now tells them to try
+   later. fixed freezing in the background problems. hopefully fixed problems
+   of intermail and frontdoor not be'ing able to read the connect string
+   as fast as netfossil sends it. and other fossil bugs. Also fixed problems
+   with Illusion BBS software. (Thanks voivode). Raised the unreg'd connect
+   limit from 50 to 70...
+-------------------------------------------------------------------------
+beta6 - released April 17, 1997 at 12:30am
+-> fixed "Exit" bug on NetModem server, and a few more in the FOSSIL
+-------------------------------------------------------------------------
+beta5 - released April 16, 1997 at 9:00pm
+-> worked more on the modem init emulation code. Now NetFOSSIL
+   accepts ANY AT command. Use ATZ to Init, or any other AT Command.
+   although they do nothing. And use ATA to answer, or AT....A (meaning
+   you can put any other commands in between as long as the last one is
+   A) and it will answer. Also fixed bugs in the Server, and in the FOSSIL
+   and added more functions to the FOSSIL.
+-------------------------------------------------------------------------
+beta 4 - released April 15, 1997 at 10:55pm
+-> now works with Iniquity. I setup Iniquity and tested it myself.
+   fixed the modem initialization problems. only accepts ATA| and ATZ|.
+   also fixed other bugs in the fossil. still working on the peekmessage();
+   funtion in the modem server, its lagging win95 slightly for some reason.
+   doenst lag on NT systems. i think its a bad routine in the win95 API
+   (I am not surprised) 
+-------------------------------------------------------------------------
+beta3 - released April 14, 1997 at 4:40pm
+-> fixed minor bug problems and fixed fossil function 03h
+   added the RING bit to function 03h, because Iniquity BBS seems to
+   use it. Hopefully fixed the problem of Iniquity hanging up. If not
+   notify me right away...
+-------------------------------------------------------------------------
+beta2 - released April 14, 1997 at 1:10am
+-> hopefully fixed the problem with Iniquity BBS, and Illusion beta4 BBS.
+   and also fixed a couple of other bugs in the NetFOSSIL.
+-------------------------------------------------------------------------
+beta1 - released April 13, 1997 at 10:36pm
+-> First initial release of NetModem...
+-------------------------------------------------------------------------

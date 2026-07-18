@@ -21,7 +21,16 @@ unit NMVxD;
 interface
 
 uses
-  Windows, SysUtils;
+  {$IFDEF WINDOWS}Windows,{$ENDIF} SysUtils;
+
+{$IFNDEF WINDOWS}
+type
+  THandle = LongInt;
+  HWND = LongInt;
+  DWORD = LongWord;
+const
+  INVALID_HANDLE_VALUE = THandle(-1);
+{$ENDIF}
 
 const
   { --- driver identity (NETMODEM.INC) --- }
@@ -142,11 +151,10 @@ type
 
 implementation
 
+{$IFDEF WINDOWS}
 constructor TNetModemDriver.Create;
 begin
   inherited Create;
-  { FILE_FLAG_DELETE_ON_CLOSE triggers dynamic VxD load on Win9x. If the VxD is
-    loaded statically as a VCOMM port driver, open it by its device name. }
   FHandle := CreateFile(NETMODEM_VXD_NAME, 0, 0, nil, 0,
                         FILE_FLAG_DELETE_ON_CLOSE, 0);
 end;
@@ -163,9 +171,6 @@ begin
   Result := FHandle <> INVALID_HANDLE_VALUE;
 end;
 
-{ Central call. The driver reads the node index (or, for IOCTL_REGISTER_WINDOW,
-  the HWND) from the DWORD pointed to by lpcbBytesReturned. We therefore pass
-  @NodeOrHwnd there. Struct payloads go through lpvInBuffer. }
 function TNetModemDriver.DoIoctl(Code: DWORD; NodeOrHwnd: DWORD;
                                  Buf: Pointer; BufSize: DWORD): Boolean;
 var
@@ -175,15 +180,38 @@ begin
   Result := False;
   if not IsOpen then Exit;
   Slot := NodeOrHwnd;
-  { lpvInBuffer = Buf; lpcbBytesReturned = @Slot (carries node/HWND) }
   Result := DeviceIoControl(FHandle, Code,
-              Buf, BufSize,          // lpInBuffer / nInBufferSize
-              Buf, BufSize,          // lpOutBuffer / nOutBufferSize
-              @Slot,                 // <-- node/HWND channel (see §4.2)
+              Buf, BufSize,
+              Buf, BufSize,
+              @Slot,
               nil);
-  Returned := Slot;                  // some calls update this
-  if Returned = 0 then ;            // silence hint; value is driver-specific
+  Returned := Slot;
+  if Returned = 0 then ;
 end;
+{$ELSE}
+{ Non-Windows stubs — driver interface not available on this platform }
+constructor TNetModemDriver.Create;
+begin
+  inherited Create;
+  FHandle := INVALID_HANDLE_VALUE;
+end;
+
+destructor TNetModemDriver.Destroy;
+begin
+  inherited Destroy;
+end;
+
+function TNetModemDriver.IsOpen: Boolean;
+begin
+  Result := False;
+end;
+
+function TNetModemDriver.DoIoctl(Code: DWORD; NodeOrHwnd: DWORD;
+                                 Buf: Pointer; BufSize: DWORD): Boolean;
+begin
+  Result := False;
+end;
+{$ENDIF}
 
 function TNetModemDriver.GetDriverInfo(out Info: TDriverInfo): Boolean;
 begin

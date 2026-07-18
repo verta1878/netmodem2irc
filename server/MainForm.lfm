@@ -1,0 +1,17 @@
+object frmMain: TfrmMain
+  Left = 200
+  Top = 100
+  Width = 640
+  Height = 480
+  Caption = 'NetModem/32 Server'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object StatusBar: TStatusBar
+    Left = 0
+    Top = 458
+    Width = 640
+    Height = 22
+    SimplePanel = True
+    SimpleText = 'Ready'
+  end
+end

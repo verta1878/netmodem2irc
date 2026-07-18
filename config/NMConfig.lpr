@@ -4,6 +4,7 @@ program NMConfig;
   Reads/writes HKLM\Software\Allen Software\NetModem (ComportConfig, IRQ),
   then calls IOCTL 03 (reload config) so no reboot is needed. }
 {$MODE OBJFPC}{$H+}
+{$R NMConfig.res}
 uses
   {$IFDEF UNIX}cthreads,{$ENDIF}
   Interfaces, Forms,

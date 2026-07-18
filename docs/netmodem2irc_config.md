@@ -1,64 +1,34 @@
-# Config wiring (NM_Config) — per-node comport/host/port, deployable setup
+# netmodem2irc — configuration
 
-Turns netmodem2irc from "constructed in code" into "configured and deployable."
+## Storage
 
-## Format (simple, BBS-era INI-like)
-    node <index> <host> <port>
-e.g.
-    ; my board
-    node 3 bbs.example.com 23
-    node 4 chat.example.org 6667
-Blank lines and lines starting with ';' or '#' are comments.
+Primary: Windows registry (`HKLM\Software\Allen Software\NetModem`)
+- `ComportConfig` — REG_BINARY, array of ComportStruct (22 bytes/node)
+- `IRQ` — REG_DWORD
 
-## What it does
-- TNMConfig parses config text/lines into per-node entries
-  (TNodeConfig: NodeIndex, Host, Port).
-- Each field is RANGE-CHECKED on load (structural-sight discipline — a config
-  value is untrusted input crossing a boundary, like a wire value):
-    * node index: 0 .. NM_MAX_NODES-1 (0..98)
-    * port:       1 .. 65535
-    * host:       non-empty
-- Bad lines are REPORTED (Errors), never silently accepted. IsValid is true only
-  if every line parsed cleanly.
-- Redefining a node updates it (last wins), no duplicates.
+Text config also supported (NM_Config.ParseText):
+    node 1 comport 3 baud 38400 mode fossil port 23
 
-## Verified (test_config, 28/28) — boundary discipline
-- node index: 0 and 98 accepted; 99 (== NM_MAX_NODES) and -1 REJECTED.
-- port: 1 and 65535 accepted; 0 and 65536 (past Word) REJECTED.
-- malformed lines (too few/many fields, non-numeric index/port, unknown keyword)
-  all rejected AND recorded as errors, not swallowed.
-- comments/blanks ignored; multi-line ParseText; last-wins update.
-Full suite: 25 tests, 0 failures (FPC 2.6.4 + 3.2.2).
+## What configures what
 
-## Where it fits
-This is the last big buildable-now server-side piece: it's how a deployment says
-"node 3 is COM3, talks to bbs.example.com:23." The server would load a config and
-AddNode(idx, link-to(host,port)) per entry; the TSR side reads its own node's
-host/port the same way. Wiring config into the actual server/TSR construction is a
-small follow-up (it just feeds the already-tested constructors).
+- **CPL / NMConfig** writes the registry (per-node settings)
+- **VxD driver** reads the registry at boot + on IOCTL 03 reload
+- **NMServer** does NOT read config — the driver already has it
+- **Connection targets** come from AT dial (ATDT host:port), not config
 
----
+## Per-node fields
 
-## Config APPLIED to the server (NM_ConfigApply) — the loose end closed
+All fields match the original NetModem/32 CPL 1:1:
 
-NM_Config parses+validates; NM_ConfigApply is the thin glue that brings the
-configured nodes UP on a TServerBridge, so "load a config -> nodes come up" is a
-real, tested path. Kept as its own single-purpose unit (config parses, bridge
-runs, applier connects them).
+    NodeIndex, ComPort, Baud, Mode, Enabled, InternetPort,
+    BaseAddress, BufferSize, AlwaysActive, LockedBaudRate, ManageTimeSlice
 
-ApplyConfig(cfg, bridge) -> TApplyResult(Brought, Skipped):
-- Refuses to apply an INVALID config (IsValid = false) — never half-configures
-  from broken input.
-- For each configured node, brings it up via the bridge; counts Brought vs
-  Skipped. HONEST about the stub build: with no transport backend compiled in
-  (HAS_SYNAPSE off), MakeLink returns nil and nodes are counted SKIPPED, not
-  falsely reported up. With -dHAS_SYNAPSE the same nodes come up.
+- NM_Config parses and validates (boundary-checked, tested)
+- NM_ConfigApply applies to the bridge (tested)
+- NM_DefaultConfig writes factory defaults to registry
+- 35 test programs, 0 failures
 
-### Verified (test_config_apply, 7/7)
-- valid config -> all configured nodes accounted for (brought + skipped, none lost).
-- INVALID config -> applies NOTHING (0 brought, 0 skipped).
-- empty config and nil args -> safe, 0/0.
-Full suite: 26 tests, 0 failures (FPC 2.6.4 + 3.2.2).
+## Factory defaults (NetModem v1)
 
-The config story is now complete end to end: text -> parse -> validate -> apply ->
-nodes, every step tested.
+    Node 1, COM3, 38400 baud, FOSSIL, port 23, base $03E8,
+    buffer 2048, lockedbaud on, timeslice on, enabled

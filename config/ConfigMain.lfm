@@ -1,0 +1,38 @@
+object frmConfig: TfrmConfig
+  Left = 200
+  Top = 100
+  Width = 480
+  Height = 360
+  Caption = 'NetModem/32 Configuration'
+  OnCreate = FormCreate
+  object Nav: TListBox
+    Left = 8
+    Top = 8
+    Width = 120
+    Height = 280
+    OnClick = NavClick
+  end
+  object Pages: TPageControl
+    Left = 136
+    Top = 8
+    Width = 336
+    Height = 280
+  end
+  object btnOK: TBitBtn
+    Left = 312
+    Top = 300
+    Width = 75
+    Height = 25
+    Caption = 'OK'
+    OnClick = btnOKClick
+    Kind = bkOK
+  end
+  object btnCancel: TBitBtn
+    Left = 396
+    Top = 300
+    Width = 75
+    Height = 25
+    Caption = 'Cancel'
+    Kind = bkCancel
+  end
+end

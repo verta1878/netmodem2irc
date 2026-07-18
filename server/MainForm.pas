@@ -11,9 +11,9 @@ unit MainForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, ComCtrls, ExtCtrls, Menus, StdCtrls,
+  Classes, SysUtils, Forms, Controls, ComCtrls, ExtCtrls, Menus, StdCtrls, LMessages,
   {$IFDEF WINDOWS}Windows,{$ENDIF}
-  NMVxD;
+  NMVxD, NM_ServerBridge;
 
 type
 
@@ -36,6 +36,7 @@ type
     procedure TrayIconDblClick(Sender: TObject);
   private
     FDriver: TNetModemDriver;
+    FBridge: TServerBridge;
     procedure RefreshNodes;
     {$IFDEF WINDOWS}
     // Intercept the CM_* messages the driver posts to this window.
@@ -54,6 +55,8 @@ implementation
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   FDriver := TNetModemDriver.Create;
+  FBridge := TServerBridge.Create;
+
   if FDriver.IsOpen then
   begin
     {$IFDEF WINDOWS}
@@ -63,11 +66,13 @@ begin
   end
   else
     StatusBar.SimpleText := 'Driver not found (NETMODEM.VXD not loaded).';
+
   RefreshNodes;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
+  FBridge.Free;
   FDriver.Free;
 end;
 
