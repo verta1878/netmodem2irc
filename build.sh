@@ -2,7 +2,7 @@
 # netmodem2irc — full project build
 # Usage: ./build.sh [tests|resources|win32|fossil|clean|all]
 #        FPCIRC=/path/to/fpc264irc ./build.sh
-# Requires: fpc264irc r6.1+
+# Requires: fpc264irc r3.1+
 #           i686-w64-mingw32-windres (for icon resources)
 set -e
 cd "$(dirname "$0")"
@@ -30,7 +30,7 @@ run_tests() {
 }
 
 build_win32() {
-    echo "=== Win32 Cross-Compile (fpc264irc r6.1+) ==="
+    echo "=== Win32 Cross-Compile (fpc264irc r3.1+) ==="
     if [ ! -d "$FPCIRC" ]; then
         echo "  ERROR: FPCIRC=$FPCIRC not found"
         echo "  Set FPCIRC=/path/to/fpc264irc or clone github.com/verta1878/fpc264irc"

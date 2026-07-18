@@ -89,7 +89,7 @@ attic/          retired files
 
 ## Building
 
-Requires fpc264irc r6.1+ (github.com/verta1878/fpc264irc).
+Requires fpc264irc r3.1+ (github.com/verta1878/fpc264irc).
 
 ```sh
 FPCIRC=/path/to/fpc264irc ./build.sh          # build everything (tests + win32 + fossil)
@@ -118,7 +118,7 @@ Compiled via windres into `.res` files embedded in each binary:
 
 ### DOS (netfossl.exe)
 
-Requires fpc264irc r6.1+ with i8086 cross-compiler + OpenWatcom wlink:
+Requires fpc264irc r3.1+ with i8086 cross-compiler + OpenWatcom wlink:
 ```
 FPCIRC=/path/to/fpc264irc ./build.sh fossil
 ```
@@ -156,7 +156,7 @@ Original NetModem/32: **Dedrick Allen** (mag69), 1997-2001. Allen Software.
 Released under GNU General Public License v2.
 
 Revival: **Antonio Rico** (Reapern66 / verta1878).
-Built with fpc264irc r6.1+ (github.com/verta1878/fpc264irc).
+Built with fpc264irc r3.1+ (github.com/verta1878/fpc264irc).
 
 ## License
 

@@ -63,7 +63,7 @@ Original binary: history/NETMODEM.CPL (657KB, Delphi 5)
 
     copy NETMODEM.CPL %SystemRoot%\system32\
 
-Using original NETMODEM.CPL binary. Config app (NMConfig) requires fpc264irc r6.1+.
+Using original NETMODEM.CPL binary. Config app (NMConfig) requires fpc264irc r3.1+.
 
 ## Global settings (NM_GlobalConfig)
 
