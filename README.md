@@ -41,30 +41,30 @@ FOSSIL bridge (netfossl.exe)
 
 ## Configuration
 
-The VxD reads config from the Windows registry (`HKLM\Software\Allen Software\NetModem`).
-The CPL and NMConfig write the same keys. Text config is also supported:
+The VxD reads config from the Windows registry. The CPL and NMConfig write
+the same keys. The server does NOT read config — the driver already has it.
 
-    ; netmodem2irc config — matches original CPL 1:1
-    node 1 comport 3 baud 38400 mode fossil port 23
-    node 2 comport 4 baud 57600 mode uart port 6667 buffer 4096
+    HKLM\Software\Allen Software\NetModem
+      ComportConfig   REG_BINARY   array of ComportStruct (22 bytes/node)
+      IRQ             REG_DWORD    interrupt number (0 = none)
 
-Per-node fields (all optional except comport, defaults in parentheses):
+Per-node ComportStruct fields (matches original CPL 1:1):
 
-    comport <1-99>          virtual COM port number
-    baud <rate>             300/1200/2400/9600/14400/16800/19200/21600/
-                            28800/33600/38400/57600/64000/115200 (38400)
-    mode <fossil|uart>      emulation mode (fossil)
-    port <1-65535>          TCP listen port (23)
-    base <hex>              I/O base address ($03E8)
-    buffer <1024-8192>      RX/TX buffer size in bytes (2048)
-    alwaysactive <0|1>      keep node active without connection (0)
-    lockedbaud <0|1>        lock baud rate (1)
-    timeslice <0|1>         yield CPU when idle (1)
-    enabled <0|1>           node active (1)
+    Field            Size   Default        Description
+    Node             Byte   1              node slot
+    Enabled          Byte   1              node active
+    ComportNumber    Byte   3              virtual COM port (1-99)
+    szComportName    7      "COM3"         ASCII name
+    Emulation        Byte   1 (FOSSIL)     0=UART, 1=FOSSIL
+    Baudrate         Word   38400          300-115200 (14 rates)
+    Internetport     Word   23             TCP listen port
+    Baseaddress      Word   $03E8          I/O base address
+    Alwaysactive     Byte   0              keep node up without connection
+    Lockedbaudrate   Byte   1              lock baud rate
+    Managetimeslice  Byte   1              yield CPU when idle
+    Buffersize       Word   2048           RX/TX buffer (1024-8192)
 
-Factory defaults (from NetModem v1): Node 1, COM3, 38400 baud, FOSSIL mode,
-telnet port 23, 2048 byte buffers. Written to registry on first run.
-
+Factory defaults written to registry on first run if no config exists.
 Connection targets come from AT dial commands (`ATDT host:port`), not config.
 
 ## Repository layout
