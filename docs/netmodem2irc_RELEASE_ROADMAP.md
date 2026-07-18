@@ -10,7 +10,7 @@ distance from the current published repo to a shippable release.
 - server/ — Lazarus GUI scaffold (MainForm/SplashForm) with CM_* handler STUBS
   (MainForm.pas literally says "Fill in the transport (NetTransport.pas) to
   complete it" + TODOs for CM_CONNECT_NODE, CM_DISCONNECT_NODE, etc.)
-- config/, common/NetModemVxD.pas, docs/, docs/original/
+- config/, common/NMVxD.pas, docs/, docs/original/
 - Single `main` branch (no separate 9x/nt branches yet)
 
 **Built this session but NOT yet pushed (the engine):**
@@ -39,7 +39,7 @@ Exit: repo contains a coherent, building NT server that USES the tested engine.
       2.6.4irc/Lazarus 1.2.6 pairing, or modern Lazarus — decide)
 - [ ] Compile the Synapse path (-dHAS_SYNAPSE) against bundled Synapse on Windows
 - [ ] Resolve any Win32-specific compile issues
-Exit: `NetModemServer.exe` builds and launches on Windows.
+Exit: `NMServer.exe` builds and launches on Windows.
 
 ### M3 — It connects  [functional, the real proof]
 - [ ] Synapse RUNTIME test: server dials out / accepts a real Telnet connection

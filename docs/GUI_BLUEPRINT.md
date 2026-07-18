@@ -100,14 +100,14 @@ blueprint** (this doc + the DFMs), and the **interface spec** that binds them.
 ```
 NetModem2/
 ├── driver/                    ← recovered MASM source (build NETMODEM.VXD)
-├── NetModemVxD.pas            ← IOCTL/message wrapper (from earlier recovery)
+├── NMVxD.pas            ← IOCTL/message wrapper (from earlier recovery)
 ├── server/
-│   ├── NetModemServer.lpr
+│   ├── NMServer.lpr
 │   ├── MainForm.pas/.lfm      ← rebuild of EXE TForm1 (node list, tray, menu)
 │   ├── SplashForm.pas/.lfm    ← rebuild of TSplashForm
 │   └── NetTransport.pas       ← WinSock telnet (Synapse TTCPBlockSocket)
 └── config/
-    ├── NetModemConfig.lpr
+    ├── NMConfig.lpr
     ├── ConfigMain.pas/.lfm    ← rebuild of CPL TForm1 (+ TCategoryButtons nav)
     ├── frmListserv, frmGlobal, frmLog, frmLegend, frmAddress  ← TForm2..TForm6
     └── RegConfig.pas          ← read/write the NetModem registry keys

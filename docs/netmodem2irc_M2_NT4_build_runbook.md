@@ -10,8 +10,8 @@ real-world snags at the machine; note them and we refine. The Pascal core it bui
 is tested (33 host tests); M2 is about getting it to build+run on Windows.
 
 ## What M2 produces
-1. NetModemServer.exe   — the Telnet server GUI (Lazarus)  [server/]
-2. NetModemConfig.exe    — the configuration utility (Lazarus, rebuilt from
+1. NMServer.exe   — the Telnet server GUI (Lazarus)  [server/]
+2. NMConfig.exe    — the configuration utility (Lazarus, rebuilt from
                           Dedrick's original NETMODEM.CPL)  [config/]
    (later: repackage config as a .cpl Control Panel applet — see
     netmodem2irc_cpl_config_design.md)
@@ -28,15 +28,15 @@ is tested (33 host tests); M2 is about getting it to build+run on Windows.
 - The netmodem2irc repo checked out (engine/, server/, config/, common/,
   libs/synapse/).
 
-## STEP 1 — Build the server GUI (NetModemServer.exe)
-1. Open Lazarus. File > Open > server/NetModemServer.lpi.
+## STEP 1 — Build the server GUI (NMServer.exe)
+1. Open Lazarus. File > Open > server/NMServer.lpi.
 2. The project already sets (verified in the .lpi):
      - Unit search paths: ../engine ; ../common ; ../libs/synapse
      - Custom option: -dHAS_SYNAPSE   (compiles the real TCP backend)
    Confirm these under Project > Project Options > Compiler Options > Paths /
    Custom Options if the build can't find units.
 3. Build: Run > Build (or Shift+F9). It compiles the engine units + Synapse + the
-   GUI (TfrmMain, TfrmSplash) into NetModemServer.exe.
+   GUI (TfrmMain, TfrmSplash) into NMServer.exe.
 4. EXPECTED SNAGS + fixes:
    - "Can't find unit blcksock / synsock": the Synapse path isn't on the search
      path, or Synapse needs its platform inc — ensure ../libs/synapse is listed and
@@ -47,13 +47,13 @@ is tested (33 host tests); M2 is about getting it to build+run on Windows.
      Options > Additions and Overrides, or the LCLWidgetType), not gtk.
 5. Run it (F9). The splash then the main form should appear.
 
-## STEP 2 — Build the config utility (NetModemConfig.exe)
-1. File > Open > config/NetModemConfig.lpr (project) / ConfigMain.pas (form).
+## STEP 2 — Build the config utility (NMConfig.exe)
+1. File > Open > config/NMConfig.lpr (project) / ConfigMain.pas (form).
 2. This app (per its header) reads/writes
      HKLM\Software\Allen Software\NetModem  (ComportConfig, IRQ)
    and calls IOCTL 03 to reload config without reboot — it was rebuilt from the
    original NETMODEM.CPL's 6 Delphi forms. On NT4 the registry write needs admin.
-3. Build (Shift+F9) -> NetModemConfig.exe. Run it; the config form appears.
+3. Build (Shift+F9) -> NMConfig.exe. Run it; the config form appears.
 4. DESIGN NOTE: our tested NM_Config uses a text format (node i host port). The
    original NETMODEM.CPL used the registry. Decide which is canonical for the
    revival:
@@ -76,10 +76,10 @@ netmodem2irc_i8086_TSR_finish_guide.md):
 
 ## STEP 4 — First connection test (M3 preview)
 Order of testing, cheapest first:
-1. SERVER ALONE: run NetModemServer.exe, confirm it opens a listening node
+1. SERVER ALONE: run NMServer.exe, confirm it opens a listening node
    (per config). Use a telnet client (SyncTERM/NetRunner/putty) to connect TO the
    server's node port and confirm the server accepts + shows the connection.
-2. CONFIG ROUND-TRIP: set a node in NetModemConfig, confirm the server picks it up
+2. CONFIG ROUND-TRIP: set a node in NMConfig, confirm the server picks it up
    (reload/IOCTL 03), confirm the node comes up with the configured host/port.
 3. OUTBOUND: point a node at a real remote Telnet BBS (host:23). Confirm the server
    connects out (Synapse) and negotiates Telnet BINARY (our NetTransport).

@@ -34,6 +34,7 @@ begin
   node := br.Nodes.AddNode(4, ifake);
 
   writeln('== smConnect frame -> node rings (inbound) ==');
+  FillChar(payload, SizeOf(payload), 0);
   n := BuildFrame(smConnect, 4, payload[0], 0, buf[0]);
   Check(br.FeedDriverBytes(buf[0], n) = 1, 'one connect frame handled');
   { RING should have been emitted to the guest }

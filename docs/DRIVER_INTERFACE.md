@@ -110,7 +110,7 @@ Reading the source (`W32DeviceIoControl`, `jmp IOCTL_Table[eax*4]`):
 
 So from Pascal, pass a pointer to a DWORD holding the node number as
 `lpcbBytesReturned`, and your struct as `lpvInBuffer`. The wrapper unit
-(`NetModemVxD.pas`) encapsulates this.
+(`NMVxD.pas`) encapsulates this.
 
 ### 4.3 IOCTL table (control codes $00–$10)
 
@@ -174,7 +174,7 @@ Error: `NO_ERROR=0 PORT_ERROR=1 MEMORY_ERROR=2 IRQ_ERROR=3 V86_MEMORY_ERROR=4 CB
 
 ```
 NetModem2/
-├── NetModemVxD.pas     ← provided: driver interface (records, IOCTLs, messages)
+├── NMVxD.pas     ← provided: driver interface (records, IOCTLs, messages)
 ├── NetModemHost.lpr    ← program entry
 ├── MainForm.pas/.lfm   ← node list, status, connect/disconnect (TToolBar/TListView)
 ├── ConfigForm.pas/.lfm ← reads/writes HKLM\Software\Allen Software\NetModem

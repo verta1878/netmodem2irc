@@ -40,7 +40,6 @@ end;
 
 { read everything currently in the guest RX ring as a string }
 function GuestSees: string;
-var b: Byte;
 begin
   Result := '';
   while UartReadReg(U, UART_RBR) <> 0 do ; // can't distinguish; use ring directly

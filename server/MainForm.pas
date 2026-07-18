@@ -13,7 +13,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, ComCtrls, ExtCtrls, Menus, StdCtrls,
   {$IFDEF WINDOWS}Windows,{$ENDIF}
-  NetModemVxD;
+  NMVxD;
 
 type
 

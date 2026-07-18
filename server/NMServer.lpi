@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags><MainUnitHasCreateFormStatements Value="False"/></Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="NetModem/32 Server (netmodem2irc)"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <BuildModes Count="2">
+      <Item1 Name="Default" Default="True"/>
+      <Item2 Name="Synapse">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <SearchPaths>
+            <OtherUnitFiles Value="../engine;../common;../libs/synapse"/>
+            <IncludeFiles Value="../libs/synapse"/>
+          </SearchPaths>
+          <Other>
+            <CustomOptions Value="-dHAS_SYNAPSE"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
+    </BuildModes>
+    <Units Count="3">
+      <Unit0><Filename Value="NMServer.lpr"/><IsPartOfProject Value="True"/></Unit0>
+      <Unit1><Filename Value="MainForm.pas"/><IsPartOfProject Value="True"/><ComponentName Value="frmMain"/><HasResources Value="True"/></Unit1>
+      <Unit2><Filename Value="SplashForm.pas"/><IsPartOfProject Value="True"/><ComponentName Value="frmSplash"/><HasResources Value="True"/></Unit2>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target><Filename Value="NMServer"/></Target>
+    <SearchPaths>
+      <!-- so Lazarus finds the engine, driver interface, and Synapse -->
+      <OtherUnitFiles Value="../engine;../common;../libs/synapse"/>
+      <IncludeFiles Value="../libs/synapse"/>
+      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Parsing><SyntaxOptions><SyntaxMode Value="ObjFPC"/></SyntaxOptions></Parsing>
+  </CompilerOptions>
+</CONFIG>

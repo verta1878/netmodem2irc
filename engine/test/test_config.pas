@@ -4,7 +4,7 @@ program test_config;
   tested AT their limits, bad input must be REJECTED (not silently accepted). }
 uses SysUtils, NM_UART16550, NM_Fossil, NetTransport, NM_ATCommand, NM_Node, NM_Config;
 var
-  cfg: TNetModemConfig; pass,fail: Integer; c: TNodeConfig;
+  cfg: TNMConfig; pass,fail: Integer; c: TNodeConfig;
 procedure Check(cc:Boolean;const nm:string);
 begin if cc then begin Inc(pass);writeln('  PASS: ',nm);end else begin Inc(fail);writeln('  FAIL: ',nm);end;end;
 
@@ -12,7 +12,7 @@ begin
   pass:=0;fail:=0;
 
   writeln('== happy path: a valid node line parses ==');
-  cfg := TNetModemConfig.Create;
+  cfg := TNMConfig.Create;
   Check(cfg.ParseLine('node 3 bbs.example.com 23'), 'valid line accepted');
   Check(cfg.NodeCount = 1, 'one node loaded');
   Check(cfg.GetNode(3, c), 'node 3 found');
@@ -21,7 +21,7 @@ begin
   cfg.Free;
 
   writeln('== comments and blanks are ignored, not errors ==');
-  cfg := TNetModemConfig.Create;
+  cfg := TNMConfig.Create;
   cfg.ParseLine('; this is a comment');
   cfg.ParseLine('# also a comment');
   cfg.ParseLine('');
@@ -31,7 +31,7 @@ begin
   cfg.Free;
 
   writeln('== BOUNDARY: node index 0 and 98 valid, 99 and -1 rejected ==');
-  cfg := TNetModemConfig.Create;
+  cfg := TNMConfig.Create;
   Check(cfg.ParseLine('node 0 h 23'),  'index 0 (min) accepted');
   Check(cfg.ParseLine('node 98 h 23'), 'index 98 (max valid) accepted');
   Check(not cfg.ParseLine('node 99 h 23'),  'index 99 (== NM_MAX_NODES) REJECTED');
@@ -41,7 +41,7 @@ begin
   cfg.Free;
 
   writeln('== BOUNDARY: port 1 and 65535 valid, 0 and 65536 rejected ==');
-  cfg := TNetModemConfig.Create;
+  cfg := TNMConfig.Create;
   Check(cfg.ParseLine('node 5 h 1'),     'port 1 (min) accepted');
   Check(cfg.ParseLine('node 6 h 65535'), 'port 65535 (max) accepted');
   Check(not cfg.ParseLine('node 7 h 0'),     'port 0 REJECTED');
@@ -49,7 +49,7 @@ begin
   cfg.Free;
 
   writeln('== malformed lines rejected with errors, not silently swallowed ==');
-  cfg := TNetModemConfig.Create;
+  cfg := TNMConfig.Create;
   Check(not cfg.ParseLine('node 3 onlythree'),      'too few fields rejected');
   Check(not cfg.ParseLine('node 3 h 23 extra'),     'too many fields rejected');
   Check(not cfg.ParseLine('node abc h 23'),         'non-numeric index rejected');
@@ -59,7 +59,7 @@ begin
   cfg.Free;
 
   writeln('== ParseText: whole multi-line config ==');
-  cfg := TNetModemConfig.Create;
+  cfg := TNMConfig.Create;
   Check(cfg.ParseText(
     '; my board' + #10 +
     'node 1 bbs.one.net 23' + #10 +
@@ -70,7 +70,7 @@ begin
   cfg.Free;
 
   writeln('== redefining a node updates it (last wins) ==');
-  cfg := TNetModemConfig.Create;
+  cfg := TNMConfig.Create;
   cfg.ParseLine('node 4 old.host 23');
   cfg.ParseLine('node 4 new.host 24');
   Check(cfg.NodeCount = 1, 'still one node (updated, not duplicated)');

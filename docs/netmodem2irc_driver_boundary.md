@@ -7,7 +7,7 @@ boundary.
 
 ## Verified state (why it's already clean)
 - The ENGINE (engine/*.pas) is OS-INDEPENDENT: no engine unit `uses Windows`, none
-  `uses NetModemVxD`. Proven by the 33 tests building engine-only on Linux.
+  `uses NMVxD`. Proven by the 33 tests building engine-only on Linux.
 - NM_ServerBridge MIRRORS the driver's TIOStruct layout with a plain record and a
   comment ("kept here so the bridge is testable without the driver unit; layouts
   MUST match") — an intentional DECOUPLING, not a dependency.
@@ -16,8 +16,8 @@ boundary.
   Int14_Table..."). They document heritage; they are not code coupling. KEEP them.
 
 ## Where the driver/virtual-COM material lives (correctly isolated)
-- common/NetModemVxD.pas — Ring-3 interface to Dedrick's NETMODEM.VXD. Used by the
-  server GUI (server/MainForm.pas, NetModemServer.lpr) ONLY — never by the engine.
+- common/NMVxD.pas — Ring-3 interface to Dedrick's NETMODEM.VXD. Used by the
+  server GUI (server/MainForm.pas, NMServer.lpr) ONLY — never by the engine.
 - driver/src/ — Dedrick Allen's original 9x VxD source (NETMODEM.ASM + VxD includes
   VMM/VCOMM/VCOMMW32/VPICD/VWIN32/SHELL/REGDEF). Original, GPL, reference.
 

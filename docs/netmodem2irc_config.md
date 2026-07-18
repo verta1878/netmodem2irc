@@ -11,7 +11,7 @@ e.g.
 Blank lines and lines starting with ';' or '#' are comments.
 
 ## What it does
-- TNetModemConfig parses config text/lines into per-node entries
+- TNMConfig parses config text/lines into per-node entries
   (TNodeConfig: NodeIndex, Host, Port).
 - Each field is RANGE-CHECKED on load (structural-sight discipline — a config
   value is untrusted input crossing a boundary, like a wire value):

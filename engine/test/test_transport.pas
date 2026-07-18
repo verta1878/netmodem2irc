@@ -50,7 +50,6 @@ var
   T: TNetTransport;
   pass, fail, i: Integer;
   b: Byte;
-  allbytes: array[0..255] of Byte;
   got: array of Byte;
 
 procedure Check(cond: Boolean; const name: string);

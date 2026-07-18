@@ -9,10 +9,10 @@ Both the server side and the driver side are built and tested in Pascal. The
 emulation engine, server bridge, FOSSIL driver logic, driver<->server seam
 protocol (both directions), the TSR resident-program skeleton, and per-node
 configuration are all done and covered by tests:
-**33 test programs, 0 failures, verified on stock FPC 2.6.4 and FPC 3.2.2.**
+**34 test programs, 0 failures, verified on stock FPC 2.6.4 and FPC 3.2.2.**
 
-Remaining work is outside the pure-Pascal core: the real-mode i8086 TSR wrapper
-(pending the fpc264irc DOS backport) and the Windows/Lazarus GUI build (M2).
+Remaining work is outside the pure-Pascal core: the Windows/Lazarus GUI build (M2).
+The i8086 DOS FOSSIL↔TCP bridge (netfossl.exe) is built and linked — see dos/.
 
 ```
 engine/        the emulation engine (Pascal) — UART, FOSSIL, Telnet transport,
@@ -23,7 +23,8 @@ engine/test/   the test suite (run: sh engine/test/run-tests.sh)
 libs/synapse/  bundled Ararat Synapse (modified-BSD, GPLv2-compatible)
 server/        Lazarus GUI (LCL) — wire per docs/netmodem2irc_M1_COMPLETE.md
 config/        Lazarus config tool
-common/        driver interface (TNetModemDriver, TIOStruct, CM_* messages)
+common/        driver interface (NMVxD, TIOStruct, CM_* messages)
+dos/           i8086 DOS FOSSIL↔TCP bridge (netfossl.exe, fpcirc cross-compile)
 driver/src/    Dedrick's original 9x VxD source (experimental branch)
 history/       Dedrick's original FILE_ID.DIZ + facts
 attic/         retired files (kept, not deleted)
@@ -54,20 +55,20 @@ exact MainForm wiring, and **docs/BUILD.md** for the original build notes.
 
 ### Roadmap
 M1 (engine integrated) DONE. Driver side (seam + TSR skeleton) and config: DONE,
-tested. Next: M2 (builds on Windows/Lazarus), i8086 real-mode TSR wrapper (pending
-the fpc264irc DOS backport), M3 (it connects — live Telnet session), M4 (virtual
+tested. DOS i8086 FOSSIL↔TCP bridge (netfossl.exe): DONE, linked. Next: M2
+(builds on Windows/Lazarus), M3 (it connects — live Telnet session), M4 (virtual
 COM: Option A driver), M5 (installer + release).
 See **docs/netmodem2irc_RELEASE_ROADMAP.md**.
 
 ### Honest status
 The Pascal core (engine, bridge, switch, seam both directions, TSR skeleton,
 config) is tested — compile + behavior — on FPC 2.6.4 and 3.2.2. The full
-driver<->server seam loop is proven end to end with a fake link. The Synapse
-networked path is optional (-dHAS_SYNAPSE) and compile-verified but needs a live
-runtime test. What remains needs work outside the pure-Pascal core: the i8086
-real-mode TSR wrapper (INT 14h ISR + residency + a real pipe/socket link) and the
-Windows/Lazarus GUI build. The 9x VxD (driver/src) is Dedrick's original,
-experimental.
+driver<->server seam loop is proven end to end with a fake link. The DOS i8086
+FOSSIL↔TCP bridge (dos/netfossl.exe, 179KB) is built and linked via the fpc264irc
+cross-compiler. The Synapse networked path is optional (-dHAS_SYNAPSE) and
+compile-verified but needs a live runtime test. What remains: the Windows/Lazarus
+GUI build and live testing on real DOS/DOSBox. The 9x VxD (driver/src) is Dedrick's
+original, experimental.
 
 ---
 
@@ -109,9 +110,10 @@ in the day. *(More of that history to be added over time.)*
 
 ```
 driver/src/     Dedrick Allen's original MASM VxD source (NETMODEM.VXD) — GPLv2
-common/         NetModemVxD.pas — Pascal interface to the driver (IOCTL + messages)
+common/         NMVxD.pas — Pascal interface to the driver (IOCTL + messages)
 server/         Lazarus rewrite of the Telnet server app (was NETMODEM.EXE)
 config/         Lazarus rewrite of the configuration app (was NETMODEM.CPL)
+dos/            i8086 DOS FOSSIL↔TCP bridge (netfossl.exe, fpcirc cross-compile)
 docs/           DRIVER_INTERFACE.md, GUI_BLUEPRINT.md, BUILD.md, GitHub walkthrough
 docs/original/  Dedrick's original WHATSNEW.TXT / README.TXT / ATCOMNDS.TXT (verbatim)
 CHANGELOG.md    Revival history + preserved original release history

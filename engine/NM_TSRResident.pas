@@ -45,7 +45,7 @@ type
   TTSRResident = class
   private
     FBridge : TServerBridge;     { hosts the switch (TNodeManager) + nodes }
-    FConfig : TNetModemConfig;   { the loaded per-node config }
+    FConfig : TNMConfig;   { the loaded per-node config }
     FResident : Boolean;
   public
     constructor Create;
@@ -76,7 +76,7 @@ constructor TTSRResident.Create;
 begin
   inherited Create;
   FBridge := TServerBridge.Create;
-  FConfig := TNetModemConfig.Create;
+  FConfig := TNMConfig.Create;
   FResident := False;
 end;
 

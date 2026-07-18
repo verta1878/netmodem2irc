@@ -66,7 +66,7 @@ The ISocketLink abstraction means the SAME tested transport drives a TCP socket
 ### ELECOM integration (parallel)
 7. **ELECOM port** — EleBBS comms lib (VP-era) to modern FPC. BUFUNIT + ELEDEF
    building on 2.6.4; VP->FPC convention-fix pattern documented. FOS_COM =
-   go32v2/DOS FOSSIL client (fpc264irc target) = the CLIENT side our NM_Fossil is
+   i8086 DOS FOSSIL client (fpc264irc target, see dos/) = the CLIENT side our NM_Fossil is
    the SERVER side of. Cross-check them (both use $1954 signature — good sign).
 
 ## Honest status line

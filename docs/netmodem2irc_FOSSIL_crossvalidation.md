@@ -39,7 +39,7 @@ then a real BBS FOSSIL client works against our driver. This is logic-level proo
 target-independent — verified now, before the 16-bit ISR/TSR packaging exists.
 
 ## What remains (target-bound, later)
-The real DOS proof — FOS_COM compiled for go32v2/16-bit actually calling INT 14h
+The real DOS proof — FOS_COM compiled for i8086 real mode actually calling INT 14h
 against our loaded TSR — needs the i8086 build (fpc264irc r3). But the CONTRACT
 those calls rely on is now proven at the logic level, so that final step is
 validation, not discovery.

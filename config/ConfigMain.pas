@@ -6,7 +6,7 @@ unit ConfigMain;
 interface
 uses
   Classes, SysUtils, Forms, Controls, StdCtrls, ComCtrls, Buttons, ExtCtrls,
-  NetModemVxD;
+  NMVxD;
 type
   TfrmConfig = class(TForm)
     Nav: TListBox;             // replaces TShortcutList (left nav)

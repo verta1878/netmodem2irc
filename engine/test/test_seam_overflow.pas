@@ -37,6 +37,7 @@ begin
   Check(n = 0, '100000-byte payload refused');
 
   writeln('== negative length refused (defensive) ==');
+  FillChar(small, SizeOf(small), 0);
   n := BuildFrame(smData, 5, small[0], -1, dest[0]);
   Check(n = 0, 'negative PayloadLen refused');
 

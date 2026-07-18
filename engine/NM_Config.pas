@@ -35,7 +35,7 @@ type
   end;
 
   { the whole configuration: a set of node entries }
-  TNetModemConfig = class
+  TNMConfig = class
   private
     FNodes : array of TNodeConfig;
     FErrors: array of string;   { human-readable problems found during parse }
@@ -66,14 +66,14 @@ type
 
 implementation
 
-constructor TNetModemConfig.Create;
+constructor TNMConfig.Create;
 begin
   inherited Create;
   SetLength(FNodes, 0);
   SetLength(FErrors, 0);
 end;
 
-function TNetModemConfig.FindNode(AIndex: Integer): Integer;
+function TNMConfig.FindNode(AIndex: Integer): Integer;
 var i: Integer;
 begin
   Result := -1;
@@ -85,13 +85,12 @@ begin
     end;
 end;
 
-function TNetModemConfig.ParseLine(const ALine: string): Boolean;
+function TNMConfig.ParseLine(const ALine: string): Boolean;
 var
   s, keyword, host: string;
   parts: array of string;
   p, idx, prt: Integer;
   code: Integer;
-  n: Integer;
 
   procedure PushErr(const Msg: string);
   begin
@@ -198,7 +197,7 @@ begin
   Result := True;
 end;
 
-function TNetModemConfig.ParseText(const AText: string): Integer;
+function TNMConfig.ParseText(const AText: string): Integer;
 var
   i, lineStart: Integer;
   line: string;
@@ -219,7 +218,7 @@ begin
   end;
 end;
 
-function TNetModemConfig.GetNode(AIndex: Integer; out ACfg: TNodeConfig): Boolean;
+function TNMConfig.GetNode(AIndex: Integer; out ACfg: TNodeConfig): Boolean;
 var p: Integer;
 begin
   p := FindNode(AIndex);
@@ -227,23 +226,23 @@ begin
   if Result then ACfg := FNodes[p];
 end;
 
-function TNetModemConfig.NodeCount: Integer;
+function TNMConfig.NodeCount: Integer;
 begin
   Result := Length(FNodes);
 end;
 
-function TNetModemConfig.NodeByPosition(APos: Integer; out ACfg: TNodeConfig): Boolean;
+function TNMConfig.NodeByPosition(APos: Integer; out ACfg: TNodeConfig): Boolean;
 begin
   Result := (APos >= 0) and (APos <= High(FNodes));
   if Result then ACfg := FNodes[APos];
 end;
 
-function TNetModemConfig.ErrorCount: Integer;
+function TNMConfig.ErrorCount: Integer;
 begin
   Result := Length(FErrors);
 end;
 
-function TNetModemConfig.ErrorText(APos: Integer): string;
+function TNMConfig.ErrorText(APos: Integer): string;
 begin
   if (APos >= 0) and (APos <= High(FErrors)) then
     Result := FErrors[APos]
@@ -251,7 +250,7 @@ begin
     Result := '';
 end;
 
-function TNetModemConfig.IsValid: Boolean;
+function TNMConfig.IsValid: Boolean;
 begin
   Result := Length(FErrors) = 0;
 end;

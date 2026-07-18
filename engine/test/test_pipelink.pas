@@ -50,7 +50,6 @@ var
   link: TNamedPipeLink;
   ilink: ISocketLink;
   pass, fail, i, n, j: Integer;
-  b: Byte;
   buf: array[0..63] of Byte;
   lr: TLinkResult;
 

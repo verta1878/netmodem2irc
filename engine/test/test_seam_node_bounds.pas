@@ -29,6 +29,7 @@ begin
   writeln('== out-of-range NODE from the wire must be ignored, not crash ==');
   { NODE=200 (> NM_MAX_NODES=99). BuildFrame writes it (Byte). The bridge must
     handle the frame without indexing FNodes[200]. }
+  FillChar(pl, SizeOf(pl), 0);
   n := BuildFrame(smConnect, 200, pl[0], 0, buf[0]);
   Check(br.FeedDriverBytes(buf[0], n) = 1, 'connect NODE=200 frame consumed (parsed)');
   { if it had indexed FNodes[200] we'd have crashed already; reaching here = safe }

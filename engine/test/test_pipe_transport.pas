@@ -26,7 +26,7 @@ var b0,i:Integer;begin b0:=Length(FromDriver);SetLength(FromDriver,b0+Length(B))
   for i:=0 to High(B) do FromDriver[b0+i]:=B[i];end;
 var
   U: TUart16550; fake: TFakePipe; ifake: IPipeBackend;
-  link: ISocketLink; T: TNetTransport; pass,fail:Integer; b:Byte;
+  link: ISocketLink; T: TNetTransport; pass,fail:Integer;
 procedure Check(c:Boolean;const n:string);
 begin if c then begin Inc(pass);writeln('  PASS: ',n);end else begin Inc(fail);writeln('  FAIL: ',n);end;end;
 begin

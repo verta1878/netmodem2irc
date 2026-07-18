@@ -33,7 +33,7 @@ uses
   {$IFDEF HAS_SYNAPSE}, NM_SynapseLink{$ENDIF};
 
 type
-  { Mirror of the driver's TIOStruct (common/NetModemVxD.pas). Kept here so the
+  { Mirror of the driver's TIOStruct (common/NMVxD.pas). Kept here so the
     bridge is testable without the driver unit; the layouts MUST match.
     RX = bytes the DOS game wrote (-> send to socket).
     HX = buffer for bytes from the socket (-> give to the game). }

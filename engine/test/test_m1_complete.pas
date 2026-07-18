@@ -5,7 +5,7 @@ program test_m1_complete;
 uses SysUtils, NM_UART16550, NM_Fossil, NetTransport, NM_ATCommand, NM_Node, NM_ServerBridge;
 
 type
-  { EXACT mirror of the driver's TIOStruct (common/NetModemVxD.pas) }
+  { EXACT mirror of the driver's TIOStruct (common/NMVxD.pas) }
   TIOStruct = packed record
     RXPointer  : DWORD;
     IORXLength : DWORD;
@@ -34,7 +34,7 @@ var bb,i:Integer;begin bb:=Length(FromWire);SetLength(FromWire,bb+Length(D));
   for i:=0 to High(D) do FromWire[bb+i]:=D[i];end;
 
 var
-  br: TServerBridge; pass,fail,i:Integer;
+  br: TServerBridge; pass,fail: Integer;
   fake: TFakeLink; ifake: ISocketLink; node: TNetModemNode;
   dio: TIOStruct;
   rxbuf, hxbuf: array[0..255] of Byte;

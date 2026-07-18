@@ -33,7 +33,7 @@ tested. What's missing is the DOS PACKAGING around it.
 2. **Register-level entry/exit** — FOSSIL passes args in AH/AL/DX (function/port)
    and returns in AX etc. Our NM_Fossil already models TFossilRegs; the driver
    wraps the actual ISR register frame onto it.
-3. **TSR or loadable form** — stay resident (real-mode TSR) OR a go32v2 resident
+3. **TSR or loadable form** — stay resident (real-mode TSR) — implemented as i8086 real mode
    strategy. DOS-target packaging.
 4. **The seam to the server** — how the DOS-side driver reaches the Windows
    server. Options:
@@ -45,7 +45,7 @@ tested. What's missing is the DOS PACKAGING around it.
    the server.
 
 ## Build reality (honest)
-- This is **real-mode / go32v2 DOS code** = **fpc264irc territory**, NOT the NT
+- This is **i8086 real-mode DOS code** = **fpc264irc territory**, NOT the NT
   host. INT 14h hooking needs Dos/Registers/Intr (DOS target) or asm.
 - Verified by a **DOS build + a real door talking through it**, not on the NT box.
 - fpc264irc is the compiler; this is exactly the kind of DOS target it exists for.
@@ -57,7 +57,7 @@ the same wire, same $1954 signature — FOS_COM can literally be a TEST CLIENT f
 our driver. Independent period code validating our driver.
 
 ## Milestone breakdown (M3.5)
-- [ ] M3.5a — DOS test harness: a go32v2 program that calls INT 14h fn 04h and
+- [ ] M3.5a — DOS test harness: an i8086 program that calls INT 14h fn 04h and
       checks $1954 (proves we can hook + answer). (FOS_COM can seed this.)
 - [ ] M3.5b — wrap NM_Fossil's logic behind a real INT 14h handler (the ISR
       register frame -> TFossilRegs -> FossilDispatch -> back).
@@ -76,15 +76,15 @@ original's core use case. It's arguably THE feature that makes netmodem2irc
 ## TARGET DECISION — i8086 (16-bit real-mode) is the better fit for the driver
 
 Question raised: since the fpc264irc maintainer plans to add i8086 (real-mode
-16-bit) support, would that be a better target for the FOSSIL driver than go32v2?
+16-bit) support, i8086 was chosen over go32v2 for the FOSSIL driver.
 
 **Answer: yes — i8086 real-mode is the better and more faithful target.**
 
-### Why i8086 over go32v2 for a FOSSIL driver
+### Why i8086 was chosen over go32v2
 - A FOSSIL driver is, by nature, a **16-bit real-mode TSR** (X00, BNU, ADF — all
   classic 16-bit resident drivers). Hooking INT 14h, SetIntVec, and staying
   resident (Keep/TSR) are **native, natural real-mode operations**.
-- **go32v2** produces **32-bit protected-mode (DPMI)** programs. A FOSSIL driver
+- **go32v2** produces 32-bit protected-mode (DPMI) programs. A FOSSIL driver
   can be built there, but TSR residency + INT 14h hooking fight the grain:
   protected↔real mode transitions, DPMI callbacks, and go32v2 programs not being
   natural TSRs. Doable, but awkward.
@@ -125,12 +125,12 @@ keep DOSBox-X's door open as a less-invasive alternative.
 - i8086 is the fpc264irc **r3** expedition (2.6.4 has zero i8086 scaffolding; the
   backend arrived in FPC 3.0 — a multi-month port). So i8086 is the RIGHT target
   but a FUTURE one.
-- go32v2 is available NOW (fpc264irc bundles it) but is the more awkward fit.
+- go32v2 was available but was the more awkward fit. i8086 was implemented instead.
 - **Decision: scope the FOSSIL driver for i8086 (real-mode TSR) as the eventual
   target.** The tested service logic (NM_Fossil) and the frame-dispatch layer
   (NM_FossilDriver.DispatchFrame) are already target-agnostic and verified, so
   they carry over unchanged; only the ISR hook + TSR packaging bind to i8086 when
-  it lands. If a working driver is wanted before i8086 ships, a go32v2 interim
+  it landed. The i8086 FOSSIL driver is now implemented in dos/fossil_dos.pas.
   build is possible but should be treated as a stopgap, not the final form.
 
 ### What this means for the code we already have

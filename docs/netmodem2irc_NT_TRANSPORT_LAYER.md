@@ -9,7 +9,7 @@ Layer B's place.** This doc designs that replacement.
 Builds on (does not duplicate):
 - netmodem2irc_DRIVER_MAP.md — the 3-layer split (A emulation / B kernel / C seam)
 - docs/DRIVER_INTERFACE.md — recovery record + IOCTL spec + "two programs" model
-- common/NetModemVxD.pas — the IOCTL constants ($00..$10) the server already speaks
+- common/NMVxD.pas — the IOCTL constants ($00..$10) the server already speaks
 
 ## What Layer B did on 9x, and what must replace it on NT
 On 9x, the VxD (Layer B) did three kernel-only jobs:
@@ -67,7 +67,7 @@ driver) as last resort — signing cost is high and out of proportion for a revi
 | Layer A: 16550 UART emulation | user-mode | **Pascal** (re-create from spec) |
 | Layer A: FOSSIL / X00 / AT parser | user-mode | **Pascal** (re-create from spec) |
 | Layer C: TX/RX byte-shuttle | user-mode | **Pascal** |
-| Layer C: server protocol (IOCTL-equivalent) | user-mode | **Pascal** (common/NetModemVxD.pas already models it) |
+| Layer C: server protocol (IOCTL-equivalent) | user-mode | **Pascal** (common/NMVxD.pas already models it) |
 | WinSock / Telnet | user-mode | **Pascal** (fpc264irc sockets) |
 | Virtual COM port presentation | com0com (Opt 1) / helper (Opt 2) / none (Opt 3) | external / minimal / none |
 

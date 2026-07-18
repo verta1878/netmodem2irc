@@ -9,7 +9,7 @@ in the data path.
 
 ### uses
 ```pascal
-uses ..., NetModemVxD, NM_ServerBridge;
+uses ..., NMVxD, NM_ServerBridge;
 ```
 
 ### fields

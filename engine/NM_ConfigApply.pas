@@ -35,11 +35,11 @@ type
   the host/port from config travel with the node's link when a real transport is
   present. With no transport backend (stub build), nodes are counted as Skipped,
   not falsely reported up. }
-function ApplyConfig(ACfg: TNetModemConfig; ABridge: TServerBridge): TApplyResult;
+function ApplyConfig(ACfg: TNMConfig; ABridge: TServerBridge): TApplyResult;
 
 implementation
 
-function ApplyConfig(ACfg: TNetModemConfig; ABridge: TServerBridge): TApplyResult;
+function ApplyConfig(ACfg: TNMConfig; ABridge: TServerBridge): TApplyResult;
 var
   i: Integer;
   nc: TNodeConfig;

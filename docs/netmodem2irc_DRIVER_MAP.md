@@ -88,7 +88,7 @@ Pascal/C for the NT user-mode bridge.
   per-port state.
 - **S_DriverControl / InitFunction / PortOpen / PortClose (5348-5697, CCALL)** — the
   C-callable entry points (note CCALL = cdecl) the Pascal/server side links against.
-  These are the documented ABI in common/NetModemVxD.pas.
+  These are the documented ABI in common/NMVxD.pas.
 
 ---
 
@@ -104,7 +104,7 @@ Pascal/C for the NT user-mode bridge.
   server protocol) becomes user-mode too. => **This is where FPC/fpc264irc + the
   sockets work applies: the NT user-mode COM emulation + Telnet server is Pascal.**
 - The IOCTL table (Layer C) is the contract the Pascal server already speaks
-  (common/NetModemVxD.pas) — so the server's view of the driver is already documented
+  (common/NMVxD.pas) — so the server's view of the driver is already documented
   and stable across both branches.
 
 ## Honest caveats

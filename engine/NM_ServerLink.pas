@@ -13,7 +13,7 @@ unit NM_ServerLink;
                            and is a genuine transport for same-process wiring.
 
     TSynapseServerLink   — a real TCP link over Ararat Synapse (blcksock), guarded
-                           by {$IFDEF HAS_SYNAPSE}. This is the shape the i8086 TSR
+                           by the HAS_SYNAPSE ifdef. This is the shape the i8086 TSR
                            will use to reach the server over a socket.
 
   Both honor the TServerLink contract: Send pushes bytes out, Poll pulls available

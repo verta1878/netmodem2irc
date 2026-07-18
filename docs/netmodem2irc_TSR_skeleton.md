@@ -31,7 +31,7 @@ TESTED on the host now. The real-mode RESIDENCY (INT 14h vector hook, TSR-reside
 the actual pipe/socket) is DOS-specific: InstallFossil/RemoveFossil have a DOS build
 (real vector) and a host build (no-op), and the pipe/socket lives behind TServerLink.
 => When i8086 lands, only the thin real-mode wrapper is filled in: a real
-   TServerLink (pipe/socket) + the go32v2 INT 14h ISR + residency. The shape,
+   TServerLink (pipe/socket) + the i8086 INT 14h ISR (dos/fossil_dos.pas) + residency. The shape,
    the data flow, and every layer above are already here and proven.
 
 ## Verified (test_tsr, 8/8) — TSR SKELETON ORCHESTRATION VERIFIED
@@ -52,6 +52,6 @@ Full suite: 24 tests, 0 failures (FPC 2.6.4 + 3.2.2).
 
 ## What remains for a live TSR (i8086, blocked on the backport)
 - A concrete TServerLink over a real pipe/socket to the server.
-- The go32v2 INT 14h ISR (map CPU regs <-> TInt14Frame, call DispatchFrame) and
+- The i8086 INT 14h ISR (map CPU regs <-> TInt14Frame, call DispatchFrame) and
   TSR residency (keep-resident, restore vector on unload).
 Both are thin wrappers over this proven shell.

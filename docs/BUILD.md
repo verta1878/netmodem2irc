@@ -27,16 +27,16 @@ branch uses a user-mode COM bridge instead — see below.
 Requirements: **Free Pascal 3.2.x + Lazarus**. On your build machine install
 Lazarus, then:
 
-* Server:  open `server/NetModemServer.lpr` in Lazarus and Build.
-* Config:  open `config/NetModemConfig.lpr` in Lazarus and Build.
+* Server:  open `server/NMServer.lpr` in Lazarus and Build.
+* Config:  open `config/NMConfig.lpr` in Lazarus and Build.
 
-Add `common/` to each project's unit search path so `NetModemVxD` is found.
+Add `common/` to each project's unit search path so `NMVxD` is found.
 
 ### Targeting Windows 9x vs. modern Windows
 
 * **9x branch:** build the GUI for **i386-win32**. FPC/Lazarus can target win32;
   the resulting `.exe` runs on 98/ME. Pair with the VxD above.
-* **nt branch:** build for win32 or win64. Replace the VxD path in `NetModemVxD.pas`
+* **nt branch:** build for win32 or win64. Replace the VxD path in `NMVxD.pas`
   with a **com0com** (or similar) user-mode virtual COM port, and have the server
   bridge that port to WinSock. No kernel driver, no driver signing.
 

@@ -14,15 +14,10 @@ unit NM_FossilDriver;
   call the tested dispatch, map the result back. All the ACTUAL FOSSIL semantics
   live in NM_Fossil (already tested). This unit is just the DOS packaging.
 
-  TARGET: this is real-mode / go32v2 DOS code. The actual INT 14h vector hook
-  (GetIntVec/SetIntVec + an interrupt handler) is guarded by DOS_TARGET and built
-  under fpc264irc (which bundles the go32v2 toolchain). WITHOUT DOS_TARGET the
-  unit still compiles (host build) and the register-frame MAPPING is testable via
-  DispatchFrame — so the logic is verified even where the real ISR can't be built.
-
-  VERIFICATION NOTE (honest): DispatchFrame (frame<->TFossilRegs<->dispatch) is
-  testable on any host and IS tested. The real INT 14h hook + TSR residency need
-  a go32v2/DOS build + a real door to verify.
+  TARGET: the real DOS FOSSIL driver is in dos/fossil_dos.pas (i8086 real mode,
+  built with fpc264irc cross-compiler, produces netfossl.exe). This unit provides
+  the testable DispatchFrame mapping so the FOSSIL logic is verified on any host.
+  The DOS_TARGET ifdef is kept for future integration with the i8086 build.
   =========================================================================== }
 
 {$MODE OBJFPC}{$H+}
@@ -83,35 +78,24 @@ begin
 end;
 
 {$IFDEF DOS_TARGET}
-{ ---- real INT 14h hook (go32v2/DOS) ----
-  NOTE: real-mode ISR details (saving the prior vector, chaining non-our-port
-  calls, the interrupt attribute/register access) are DOS-target specifics
-  finalized on the fpc264irc go32v2 build. Sketch of the shape: }
-
-var
-  PrevInt14 : Pointer;      // saved previous INT 14h vector
-  ResidentU : PUart16550;   // the UART the ISR services
-
-{ The actual interrupt handler would read the pushed CPU registers into a
-  TInt14Frame, call DispatchFrame(ResidentU^, frame), and write them back to the
-  register frame, chaining PrevInt14 for ports that aren't ours. Implemented with
-  the go32v2 interrupt support on the DOS build. }
+{ ---- DOS INT 14h ----
+  The real i8086 DOS FOSSIL driver is in dos/fossil_dos.pas (pure INT 14h,
+  built with the fpc264irc i8086 cross-compiler). It produces netfossl.exe.
+  This ifdef is kept for future integration; see dos/ for the working code. }
 
 procedure InstallFossil(var U: TUart16550);
 begin
-  ResidentU := @U;
-  { GetIntVec($14, PrevInt14); SetIntVec($14, @Int14Handler);  -- DOS build }
+  { DOS: see dos/fossil_dos.pas — direct INT 14h calls }
 end;
 
 procedure RemoveFossil;
 begin
-  { SetIntVec($14, PrevInt14);  -- restore on unload }
-  ResidentU := nil;
+  { DOS: see dos/fossil_dos.pas }
 end;
 {$ELSE}
 { ---- host build: no real interrupt vector to hook ----
   These are no-ops so NM_TSR's orchestration compiles and is testable on any host.
-  The real residency is exercised only on the DOS (i8086/go32v2) build. }
+  The real residency is exercised only on the DOS (i8086) build. }
 procedure InstallFossil(var U: TUart16550);
 begin
   { host: nothing to hook; the UART is driven directly by tests/DispatchFrame }

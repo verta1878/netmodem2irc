@@ -37,7 +37,7 @@ end;
 
 var
   srv: TFakeServer; tsr: TNetModemTSR; pass,fail,i:Integer;
-  parser: TSeamParser; fr: TSeamFrame; b: Byte;
+  parser: TSeamParser; fr: TSeamFrame;
   frbuf: array[0..63] of Byte; pl: array[0..7] of Byte; n: Integer;
   sawConnect, sawData: Boolean;
 procedure Check(c:Boolean;const nm:string);

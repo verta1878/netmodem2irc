@@ -61,6 +61,7 @@ begin
   SetLength(wire,0);
   br := TServerBridge.Create;
   holder := TSinkHolder.Create;
+  Assert(holder <> nil);  { used via @holder.Sink below }
   fake := TFakeLink.Create; ifake := fake;
   { pre-create the node the driver serves }
   node := br.Nodes.AddNode(6, ifake);

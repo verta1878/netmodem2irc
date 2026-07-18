@@ -27,7 +27,7 @@ Revival of NetModem/32 as an open project buildable entirely from free tools.
 #### Added
 - Original MASM VxD driver source by Dedrick Allen (GPLv2), recovered from the
   Ecstasy BBS (xtcbox.org) forum database backup where he first released it.
-- `common/NetModemVxD.pas` — Free Pascal interface to the driver's IOCTL and
+- `common/NMVxD.pas` — Free Pascal interface to the driver's IOCTL and
   window-message protocol, reconstructed from the assembly source.
 - Lazarus scaffolds for the Telnet server (`server/`) and configuration app
   (`config/`), rebuilt from the decompiled alpha-3 GUI blueprint.
