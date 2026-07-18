@@ -64,3 +64,38 @@ Original binary: history/NETMODEM.CPL (657KB, Delphi 5)
     copy NETMODEM.CPL %SystemRoot%\system32\
 
 Using original NETMODEM.CPL binary. Config app (NMConfig) requires fpc264irc r6.1+.
+
+## Global settings (NM_GlobalConfig)
+
+Server-level settings stored in NETCONFIG.CNF (original) or registry.
+The VxD does NOT read these — they are server-side only.
+
+    Setting                 Type     Default    CPL Section
+    StartAsService          Bool     off        Server
+    SuppressSplash          Bool     off        Server
+    AutoMinimize            Bool     off        Server
+    EnableSpinningGlobe     Bool     on         Server
+    ServerLogging           Bool     on         Logging
+    ActivityLog             Bool     on         Logging
+    LogFileDays             Int      30         Logging
+    LogFileMaxSize          Int      1024       Logging
+    RetrieveLocalHost       Bool     on         Options
+    ExplicitBind            Bool     off        Options
+    BindAddress             String   (empty)    Options
+    AllowUnknownHosts       Bool     on         Options
+    AllowDuplicateConn      Bool     off        Options
+    DisplayBusyFile         Bool     on         Options
+    DisplayOfflineFile      Bool     on         Options
+    DisplayBlockedFile      Bool     on         Options
+    DisplayConnectFile      Bool     off        Options
+    DisplayDisconnectFile   Bool     off        Options
+    DisplayErrorFile        Bool     off        Options
+    DisplayDuplicateFile    Bool     off        Options
+    EnableAutoNews          Bool     off        Options
+    AutoNewsInterval        Int      60 min     Options
+    EnableListserv          Bool     off        Options
+    InternalCacheSize       Int      4096       Advanced
+    RingCount               Int      1          Advanced
+    NetModemDir             String   (empty)    Paths
+
+Original config files: NETCONFIG.CNF, NETSERVER.CNF, NETMODEM.BLK

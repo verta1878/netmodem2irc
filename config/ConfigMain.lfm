@@ -1,26 +1,314 @@
 object frmConfig: TfrmConfig
   Left = 200
   Top = 100
-  Width = 480
-  Height = 360
+  Width = 520
+  Height = 420
   Caption = 'NetModem/32 Configuration'
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   object Nav: TListBox
     Left = 8
     Top = 8
-    Width = 120
-    Height = 280
+    Width = 105
+    Height = 340
     OnClick = NavClick
   end
   object Pages: TPageControl
-    Left = 136
+    Left = 120
     Top = 8
-    Width = 336
-    Height = 280
+    Width = 388
+    Height = 340
+    ActivePage = tsComports
+    object tsComports: TTabSheet
+      Caption = 'Comports'
+      object Label1: TLabel
+        Left = 8
+        Top = 12
+        Caption = 'COM Port:'
+      end
+      object cboComport: TComboBox
+        Left = 100
+        Top = 8
+        Width = 80
+      end
+      object chkEnabled: TCheckBox
+        Left = 200
+        Top = 10
+        Width = 80
+        Caption = 'Enabled'
+        Checked = True
+      end
+      object Label2: TLabel
+        Left = 8
+        Top = 42
+        Caption = 'Emulation:'
+      end
+      object cboMode: TComboBox
+        Left = 100
+        Top = 38
+        Width = 100
+      end
+      object Label3: TLabel
+        Left = 8
+        Top = 72
+        Caption = 'Baud Rate:'
+      end
+      object cboBaud: TComboBox
+        Left = 100
+        Top = 68
+        Width = 100
+      end
+      object Label4: TLabel
+        Left = 8
+        Top = 102
+        Caption = 'Internet Port:'
+      end
+      object edtPort: TEdit
+        Left = 100
+        Top = 98
+        Width = 60
+        Text = '23'
+      end
+      object Label5: TLabel
+        Left = 8
+        Top = 132
+        Caption = 'Base Address:'
+      end
+      object edtBaseAddr: TEdit
+        Left = 100
+        Top = 128
+        Width = 80
+        Text = '$03E8'
+      end
+      object Label6: TLabel
+        Left = 8
+        Top = 162
+        Caption = 'Buffer Size:'
+      end
+      object cboBuffer: TComboBox
+        Left = 100
+        Top = 158
+        Width = 100
+      end
+      object chkAlwaysActive: TCheckBox
+        Left = 8
+        Top = 195
+        Width = 160
+        Caption = 'Always active'
+      end
+      object chkLockedBaud: TCheckBox
+        Left = 8
+        Top = 218
+        Width = 160
+        Caption = 'Locked baud rate'
+        Checked = True
+      end
+      object chkTimeSlice: TCheckBox
+        Left = 8
+        Top = 241
+        Width = 160
+        Caption = 'Manage time-slice'
+        Checked = True
+      end
+    end
+    object tsServer: TTabSheet
+      Caption = 'Server'
+      object chkStartAsService: TCheckBox
+        Left = 8
+        Top = 12
+        Width = 250
+        Caption = 'Start as system service'
+      end
+      object chkSuppressSplash: TCheckBox
+        Left = 8
+        Top = 38
+        Width = 250
+        Caption = 'Suppress splash screen'
+      end
+      object chkAutoMinimize: TCheckBox
+        Left = 8
+        Top = 64
+        Width = 250
+        Caption = 'Auto-minimize on startup'
+      end
+      object chkSpinningGlobe: TCheckBox
+        Left = 8
+        Top = 90
+        Width = 250
+        Caption = 'Enable spinning globe'
+        Checked = True
+      end
+    end
+    object tsLogging: TTabSheet
+      Caption = 'Logging'
+      object chkServerLogging: TCheckBox
+        Left = 8
+        Top = 12
+        Width = 250
+        Caption = 'Server logging'
+        Checked = True
+      end
+      object chkActivityLog: TCheckBox
+        Left = 8
+        Top = 38
+        Width = 250
+        Caption = 'Activity log'
+        Checked = True
+      end
+      object Label7: TLabel
+        Left = 8
+        Top = 72
+        Caption = 'Log file days:'
+      end
+      object edtLogDays: TEdit
+        Left = 120
+        Top = 68
+        Width = 60
+        Text = '30'
+      end
+      object Label8: TLabel
+        Left = 8
+        Top = 102
+        Caption = 'Max log size (KB):'
+      end
+      object edtLogMaxSize: TEdit
+        Left = 120
+        Top = 98
+        Width = 60
+        Text = '1024'
+      end
+    end
+    object tsOptions: TTabSheet
+      Caption = 'Options'
+      object chkRetrieveLocalHost: TCheckBox
+        Left = 8
+        Top = 12
+        Width = 250
+        Caption = 'Retrieve local host info'
+        Checked = True
+      end
+      object chkExplicitBind: TCheckBox
+        Left = 8
+        Top = 35
+        Width = 170
+        Caption = 'Explicit bind to address:'
+      end
+      object edtBindAddress: TEdit
+        Left = 180
+        Top = 33
+        Width = 140
+      end
+      object chkAllowUnknownHosts: TCheckBox
+        Left = 8
+        Top = 58
+        Width = 250
+        Caption = 'Allow unknown hosts'
+        Checked = True
+      end
+      object chkAllowDuplicateConn: TCheckBox
+        Left = 8
+        Top = 81
+        Width = 250
+        Caption = 'Allow duplicate connections'
+      end
+      object chkDisplayBusyFile: TCheckBox
+        Left = 8
+        Top = 112
+        Width = 250
+        Caption = 'Display busy file'
+        Checked = True
+      end
+      object chkDisplayOfflineFile: TCheckBox
+        Left = 8
+        Top = 135
+        Width = 250
+        Caption = 'Display offline file'
+        Checked = True
+      end
+      object chkDisplayBlockedFile: TCheckBox
+        Left = 8
+        Top = 158
+        Width = 250
+        Caption = 'Display blocked file'
+        Checked = True
+      end
+      object chkDisplayConnectFile: TCheckBox
+        Left = 8
+        Top = 181
+        Width = 250
+        Caption = 'Display connect file'
+      end
+      object chkDisplayDisconnectFile: TCheckBox
+        Left = 8
+        Top = 204
+        Width = 250
+        Caption = 'Display disconnect file'
+      end
+      object chkDisplayErrorFile: TCheckBox
+        Left = 8
+        Top = 227
+        Width = 250
+        Caption = 'Display error file'
+      end
+      object chkDisplayDuplicateFile: TCheckBox
+        Left = 8
+        Top = 250
+        Width = 250
+        Caption = 'Display duplicate file'
+      end
+    end
+    object tsFeatures: TTabSheet
+      Caption = 'Features'
+      object chkAutoNews: TCheckBox
+        Left = 8
+        Top = 12
+        Width = 250
+        Caption = 'Enable Auto-News'
+      end
+      object Label9: TLabel
+        Left = 30
+        Top = 38
+        Caption = 'Interval (minutes):'
+      end
+      object edtAutoNewsInterval: TEdit
+        Left = 150
+        Top = 34
+        Width = 60
+        Text = '60'
+      end
+      object chkListserv: TCheckBox
+        Left = 8
+        Top = 68
+        Width = 250
+        Caption = 'Enable BBS Listserv'
+      end
+      object Label10: TLabel
+        Left = 8
+        Top = 108
+        Caption = 'Ring count:'
+      end
+      object edtRingCount: TEdit
+        Left = 120
+        Top = 104
+        Width = 60
+        Text = '1'
+      end
+      object Label11: TLabel
+        Left = 8
+        Top = 138
+        Caption = 'Internal cache size:'
+      end
+      object edtCacheSize: TEdit
+        Left = 120
+        Top = 134
+        Width = 80
+        Text = '4096'
+      end
+    end
   end
   object btnOK: TBitBtn
-    Left = 312
-    Top = 300
+    Left = 344
+    Top = 358
     Width = 75
     Height = 25
     Caption = 'OK'
@@ -28,8 +316,8 @@ object frmConfig: TfrmConfig
     Kind = bkOK
   end
   object btnCancel: TBitBtn
-    Left = 396
-    Top = 300
+    Left = 428
+    Top = 358
     Width = 75
     Height = 25
     Caption = 'Cancel'

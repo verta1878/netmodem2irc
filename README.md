@@ -5,11 +5,11 @@ for modern Windows, with a portable, tested Pascal modem-emulation engine.
 
 ## Status
 
-**35 test programs, 0 failures.** Server, config, and FOSSIL bridge compile. Original CPL included.
+**38 test programs, 0 failures.** Server, config, and FOSSIL bridge compile. Original CPL included.
 
 | Component | Target | Status |
 |-----------|--------|--------|
-| Engine (emulation core) | Any platform | ✅ 35/35 tests pass |
+| Engine (emulation core) | Any platform | ✅ 38/38 tests pass |
 | NMServer.exe | Win98 / NT | ✅ Compiles (needs LCL to link) |
 | NMConfig.exe | Win98 / NT | ✅ Compiles (needs LCL to link) |
 | NETMODEM.CPL | Win98 / NT | ✅ Original Dedrick Allen binary (657KB) |
@@ -83,6 +83,7 @@ driver/src/     Dedrick's original 9x VxD source (MASM, experimental)
 libs/synapse/   Ararat Synapse networking (modified-BSD, GPLv2-compatible)
 history/        Dedrick's original distributions (net32_b4, netmdb15)
 docs/           engineering docs, specs, audits, roadmap
+installer/      Inno Setup installer script (.iss)
 attic/          retired files
 ```
 
@@ -92,7 +93,7 @@ Requires fpc264irc r6.1+ (github.com/verta1878/fpc264irc).
 
 ```sh
 FPCIRC=/path/to/fpc264irc ./build.sh          # build everything (tests + win32 + fossil)
-FPCIRC=/path/to/fpc264irc ./build.sh tests     # engine tests only (35/35)
+FPCIRC=/path/to/fpc264irc ./build.sh tests     # engine tests only (38/38)
 FPCIRC=/path/to/fpc264irc ./build.sh win32     # cross-compile Win32 binaries
 FPCIRC=/path/to/fpc264irc ./build.sh fossil    # DOS FOSSIL binary
 ./build.sh resources                           # compile icon .rc → .res files
@@ -136,6 +137,9 @@ FPCIRC=/path/to/fpc264irc ./build.sh fossil
 - **NM_TSR** — FOSSIL TSR resident-program skeleton
 - **NM_Config / NM_ConfigApply** — per-node config (comport/baud/mode)
 - **NM_DefaultConfig** — factory defaults + registry read/write
+- **NM_GlobalConfig** — server-level settings (logging, network, display files, features)
+- **NM_Listserv** — BBS Listserv directory registration
+- **NM_AutoNews** — periodic news/announcement broadcast
 - **NM_FossilDriver** — INT 14h register-frame dispatch (testable)
 
 ## Platforms
@@ -157,3 +161,37 @@ Built with fpc264irc r6.1+ (github.com/verta1878/fpc264irc).
 ## License
 
 GNU General Public License v2 — see [LICENSE](LICENSE).
+
+## Roadmap
+
+Features from Dedrick's original CPL that were designed but never finished
+(NetModem/32 v2.0 was alpha when development stopped):
+
+- **Auto-News** — periodic SMTP announcement broadcast ("BBS is online").
+  CPL has the checkbox + interval setting. Engine unit ready (`NM_AutoNews`),
+  needs SMTP send via Synapse `smtpsend.pas` (same license, drop-in).
+
+- **BBS Listserv** — SMTP mailing list registration. CPL has the full info
+  form (BBS Name, Software, Speed, Hostname, IP, Port, Comment). Engine unit
+  ready (`NM_Listserv`), needs Synapse `smtpsend.pas` + `mimemess.pas` +
+  `mimepart.pas` for SMTP subscribe/announce. Both features were designed
+  by Dedrick but never implemented — the CPL UI exists, the backend doesn't.
+  Synapse units needed are modified-BSD, same license as our existing copy.
+
+- **Phonebook** — AT dial directory (ATDS/AT&Z). Design doc done
+  (`docs/netmodem2irc_phonebook.md`), no code yet.
+
+- **Blocking/Forwarding** — address-based connection filtering. CPL has
+  TForm6 (address entry with wildcards) and NETMODEM.BLK file. Not implemented.
+
+- **Full CPL GUI rebuild** — using Dedrick's original NETMODEM.CPL binary.
+  6 decompiled DFM forms preserved in `cpl/original_forms/` for reference.
+
+- **Live Telnet connection** — AT command parser exists, nothing dials yet.
+
+## Installer
+
+Inno Setup script at `installer/netmodem2irc.iss`. Build the Win32 binaries
+first, then open the `.iss` in Inno Setup Compiler to produce
+`netmodem2irc-setup.exe`. Requires Inno Setup 5.5+ (Win98) or 6.x (Win7+).
+See `installer/README.md` for details.
