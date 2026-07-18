@@ -42,7 +42,7 @@ See docs/netmodem2irc_registry.md for field-by-field layout.
 
 ## Implementation
 
-    cpl/NetModemCPL.pas      — CPlApplet DLL export, appears in Control Panel
+    history/NETMODEM.CPL     — original Dedrick Allen binary (657KB, Delphi 5)
     config/NMConfig.lpr      — standalone config app (same functionality)
     config/ConfigMain.pas    — Lazarus form, reads/writes registry
     engine/NM_DefaultConfig  — WriteDefaultRegistry, factory defaults
@@ -61,8 +61,6 @@ Original binary: history/NETMODEM.CPL (657KB, Delphi 5)
 
 ## Build
 
-    ppc386 -WD -Fu..\engine -Fu..\common cpl\NetModemCPL.pas
-    ren NetModemCPL.dll NetModemCPL.cpl
-    copy NetModemCPL.cpl %SystemRoot%\system32\
+    copy NETMODEM.CPL %SystemRoot%\system32\
 
-Requires fpc264irc r6.1+ targeting Win32.
+Using original NETMODEM.CPL binary. Config app (NMConfig) requires fpc264irc r6.1+.

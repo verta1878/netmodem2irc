@@ -5,20 +5,20 @@ for modern Windows, with a portable, tested Pascal modem-emulation engine.
 
 ## Status
 
-**35 test programs, 0 failures.** Server, config, CPL, and FOSSIL bridge all compile.
+**35 test programs, 0 failures.** Server, config, and FOSSIL bridge compile. Original CPL included.
 
 | Component | Target | Status |
 |-----------|--------|--------|
 | Engine (emulation core) | Any platform | ✅ 35/35 tests pass |
 | NMServer.exe | Win98 / NT | ✅ Compiles (needs LCL to link) |
 | NMConfig.exe | Win98 / NT | ✅ Compiles (needs LCL to link) |
-| NetModemCPL.cpl | Win98 / NT | ✅ Compiles (Control Panel applet) |
+| NETMODEM.CPL | Win98 / NT | ✅ Original Dedrick Allen binary (657KB) |
 | netfossl.exe | DOS (i8086) | ✅ Built — 179KB FOSSIL binary |
 
 ## Architecture
 
 ```
-CPL (NetModemCPL.cpl) or NMConfig.exe
+CPL (NETMODEM.CPL, original) or NMConfig.exe
     ↓ writes/reads registry
     HKLM\Software\Allen Software\NetModem
       ComportConfig   REG_BINARY (per-node: comport, baud, mode)
@@ -76,7 +76,7 @@ engine/         emulation engine — UART, FOSSIL, Telnet transport, AT commands
 engine/test/    test suite (sh engine/test/run-tests.sh)
 server/         NMServer — Lazarus GUI, Telnet server (was NETMODEM.EXE)
 config/         NMConfig — Lazarus standalone config app (was NETMODEM.CPL)
-cpl/            NetModemCPL — Control Panel applet (.cpl DLL)
+cpl/            Original CPL forms (decompiled DFMs for reference)
 dos/            i8086 DOS FOSSIL↔TCP bridge (netfossl.exe, fpcirc cross-compile)
 common/         NMVxD.pas — driver interface (IOCTL, CM_* messages, ComportStruct)
 driver/src/     Dedrick's original 9x VxD source (MASM, experimental)
@@ -102,8 +102,8 @@ make clean                                     # same via Makefile
 
 ### Win32 cross-compile
 
-`./build.sh win32` cross-compiles NMServer.exe, NMConfig.exe, and
-NetModemCPL.cpl from Linux using fpc264irc's ppc386 + Win32 LCL.
+`./build.sh win32` cross-compiles NMServer.exe and NMConfig.exe from Linux
+using fpc264irc ppc386 + Win32 LCL. Copies original NETMODEM.CPL to out/win32/.
 Output goes to `out/win32/`. Requires `i686-w64-mingw32-windres` for
 icon embedding (`apt install binutils-mingw-w64-i686`).
 
@@ -114,7 +114,6 @@ Compiled via windres into `.res` files embedded in each binary:
 
     server/resources/NMServer.rc   → server.ico
     config/resources/NMConfig.rc   → mainicon.ico
-    cpl/resources/NetModemCPL.rc   → mainicon.ico
 
 ### DOS (netfossl.exe)
 

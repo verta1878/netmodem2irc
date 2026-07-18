@@ -1,6 +1,6 @@
 #!/bin/sh
 # netmodem2irc — full project build
-# Usage: ./build.sh [tests|resources|server|config|cpl|fossil|win32|all]
+# Usage: ./build.sh [tests|resources|win32|fossil|clean|all]
 #        FPCIRC=/path/to/fpc264irc ./build.sh
 # Requires: fpc264irc r6.1+
 #           i686-w64-mingw32-windres (for icon resources)
@@ -16,10 +16,8 @@ build_resources() {
     if command -v "$WINDRES" >/dev/null 2>&1; then
         (cd server/resources && $WINDRES --preprocessor=cat NMServer.rc -o ../NMServer.res) 2>&1
         (cd config/resources && $WINDRES --preprocessor=cat NMConfig.rc -o ../NMConfig.res) 2>&1
-        (cd cpl/resources && $WINDRES --preprocessor=cat NetModemCPL.rc -o ../NetModemCPL.res) 2>&1
         echo "  NMServer.res — $(ls -l server/NMServer.res 2>/dev/null | awk '{print $5}') bytes"
         echo "  NMConfig.res — $(ls -l config/NMConfig.res 2>/dev/null | awk '{print $5}') bytes"
-        echo "  NetModemCPL.res — $(ls -l cpl/NetModemCPL.res 2>/dev/null | awk '{print $5}') bytes"
     else
         echo "  SKIP (needs i686-w64-mingw32-windres)"
         echo "  Install: apt install binutils-mingw-w64-i686"
@@ -84,59 +82,9 @@ build_win32() {
         config/NMConfig.lpr 2>&1 | tail -3
     [ -f out/win32/NMConfig.exe ] && echo "  NMConfig.exe — $(ls -lh out/win32/NMConfig.exe | awk '{print $5}')" || echo "  NMConfig.exe — FAILED"
 
-    echo "--- NetModemCPL.cpl ---"
-    $W32FPC -Twin32 -Mobjfpc \
-        -Fu"$(pwd)/engine" -Fu"$(pwd)/common" \
-        -Fu"$W32RTL" \
-        -FD"$W32TOOLS" \
-        -FEout/win32 \
-        cpl/NetModemCPL.pas 2>&1 | tail -3
-    if [ -f out/win32/NetModemCPL.dll ]; then
-        cp out/win32/NetModemCPL.dll out/win32/NetModemCPL.cpl
-        echo "  NetModemCPL.cpl — $(ls -lh out/win32/NetModemCPL.cpl | awk '{print $5}')"
-    else
-        echo "  NetModemCPL — FAILED"
-    fi
-}
-
-build_server() {
-    echo "=== Server (NMServer) ==="
-    OUT="$(pwd)/out"
-    mkdir -p "$OUT"
-    $FPC -Mobjfpc -Fu"$(pwd)/engine" -Fu"$(pwd)/common" -Fu"$(pwd)/libs/synapse" \
-        -FE"$OUT" server/NMServer.lpr 2>&1 | tail -3
-    if [ -f "$OUT/NMServer" ] || [ -f "$OUT/NMServer.exe" ]; then
-        echo "  NMServer — OK"
-    else
-        echo "  NMServer — SKIP (needs Lazarus LCL)"
-    fi
-}
-
-build_config() {
-    echo "=== Config (NMConfig) ==="
-    OUT="$(pwd)/out"
-    mkdir -p "$OUT"
-    $FPC -Mobjfpc -Fu"$(pwd)/engine" -Fu"$(pwd)/common" \
-        -FE"$OUT" config/NMConfig.lpr 2>&1 | tail -3
-    if [ -f "$OUT/NMConfig" ] || [ -f "$OUT/NMConfig.exe" ]; then
-        echo "  NMConfig — OK"
-    else
-        echo "  NMConfig — SKIP (needs Lazarus LCL)"
-    fi
-}
-
-build_cpl() {
-    echo "=== CPL (NetModemCPL) ==="
-    OUT="$(pwd)/out"
-    mkdir -p "$OUT"
-    $FPC -Mobjfpc -Fu"$(pwd)/engine" -Fu"$(pwd)/common" \
-        -FE"$OUT" cpl/NetModemCPL.pas 2>&1 | tail -3
-    if [ -f "$OUT/NetModemCPL.dll" ]; then
-        cp "$OUT/NetModemCPL.dll" "$OUT/NetModemCPL.cpl"
-        echo "  NetModemCPL.cpl — OK"
-    else
-        echo "  NetModemCPL — SKIP (needs Windows target)"
-    fi
+    echo "--- NETMODEM.CPL (original Dedrick Allen binary) ---"
+    cp history/NETMODEM.CPL out/win32/
+    echo "  NETMODEM.CPL — $(ls -lh out/win32/NETMODEM.CPL | awk '{print $5}')"
 }
 
 build_fossil() {
@@ -159,13 +107,10 @@ case "$TARGET" in
     tests)     run_tests ;;
     resources) build_resources ;;
     win32)     build_win32 ;;
-    server)    build_resources; build_server ;;
-    config)    build_resources; build_config ;;
-    cpl)       build_resources; build_cpl ;;
     fossil)    build_fossil ;;
     clean)     build_clean ;;
     all)       run_tests; echo; build_win32; echo; build_fossil ;;
-    *)         echo "Usage: $0 [tests|resources|win32|server|config|cpl|fossil|clean|all]"; exit 1 ;;
+    *)         echo "Usage: $0 [tests|resources|win32|fossil|clean|all]"; exit 1 ;;
 esac
 
 echo
