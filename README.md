@@ -72,19 +72,19 @@ Connection targets come from AT dial commands (`ATDT host:port`), not config.
 ```
 engine/         emulation engine — UART, FOSSIL, Telnet transport, AT commands,
                 multinode, Synapse + named-pipe links, server bridge, seam
-                protocol, TSR skeleton, per-node config
-engine/test/    test suite (sh engine/test/run-tests.sh)
+                protocol, TSR skeleton, per-node + global config
+engine/test/    test suite (sh engine/test/run-tests.sh) — 38 tests
 server/         NMServer — Lazarus GUI, Telnet server (was NETMODEM.EXE)
-config/         NMConfig — Lazarus standalone config app (was NETMODEM.CPL)
+config/         NMConfig — Lazarus config app, all per-node + global settings
 cpl/            Original CPL forms (decompiled DFMs for reference)
 dos/            i8086 DOS FOSSIL↔TCP bridge (netfossl.exe, fpcirc cross-compile)
 common/         NMVxD.pas — driver interface (IOCTL, CM_* messages, ComportStruct)
 driver/src/     Dedrick's original 9x VxD source (MASM, experimental)
 libs/synapse/   Ararat Synapse networking (modified-BSD, GPLv2-compatible)
-history/        Dedrick's original distributions (net32_b4, netmdb15)
-docs/           engineering docs, specs, audits, roadmap
+history/        Dedrick's original distributions + NETMODEM.CPL binary
 installer/      Inno Setup installer script (.iss)
-attic/          retired files
+docs/           active engineering docs, specs, bug reports
+attic/          retired docs and files
 ```
 
 ## Building
@@ -179,7 +179,6 @@ Features from Dedrick's original CPL that were designed but never finished
   Synapse units needed are modified-BSD, same license as our existing copy.
 
 - **Phonebook** — AT dial directory (ATDS/AT&Z). Design doc done
-  (`docs/netmodem2irc_phonebook.md`), no code yet.
 
 - **Blocking/Forwarding** — address-based connection filtering. CPL has
   TForm6 (address entry with wildcards) and NETMODEM.BLK file. Not implemented.
