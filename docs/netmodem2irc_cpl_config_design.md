@@ -65,4 +65,4 @@ Original binary: history/NETMODEM.CPL (657KB, Delphi 5)
     ren NetModemCPL.dll NetModemCPL.cpl
     copy NetModemCPL.cpl %SystemRoot%\system32\
 
-Requires fpc264irc r6.0+ targeting Win32.
+Requires fpc264irc r6.1+ targeting Win32.

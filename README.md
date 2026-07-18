@@ -88,46 +88,39 @@ attic/          retired files
 
 ## Building
 
-Requires fpc264irc r6.0+ (github.com/verta1878/fpc264irc).
+Requires fpc264irc r6.1+ (github.com/verta1878/fpc264irc).
 
 ```sh
-./build.sh                    # build everything
-./build.sh tests              # engine tests only (35/35)
-./build.sh resources          # compile icon .rc → .res files
-./build.sh server             # NMServer (builds resources first)
-./build.sh config             # NMConfig (builds resources first)
-./build.sh cpl                # Control Panel applet (builds resources first)
-./build.sh fossil             # DOS netfossl.exe
-make clean                    # remove all build artifacts
+FPCIRC=/path/to/fpc264irc ./build.sh          # build everything (tests + win32 + fossil)
+FPCIRC=/path/to/fpc264irc ./build.sh tests     # engine tests only (35/35)
+FPCIRC=/path/to/fpc264irc ./build.sh win32     # cross-compile Win32 binaries
+FPCIRC=/path/to/fpc264irc ./build.sh fossil    # DOS FOSSIL binary
+./build.sh resources                           # compile icon .rc → .res files
+./build.sh clean                               # remove build artifacts
+make clean                                     # same via Makefile
 ```
+
+### Win32 cross-compile
+
+`./build.sh win32` cross-compiles NMServer.exe, NMConfig.exe, and
+NetModemCPL.cpl from Linux using fpc264irc's ppc386 + Win32 LCL.
+Output goes to `out/win32/`. Requires `i686-w64-mingw32-windres` for
+icon embedding (`apt install binutils-mingw-w64-i686`).
 
 ### Icon resources
 
 Original icons extracted from Dedrick's NETMODEM.CPL (14 icons, 36 bitmaps).
-Compiled via `i686-w64-mingw32-windres` into `.res` files embedded in binaries:
+Compiled via windres into `.res` files embedded in each binary:
 
-    server/resources/NMServer.rc   → server/NMServer.res   (server.ico)
-    config/resources/NMConfig.rc   → config/NMConfig.res   (mainicon.ico)
-    cpl/resources/NetModemCPL.rc   → cpl/NetModemCPL.res   (mainicon.ico)
-
-Install windres: `apt install binutils-mingw-w64-i686`
-
-### Windows (NMServer + NMConfig + CPL)
-
-Requires fpc264irc r6.0+ with LCL PPUs for win32:
-```
-ppc386 -Mobjfpc -Fu<engine> -Fu<common> -Fu<synapse> -Fu<lcl-win32> -Fu<lazutils> server\NMServer.lpr
-ppc386 -Mobjfpc -Fu<engine> -Fu<common> -Fu<lcl-win32> -Fu<lazutils> config\NMConfig.lpr
-ppc386 -WD -Fu<engine> -Fu<common> cpl\NetModemCPL.pas
-ren NetModemCPL.dll NetModemCPL.cpl
-copy NetModemCPL.cpl %SystemRoot%\system32\
-```
+    server/resources/NMServer.rc   → server.ico
+    config/resources/NMConfig.rc   → mainicon.ico
+    cpl/resources/NetModemCPL.rc   → mainicon.ico
 
 ### DOS (netfossl.exe)
 
-Requires fpc264irc r6.0+ with i8086 cross-compiler + OpenWatcom wlink:
+Requires fpc264irc r6.1+ with i8086 cross-compiler + OpenWatcom wlink:
 ```
-FPCIRC=/path/to/fpc264irc dos/build.sh
+FPCIRC=/path/to/fpc264irc ./build.sh fossil
 ```
 
 ## Engine (tested)
@@ -152,7 +145,7 @@ FPCIRC=/path/to/fpc264irc dos/build.sh
 |----------|--------|-----------|
 | Windows 95/98/ME | NETMODEM.VXD (Dedrick's original) | WinSock via Synapse |
 | Windows NT/2K/XP+ | com0com virtual COM port | WinSock via Synapse |
-| DOS (real mode) | FOSSIL INT 14h (fossil_dos.pas) | fpcirc TCP/IP (Watt-32) |
+| DOS (real mode) | FOSSIL INT 14h (fossil_dos.pas) | fpcirc TCP/IP (BSD sockets) |
 
 ## Credits
 
@@ -160,7 +153,7 @@ Original NetModem/32: **Dedrick Allen** (mag69), 1997-2001. Allen Software.
 Released under GNU General Public License v2.
 
 Revival: **Antonio Rico** (Reapern66 / verta1878).
-Built with fpc264irc r6.0+ (github.com/verta1878/fpc264irc).
+Built with fpc264irc r6.1+ (github.com/verta1878/fpc264irc).
 
 ## License
 
