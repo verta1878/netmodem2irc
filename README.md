@@ -190,7 +190,12 @@ Features from Dedrick's original CPL that were designed but never finished
 
 ## Installer
 
-Inno Setup script at `installer/netmodem2irc.iss`. Build the Win32 binaries
-first, then open the `.iss` in Inno Setup Compiler to produce
-`netmodem2irc-setup.exe`. Requires Inno Setup 5.5+ (Win98) or 6.x (Win7+).
-See `installer/README.md` for details.
+Inno Setup 5.6.1 ported to FPC 2.6.4irc. 4/5 targets compile (ISCC.exe,
+ISCmplr.dll, Setup.exe, SetupLdr.exe). Runtime hollow — LZMA decompression,
+DFM forms, resources, and PascalScript still needed. All toolchain support
+confirmed in fpc264irc Phase 9 (PascalScript source, fpcres, lazres, MinGW
+cross-linker all ship in-tree).
+
+See `installer/INNO_FPC_PORT.md` for phases and build instructions.
+See `installer/README.md` for contents.
+

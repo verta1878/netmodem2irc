@@ -94,7 +94,7 @@ build_fossil() {
 
 build_clean() {
     echo "=== Cleaning build artifacts ==="
-    find . -not -path './.git/*' -not -path './dos/bin/*' \
+    find . -not -path './.git/*' -not -path './dos/bin/*' -not -path './installer/*' \
         \( -name "*.o" -o -name "*.ppu" -o -name "*.or" \
         -o -name "*.s" -o -name "*.rst" -o -name "ppas.sh" \
         -o -name "*.bak" -o -name "link.res" -o -name "*.res" \) \

@@ -1,5 +1,5 @@
 # netmodem2irc — Makefile
-# Requires: fpc264irc r6.1+ (github.com/verta1878/fpc264irc)
+# Requires: fpc264irc r3.1+ (github.com/verta1878/fpc264irc)
 #           i686-w64-mingw32-windres for icon resources
 
 FPCIRC  ?= $(HOME)/fpc264irc
