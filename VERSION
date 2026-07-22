@@ -1,7 +1,6 @@
 netmodem2irc 2.0-dev
-build: 20260720
-compiler: fpc264irc r3.1 Phase 9
-inno: 5.6.1 FPC port — WORKING (ISCC verified, installer produced)
-mystic: 15/15 Win32, 14/15 Linux
-targets: i386-win32, i386-linux
+build: 20260722
+compiler: fpc264irc r3.1 + BUG-029 patch (system.o patched)
+inno: 5.6.1 FPC port — BUG-029 fixed, runtime test pending
+targets: i386-win32 (Windows 98 — Windows 11)
 tests: 38/38 pass

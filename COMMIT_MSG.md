@@ -1,16 +1,25 @@
-20260720: Inno Setup WORKS — all repos compile, installer verified
+20260722: BUG-029 patched — fpc_ansistr_setlength sub eax,8 → sub eax,12
 
-Clean system test: fresh fpc264irc clone → LCL rebuild → compile →
-ISCC.exe produces working installer under Wine.
+Root cause found and patched in system.o:
+  fpc_ansistr_setlength (section 268, offset +0x10a)
+  sub eax, 8 → sub eax, 12 (file offset 0x1A92C)
+  
+The function passes (string_ptr - 8) to FreeMem instead of
+(string_ptr - 12). TAnsiRec header is 12 bytes (CodePage 2 +
+ElementSize 2 + Ref 4 + Len 4) but the code only backed up 8,
+missing CodePage + ElementSize. Every SetLength on an AnsiString
+freed at the wrong address → heap corruption → eventual AV.
 
-mystic-bbs-irc: 15/15 Win32 cross-compile, 14/15 Linux native
-netmodem2irc: 5/5 Inno targets compile, ISCC produces test-setup.exe
-Inno Setup: Byte(CurCRC) fix in Compress.pas, all resources embedded
+fpc_ansistr_decr_ref was correct (uses sub edx,8 for refcount
+access, sub eax,12 for FreeMem). Only fpc_ansistr_setlength
+had the bug. Confirmed by scanning all FREEMEM relocations.
 
-Binaries:
-  ISCC.exe      437KB   command-line compiler
-  ISCmplr.dll   1.9MB   compiler DLL + PascalScript
-  Setup.exe     3.7MB   installer GUI + LZMA + PS + resources
-  SetupLdr.exe  323KB   setup loader + LZMA + all resources
-  Compil32.exe  3.3MB   IDE with Scintilla editor
-  test-setup.exe 1.1MB  verified working installer output
+All 5 Inno targets recompiled against patched system.o.
+Binaries included — test on Win98 and Win11.
+
+Binaries (patched system.o, Win98 PE headers):
+  ISCC.exe      436KB  CONSOLE
+  ISCmplr.dll   1.9MB  compiler DLL + PascalScript
+  Setup.exe     3.7MB  GUI — should no longer AV
+  SetupLdr.exe  323KB  GUI
+  Compil32.exe  3.3MB  GUI + isscint.dll
