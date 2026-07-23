@@ -1,25 +1,19 @@
-20260722: BUG-029 patched — fpc_ansistr_setlength sub eax,8 → sub eax,12
+20260722: BUG-029 audit — only i386-win32 affected, other targets clean
 
-Root cause found and patched in system.o:
-  fpc_ansistr_setlength (section 268, offset +0x10a)
-  sub eax, 8 → sub eax, 12 (file offset 0x1A92C)
-  
-The function passes (string_ptr - 8) to FreeMem instead of
-(string_ptr - 12). TAnsiRec header is 12 bytes (CodePage 2 +
-ElementSize 2 + Ref 4 + Len 4) but the code only backed up 8,
-missing CodePage + ElementSize. Every SetLength on an AnsiString
-freed at the wrong address → heap corruption → eventual AV.
+Full audit of fpc_ansistr_setlength across all four targets:
 
-fpc_ansistr_decr_ref was correct (uses sub edx,8 for refcount
-access, sub eax,12 for FreeMem). Only fpc_ansistr_setlength
-had the bug. Confirmed by scanning all FREEMEM relocations.
+  i386-win32:   BUG at 0x1A92C — patched (08 → 0C) ✅
+  i386-linux:   ALL sub eax,12 — not buggy ✅
+  i386-freebsd: ALL sub eax,12 — not buggy ✅
+  i386-go32v2:  ALL sub eax,12 — not buggy ✅
 
-All 5 Inno targets recompiled against patched system.o.
-Binaries included — test on Win98 and Win11.
+The author's offsets for other targets were false positives:
+  0x1037C (linux)    → lands in fpc_dynarray_copy, not setlength
+  0xFAE8  (freebsd)  → lands in fpc_dynarray_copy, not setlength
+  0xEE88  (go32v2)   → lands in fpc_dynarray_copy, not setlength
 
-Binaries (patched system.o, Win98 PE headers):
-  ISCC.exe      436KB  CONSOLE
-  ISCmplr.dll   1.9MB  compiler DLL + PascalScript
-  Setup.exe     3.7MB  GUI — should no longer AV
-  SetupLdr.exe  323KB  GUI
-  Compil32.exe  3.3MB  GUI + isscint.dll
+If those offsets were patched, they should be REVERTED — they're
+legitimate sub eax,8 instructions in dynarray code, not string code.
+
+Binaries compiled against patched i386-win32 system.o.
+Win98 PE headers, GUI subsystem, DEP/ASLR/TS off.
