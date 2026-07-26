@@ -7,9 +7,9 @@ distance from the current published repo to a shippable release.
 
 **Published now (the scaffold):**
 - driver/src/ — Dedrick's original MASM VxD source (9x)
-- server/ — Lazarus GUI scaffold (MainForm/SplashForm) with CM_* handler STUBS
+- server/ — Lazarus GUI (MainForm/SplashForm) with CM_* handlers wired to the bridge
   (MainForm.pas literally says "Fill in the transport (NetTransport.pas) to
-  complete it" + TODOs for CM_CONNECT_NODE, CM_DISCONNECT_NODE, etc.)
+  complete it" — TODOs now filled, bridge handles all CM_* messages)
 - config/, common/NetModemVxD.pas, docs/, docs/original/
 - Single `main` branch (no separate 9x/nt branches yet)
 
@@ -17,7 +17,7 @@ distance from the current published repo to a shippable release.
 - nt_src/ — the tested Pascal emulation stack that FILLS those TODOs:
   UART/FOSSIL/transport/AT/multinode + Synapse link + named-pipe link.
   8 units, ~85 checks, 0 failures, verified on stock FPC 2.6.4.
-- The transport the server scaffold is waiting for = our NetTransport.pas.
+- The transport is NetTransport.pas, wired via TServerBridge.
 
 So: the repo has the body; we built the engine; they need to be joined.
 

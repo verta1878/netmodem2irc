@@ -34,7 +34,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, ComCtrls, ExtCtrls, Menus, StdCtrls, LMessages,
   {$IFDEF WINDOWS}Windows,{$ENDIF}
-  NMVxD, NM_ServerBridge;
+  NMVxD, NM_ServerBridge, NM_Node, NM_Debug;
 
 type
 
@@ -75,8 +75,12 @@ implementation
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
+  DebugInitFile(ExtractFilePath(Application.ExeName) + 'netmodem_debug.log');
+  DebugLog('NMServer', 'FormCreate: enter');
   FDriver := TNetModemDriver.Create;
+  DebugLog('NMServer', 'FormCreate: driver created, IsOpen=' + BoolToStr(FDriver.IsOpen, True));
   FBridge := TServerBridge.Create;
+  DebugLog('NMServer', 'FormCreate: bridge created');
 
   if FDriver.IsOpen then
   begin
@@ -93,8 +97,12 @@ end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
+  DebugLog('NMServer', 'FormDestroy: shutting down');
   FBridge.Free;
+  DebugLog('NMServer', 'FormDestroy: bridge freed');
   FDriver.Free;
+  DebugLog('NMServer', 'FormDestroy: driver freed');
+  DebugShutdown;
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -104,9 +112,37 @@ begin
 end;
 
 procedure TfrmMain.RefreshNodes;
+{ Query every active node and update the NodeList display.
+  Called on a timer (RefreshTimerTimer) and once on FormCreate.
+  The bridge owns the node state; we just read it and show it.
+  HAZARD: do not call bridge methods that mutate state here —
+  this runs on a timer and must be read-only. }
+var
+  i: Integer;
+  node: TNetModemNode;
+  item: TListItem;
 begin
-  // TODO: query per-node status via FDriver.GetInitInfo / AnswerCheck and
-  // populate NodeList. Placeholder for the scaffold.
+  NodeList.Items.BeginUpdate;
+  try
+    NodeList.Items.Clear;
+    for i := 0 to NM_MAX_NODES - 1 do
+    begin
+      node := FBridge.Nodes.NodeByIndex(i);
+      if node <> nil then
+      begin
+        item := NodeList.Items.Add;
+        item.Caption := IntToStr(i);
+        if node.Online then
+          item.SubItems.Add('ONLINE')
+        else
+          item.SubItems.Add('IDLE');
+        DebugLog('NMServer', 'RefreshNodes: node ' + IntToStr(i) +
+          ' online=' + BoolToStr(node.Online, True));
+      end;
+    end;
+  finally
+    NodeList.Items.EndUpdate;
+  end;
 end;
 
 procedure TfrmMain.RefreshTimerTimer(Sender: TObject);
@@ -115,8 +151,27 @@ begin
 end;
 
 procedure TfrmMain.miSetupClick(Sender: TObject);
+{ Launch the external NMConfig.exe configuration app.
+  The original did the same — NETMODEM.EXE launched NETMODEM.CPL.
+  We launch NMConfig.exe from the same directory as NMServer.exe.
+  HAZARD: ShellExecute is NT+ only; on Win9x use WinExec.
+  Both are in the Windows unit. }
+{$IFDEF WINDOWS}
+var
+  ConfigPath: String;
+{$ENDIF}
 begin
-  // Launch the configuration app (config/ project) or open an in-app config form.
+  {$IFDEF WINDOWS}
+  ConfigPath := ExtractFilePath(Application.ExeName) + 'NMConfig.exe';
+  if FileExists(ConfigPath) then
+  begin
+    DebugLog('NMServer', 'miSetupClick: launching ' + ConfigPath);
+    { WinExec works on Win98 through Win11. ShellExecute needs shell32. }
+    WinExec(PChar(ConfigPath), SW_SHOWNORMAL);
+  end
+  else
+    DebugLog('NMServer', 'miSetupClick: NMConfig.exe not found at ' + ConfigPath);
+  {$ENDIF}
 end;
 
 procedure TfrmMain.miExitClick(Sender: TObject);
@@ -134,13 +189,41 @@ procedure TfrmMain.WndProc(var Msg: TLMessage);
 begin
   case Msg.Msg of
     CM_CONNECT_NODE:
-      ; // TODO: node (Msg.WParam and $FF) going online -> open Telnet socket
+      begin
+        { The driver says a node is going online — a caller connected via
+          the virtual COM port. Route to the bridge, which creates the node,
+          assigns a socket link, and starts Telnet negotiation.
+          WParam low byte = node index (0..98). }
+        DebugLog('NMServer', 'CM_CONNECT_NODE node=' + IntToStr(Msg.WParam and $FF));
+        FBridge.OnConnectNode(Msg.WParam and $FF);
+        RefreshNodes;
+      end;
     CM_DISCONNECT_NODE:
-      ; // TODO: node hung up -> close socket
+      begin
+        { Node hung up — close its socket and remove it from the manager. }
+        DebugLog('NMServer', 'CM_DISCONNECT_NODE node=' + IntToStr(Msg.WParam and $FF));
+        FBridge.OnDisconnectNode(Msg.WParam and $FF);
+        RefreshNodes;
+      end;
     CM_SEND_REMOTE_BREAK:
-      ; // TODO: send Telnet BREAK to remote
-    CM_WILL_BINARY, CM_WONT_BINARY:
-      ; // TODO: Telnet BINARY option negotiation
+      begin
+        { The BBS sent a BREAK — forward it as a Telnet BREAK to the remote. }
+        DebugLog('NMServer', 'CM_SEND_REMOTE_BREAK node=' + IntToStr(Msg.WParam and $FF));
+        FBridge.OnSendRemoteBreak(Msg.WParam and $FF);
+      end;
+    CM_WILL_BINARY:
+      begin
+        { Driver requests Telnet BINARY mode on. }
+        DebugLog('NMServer', 'CM_WILL_BINARY node=' + IntToStr(Msg.WParam and $FF));
+        FBridge.OnBinary(Msg.WParam and $FF, True);
+      end;
+    CM_WONT_BINARY:
+      begin
+        { Driver reports Telnet BINARY mode off. Informational — our transport
+          always negotiates BINARY on connect and stays in it. }
+        DebugLog('NMServer', 'CM_WONT_BINARY node=' + IntToStr(Msg.WParam and $FF));
+        FBridge.OnBinary(Msg.WParam and $FF, False);
+      end;
   end;
   inherited WndProc(Msg);
 end;

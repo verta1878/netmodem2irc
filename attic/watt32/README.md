@@ -1,6 +1,6 @@
 # attic/watt32/ — the Watt-32 / Watcom mixed-link apparatus
 
-Retired 2026-07-25. **netfossl needs no TCP/IP.**
+Retired 2026-07-25. **netfosdl (formerly netfossl) needs no TCP/IP.**
 
 All of this existed for one reason: `dos/netmodem.pas` was a
 serial-to-TCP relay, real-mode DOS has no OS network API, FPC's
@@ -50,8 +50,8 @@ Pascal. One toolchain, one object format, no stubs.
 
 ## Still live
 
-`dos/netmodem.pas` still declares ten `external name '_w32_*'` bindings
-and still builds the current `netfossl.exe`. Its fate is a maintainer
+`dos/netmodem.pas` (the old relay) still declares ten `external name '_w32_*'` bindings
+and previously built `netfossl.exe` (now removed). Its fate is a maintainer
 decision, not retired here. `dos/build.sh` still references
 `stubs.asm` at the path it no longer occupies.
 

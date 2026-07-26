@@ -34,8 +34,9 @@
   `synaser.pas` is unused.
 - `engine/NM_Debug.pas` added — central debug logging. Compiles to
   nothing without `-dNM_DEBUG`. Win32: `OutputDebugString` + file.
-  DOS: file or stderr. Play/Stop and a visual debug panel planned,
-  inspired by Carl Gorringe's RIPtermJS debug log.
+  DOS: file or stderr. Play/Stop runtime toggle and TDebugLineEvent
+  callback implemented, inspired by Carl Gorringe's RIPtermJS debug log.
+  Visual debug panel (TMemo) is the remaining GUI work.
 - `ROADMAP.md` added — master roadmap across all three tracks, order of
   work, and the aggressive commenting standard codified.
 - **Output layout**: `out/` split by target arch into `dos/`, `win32/`,
@@ -72,7 +73,7 @@
 - SEAM protocol: driver↔server framed binary protocol
 - TSR skeleton: FOSSIL resident-program framework
 - Win32 cross-compile from Linux
-- DOS i8086 FOSSIL bridge (netfossl.exe, 179KB)
+- DOS i8086 FOSSIL bridge (netfossl.exe, 179KB — superseded by netfosdl)
 - 38 test programs covering all engine units
 
 ## M0 — initial recovery

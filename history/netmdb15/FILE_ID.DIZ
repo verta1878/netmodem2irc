@@ -1,0 +1,15 @@
+---------[ NetModem v1.0b15.sL ]---------
+ BBS Telnet Daemon for Windows 95...         
+ Allows incoming Telnet to any BBS that
+ can use a FOSSIL Driver. Supports Baud
+ Rates of 19200, 38400, and 57600. Uses
+ Windows95 WinSock (Dial-Up Networking
+ or other)... Emulates COM ports 3-20.
+ Very fast over the Internet if your ISP
+ has decent bandwidth. Better than the
+ others..Freeware! NetModem/32 will not
+ be Freeware! NetModem/32 (Native Win95,
+ Multi-Threaded) coming soon. NT Version
+ planned after Win95 final release...
+ Author - Dedrick Allen - drip@cris.com
+-----------------------------------------

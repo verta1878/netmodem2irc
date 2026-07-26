@@ -1,0 +1,18 @@
+----------[ NetModem/32 v1.0b4.sL ]----------
+ 32Bit FOSSIL Telnet Server for Windows 95/98
+ !! Multinode versions are now available !!
+  Allows incoming Telnet connections to any
+ BBS/Communications software that can use a
+ FOSSIL driver. Supports baud rates of 19200,
+   38400, 57600 and 115200. Comports 3-99.
+Uses Windows WinSock TCP/IP. Works with Dial-
+ up Networking, Cable modem, Ethernet, or any
+ kind of TCP/IP connection. Emulates a modem
+  via FOSSIL services. Dial-Out coming soon.
+        Very fast over the Internet.
+   Includes complete documents, Install and
+ Uninstall programs for easy setup in Windows
+   Released - 2/4/98 - NetModem/32 Beta 4
+Author - Dedrick Allen / EMail: drip@cris.com
+        http://www.cris.com/~drip
+---------------------------------------------

@@ -1,0 +1,415 @@
+                        Ü
+  ÜÛÜÜ                 ŞÛÛÜ Ü
+ ÛÛÛÛÛÛÜÜ             ÜÛÛÛÛİÛÛßÛÜ ÜÛßÛÜ ÜÛÛÜÜ
+ ŞÛÛÛÛÛÛÛÛÛÛÜÜ     ÜÜÛÛÛÛÛß ÛÛ ÛÛ ÛÛßßß  ÛÛ  ÜÜÛÛÛ    jeepee(halo)
+  ÛÛÛÛÛÛÛÛÛÛÛÛÛÜÜÛÛÛÛÛÛÛß   ÛÛ ÛÛ ÛÛ ÛÛ  ÛÛ   ÛÛÛÛ
+   ÛÛÛÛÛ   ßßÛÛÛÛÛÛÛÛÛÛÛ   ÜÜÛ ÛÛ ÛÛÜÛÛ  ÛÛÜÜ ÛÛÛÛ   ÜÜÜÜÜ   ÜÜ          ÜÜ
+   ÛÛÛÛÛ       ßÛß ÛÛÛÛÛÜÛÛÛÛÛÛÛÜÜ ßßÛÜÛÛÛÛÛÛÛÛÛÛÛÜÛÛÛÛßÛÛÛÛÜÛÛÛÛÜÜ  ÜÜÛÛÛÛ
+   ÛÛÛÛÛ           ÛÛÛÛÛÛÛÛß  ßÛÛÛÛÜÛÛÛÛß  ßÛÛÛÛÛÛÛÛÛÛÜÜÜÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+ŞÜÜÛÛÛÛÛ           ÛÛÛÛÛÛÛİ    ŞÛÛÛÛÛÛÛİ    ŞÛÛÛÛÛÛÛÛßßßßßßßßÛÛÛÛ ßÛÛß ÛÛÛÛ
+ ßßÛÛÛÛÛÛÜ         ÛÛÛÛÛÛÛÛÜ  ÜÛÛÛÛßÛÛÛÛÜ  ÜÛÛÛÛÛÛÛÛÛÜ  ÜÛÛÛÛÛÛÛÛ      ÛÛÛÛ
+     ßÛÛÛÛİ        ÛÛÛÛÛßÛÛÛÛÛÛÛÛß   ßÛÛÛÛÛÛÛÛÛÛÛÛßÛÛÛÛÛÛÛÛÛßÛÛÛÛ      ÛÛÛÛ
+      ŞÛÛß      ŞÜÜÛÛÛÛÛ   ßßßß         ßßßßß ßßßß   ßßßßß   ßßßß      ÛÛßß
+      ß          ßßÛÛÛÛÛÛÜ  
+                     ßÛÛÛÛİ        NetModem v1.0bX.sL - Shareware
+                      ŞÛÛß         CopyRight 1997 - Dedrick Allen
+                      ß               http://www.cris.com/~drip
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        Table Of Contents...                                  
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+               Chapter 1 - Information...
+                            a. About NetModem...
+                            b. How to Register...
+                            c. About/Contacting the Author...
+     
+               Chapter 2 - Getting Started...
+                            a. General Information...
+                            b. Installing NetModem...
+                            c. Installing NetFOSSIL...
+   
+               Chapter 3 - Index...
+                            a. Problem Solving...
+                            b. Getting Support...
+                            c. Future Versions...
+                            d. Special Thanks...
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+       Legal Stuff...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           I ain't responsible  for any damage this program may do
+           or be  used  for. Users using pirated/cracked copies of
+           this software  will be  delt with and prosecuted to the
+           full  extent  of the  law. Pirated/Cracked  copies  may
+           cause problems. Thats all i have to say.
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       Chapter 1 - Information...
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        a. What it is...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           Back before all this Internet hype, people were playing
+           games, downloading files, chatting and sending mail via
+           a service known as a BBS (Bulletin Board System). BBS's
+           were VERY popular and at one  time  there  were  almost
+           50,000  BBS's  in  the U.S. alone.  Now since  all this
+           Internet  hype, people have pretty much put aside BBS's
+           because  they  feel  they  can  get  the same and  more
+           amounts of  information via the Internet and WWW. Well,
+           people  are now saying "BBS's are dead!", or "Just give
+           it up!". BBS's are not dead, as soon as they can get on
+           the  Internet at  decent speeds they  will pick back up
+           and  become popular  again, because lets face it, there
+           are just some things WWW will never be able to do.
+
+           This is where NetModem comes into play. NetModem allows
+           a SysOp  to put his BBS on the Internet, and have users
+           on the Internet Telnet to his system. Most of the users
+           on  the Internet, "I" call "Internet Idiots". These are
+           people who fall into the trap of the media hype meaning
+           all they hear about the Internet is WWW here or http:\\
+           there, but they never hear about IRC, or FTP, or Telnet
+           , and %60 dont even know  what a BBS is, or  have never
+           seen one. Once these people find out what Telnet or IRC
+           is,  they begin to  use  it more, and  like  it. If you
+           advertise your BBS, and inform people how  to access it
+           via   the   Internet, I  am  sure they will try it just
+           because they have never experienced one before.
+
+           Hopefully NetModem  will  help bring BBS's  back  alive
+           again, and more Internet users will  become  more aware
+           of the  additional features of the Internet besides the
+           "over-rated" Web...
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        b. How to Register...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+        
+           Registered copies of NetModem are as follows...
+
+               1 Node License - $20
+               2 Node License - $25
+               8 Node License - $35
+
+           - Registered - NetModem Information...
+
+           Registered copies of NetModem have enhanced features to
+           help  improve  the speed of NetModem on your system and
+           over the  Internet. It  includes  support for  OutBound
+           Telnet as well as incoming.(See "Installing NetFOSSIL")
+
+           - UnRegistered - NetModem Information...
+
+           The UnRegistered copies of  NetModem, while still fast,
+           is not  as fast as the  Registered. UnRegistered copies
+           also  have a  connection limit of  50, meaning after 50
+           Incoming Telnet  connections,  your BBS Window  will be
+           closed and you will need to restart it manually.
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        c. About/Contacting the Author...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           The Author of NetModem is Dedrick A. Allen (middle name
+           is top secret :) ). I am a 19 year old  college student
+           born and raised in Chattanooga, Tennessee. I am skilled
+           in Delphi,  Pascal, Assembler,  and  currently learning
+           C/C++ all which are self-taught via friends or manuals.
+           School's  dont tend to teach you everything you need to
+           know  about  computer  programming. I run  a BBS called
+           Death-Row BBS, my SysOp handle is Snoop Dogg. I was one
+           of the  most  popular BBS's  in town, the local SysOp's
+           hated  me  cuz of  this so they all banded together and
+           tried to make me take my BBS down. They all suck! But I
+           didnt, Death-Row WILL be back this year in  full  force
+           via dial-up and Telnet. I am  experimenting via  Telnet
+           now, so if you want to see NetModem in action just send
+           me EMail.
+
+           Contacting the Author...
+
+              EMail - drip@cris.com
+
+               WWW  - http://www.cris.com/~drip
+
+             USMail - Contact me via EMail for this one... :)
+                       
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       Chapter 2 - Getting Started...
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        a. General Information...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           NetModem is the Windows  Server  Application. It  shows
+           all your nessecary TCP/IP information.  e.g. your  Host 
+           Name  on the  Internet, and your IP Address on the net.
+           It  also  displays  the  Node  Status, when you have an
+           Incoming Connection, and Connection Status. I  may  add
+           Caller-ID to this also if enough people want it, but it
+           will only be available in the  Registered  version. The
+           Server Application should  be the  first thing  loaded,
+           not nessecary to  be first  but  a good idea. Right now
+           the Application Icon Minimizes to down to the Task  Bar
+           but NetModem/32 will Minimize down  to  the  Windows 95
+           Icon Tray. (The area near the System Clock).
+
+           NetFOSSIL is the FOSSIL driver for the BBS software  to
+           use to communicate via the TCP/IP Telnet Protocol. It's
+           the ONLY FOSSIL driver that will work with NetModem. It
+           will not work with ADF, X00, nor BNU. Make sure you  do
+           not load  another FOSSIL driver  on the  same COMx port
+           as the port you told NetFOSSIL to support/emulate. This
+           will probably result in lockups and errors of some sort
+           . You also MUST load NetFOSSIL in  your AUTOEXEC.BAT so
+           it will load before Windows 3.1/95 does If you don't it
+           will NOT work so dont  EMail me saying you cant get  it
+           to work, when you don't even follow the directions.
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        b. Installing NetModem...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           There is only one command parameter for NetModem. It is
+           the number of  Nodes/Ports  to support.  The  Shareware
+           version only supports 1 Node/Port, so the command  line
+           to load NetModem would be:
+
+                              NetModem.EXE 1
+
+           You can use the "Start -> Run" option in Windows 3.1/95
+           to start it or create an Icon to execute it. I find the
+           Icon easier. Once  started NetModem will  automatically
+           Minimize  itself to the  Windows 95 Task Bar.  You  can
+           Maximize it  by  clicking  the  Icon. In  the  NetModem
+           Window it will display your Host Name. This is the name
+           of your machine on the Internet, and in some  cases  it
+           can be used as a address for a user to Telnet  into. In
+           other cases you must use an IP Address because most ISP
+           systems dont assign a Host Name to each individual user
+           and this  leaves you  only with your systems IP address
+           which no system on  the Internet has  the same. If  you
+           choose, in most cases your  ISP may charge a  small fee
+           for a custom Host Name off his system.
+
+           e.g.
+
+           If your ISP's Domain Name is:
+
+                       concentric.net
+
+           You may be able to get a Host Name of:
+
+                       yourbbsname.concentric.net
+
+           Or another method is to pay $100 to Internic for a full
+           Domain Name this will require a Static IP from your ISP
+           and you can get something like this:
+
+           e.g.
+                       yourbbsname.com
+
+           Most people tend to stick with IP Addresses or the Host
+           Name method but others may prefer thier own Domain Name
+           . NetModem is nice because its small, fast, and easy to
+           use... NetModem will work  with ANY  doors/program that
+           can use a FOSSIL driver.  NetModem also uses 32-Bit CPU
+           Instructions...
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        c. Installing NetFOSSIL...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           Brief features list of NetFOSSIL...
+
+           ( * = Registered Functions Only )
+
+            - Uses 32-Bit CPU Instructions.
+            - It will work with any DOS-based BBS software, or any
+              program that can use a FOSSIL Driver.
+            - It can run on any Windows 3.1/95 based machine.
+            - It can run with any Windows 3.1/95 based TCP/IP
+              Network as long as you have WinSock.DLL v1.1 on your
+              system.
+            - Supports FOSSIL Rev5 Specs.
+            - Supports the SuperSet/Extended FOSSIL Functions.
+            - 2048k Input and Output Buffer sizes.
+            - Emulates Hardware (CTS/RTS) and Software (XOn/XOff)
+              Flow Control.
+            - No need to work with stupid system IRQ's.
+            - It will accept any type connection speed from 300bps
+              on up to OC-xxx lines.
+            * Supports Multiple Nodes/Inbound Connections.
+            * Supports Outbound Connections.
+            * Caller-ID Displayed in the NetModem Server App.
+
+           AT Commands that NetFOSSIL will accept...
+           
+           Although NetFOSSIL  will accept ANY thing  that  begins
+           with AT here  are the ones that accually do something..
+           Your first init string MUST be ATZH0| if it is not then
+           this will go wrong...
+
+            ATA  - Answer a call when "RING" is detected.
+            ATZ  - Force an "OK" from the emulated modem/port.
+                   (ATZ - also makes BBS go On-Hook/Online.)
+            ATH0 - Go On-Hook or make the BBS ready for incoming
+                   calls.
+            ATH1 - Go Off-Hook or make the BBS not accept incoming
+                   calls.
+
+           NetFOSSIL has several command line  paramters that  you
+           you must provide for it to function properlly. First of
+           all you MUST LOAD NETFOSSL.EXE IN YOUR AUTOEXEC.BAT!!!!
+           Command-Line Parameters...
+
+            PORT - Number of comports for NetFOSSIL to emulate. 
+             
+             ^-- This tells NetFOSSIL the number of COM ports to
+                 emulate/support.
+
+            Note: NetFOSSIL it NOT 0 based like X00...
+                  3 means Com3, 4 means Com4 etc...
+
+            COMM - Specifies the 1st comport to start emulating.
+
+             ^-- This tells NetFOSSIL the 1st COM port to support/
+                 emulate. It will support this COM port and on up.
+                 e.g. If you have the 8 Node/Port version and you
+                 give it a 6 for COM6 then it will support COM6 &
+                 COM... 7, 8, 9, 10, 11, 12 & 13 as well. Do  not
+                 use a COM port that is in use by a real modem or
+                 mouse or such device.
+             
+            BAUD - Baudrate to lock the comports at.
+
+             ^-- This tells NetFOSSIL what Baudrate to lock all
+                 the COM ports that it will be emulating. Valid
+                 Baudrates are: 19200, 38400 and 57600.
+
+              Example:
+
+                NETFOSSL.EXE 1 7 38400
+
+                 Tells NetFOSSIL to use NetModem Port 1, emulate
+                 COM7 and up, and lock all the ports at 38400bps..
+                       
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       Chapter 3 - Index...
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        a. Problem Solving...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           The only/biggest  problem I  have had  people have when
+           using  NetModem/NetFOSSIL is people dont load NetFOSSIL
+           in thier AUTOEXEC.BAT, instead  they  load it in  thier
+           DOS Window. It will not  work  that  way,  it  must  be
+           loaded in the AUTOEXEC.BAT.
+
+           Another problem is that sometimes they forget that they
+           are loading another FOSSIL Driver on the same  port  as
+           NetFOSSIL. This can cause problems so make  sure if you
+           are loading another FOSSIL Driver that you dont use the
+           same COM port as NetFOSSIL is going to support/emulate.
+
+           Another problem is that people think  you have to  tell
+           NetFOSSIL the COM port your real modem is on. No you do
+           not do this, you tell NetFOSSIL a COM port to "Emulate"
+
+           Other problems have been due to NetFOSSIL  bugs, & have
+           been fixed. If you encounter any problems and have done
+           everything right, then contact me via EMail and give me
+           a  detailed  message describing  your problem, and what
+           BBS software you are using...
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        b. Getting Support...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           You can get support via EMail anytime, I  usually reply
+           to my EMail the same day.
+
+           My EMail address is:
+
+                      drip@cris.com
+
+           I have no plans on changing it  anytime  soon, but if I
+           do I  will  notify  everyone either via EMail or my WWW
+           page.  So make sure you visit http://www.cris.com/~drip
+           every once and a while to make sure you stay updated on
+           the latest news on NetModem...
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        c. Future Versions...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           Most of these features are planned for  NetModem/32 and
+           will  probably  only  be  features  of  the  Registered
+           version but possible for NetModem.
+
+           - Better GUI.
+           - Caller ID.
+           - IP/Domain Blocking to block out certain IP's or
+             Domains.
+           - More control over the Server.
+           - Statistics Display.
+           - Editable Text files to display when a certain event
+             has occured like "BBS is not ready" or "Connecting,
+             please wait...".
+           - Definable Timeout to determine if the BBS is not
+             answering.
+           - Connection Log(s).
+           - User Definable Buffer sizes in the FOSSIL driver.
+           - True 32bit/Multi-Threaded code. (NetModem/32)
+           - Support for WinSock 2.0 (32bit anyway) and 32bit
+             WinSock 1.1.
+           - NT Support - If I can somehow create an NT based
+             FOSSIL driver. If anyone has any info EMail me.
+             (drip@cris.com)
+           - Any other ideas users have or that I may come up with.
+           
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+        d. Special Thanks...
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+           These are the people whom without NetModem wouldn't be.
+           I just  want to say thank you and I  really  appreciate
+           you guys help and support.
+
+             dink     (An Assembler/Pascal Genius and HUGE OS/2 fan)
+             nivenh   (An Assembler/Pascal/Delphi Genius)
+             CMF      (Another Pascal/Delphi Genius)
+             pentium- (WinAPI and WinSock Genius)
+             voivode  (Assistance)
+             Damm     (Assistance)
+             Bin-x    (Assistance)
+
+           and anybody else who helped but i forgot about. :)
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+
+eof - yeaahhhhhh bay-beee yeaahhhhh!
+
+Mag69 - pimp, playa, and hustla 4 life...

@@ -32,11 +32,11 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 needs already compiles. What's missing is a live Telnet session through
 NMServer with a real BBS door on the other end.
 
-**No debug infrastructure exists.** There is no central debug unit, no
-`OutputDebugString` wrapper, no log-to-file during init. The two Inno
-init-time AVs and the absence of runtime testing both argue for one.
-`NM_GlobalConfig` has `LogFileDays` / `LogFileMaxSize` settings for
-future use but nothing writes to them yet.
+**Debug infrastructure is in place.** `NM_Debug.pas` provides central
+logging with Play/Stop, wired into MainForm's init path and every CM_*
+handler. The visual debug panel (TMemo in the form) is the remaining
+GUI work. `NM_GlobalConfig` has `LogFileDays` / `LogFileMaxSize`
+settings for future log rotation.
 
 ### DOS — the driver (standalone, not part of netmodem)
 
@@ -63,7 +63,7 @@ future use but nothing writes to them yet.
 - **151 paths uncommitted** — licensing, docs, layout all working-tree only
 - **fpc264irc is an empty repository** — build recipes can't run
 - **No runtime test anywhere** — Synapse untested live, no BBS door session
-- **No debug unit** — no way to trace init-time crashes
+- **Debug panel** — `NM_Debug` is wired in; the GUI TMemo panel is next
 
 ## Architecture
 
@@ -164,7 +164,7 @@ netmodem2irc/
 ├── history/                    2.7M  — Dedrick's original distributions
 │   ├── net32_b4/               11 files
 │   └── netmdb15/                6 files — plus NETMODEM.CPL, 657K, 1997-2001
-├── docs/                       296K  — engineering docs, 48 files
+├── docs/                       340K  — engineering docs, 60 files
 │   │                                   index + status: docs/README.md
 │   └── original/                3 files — Dedrick's own documentation
 ├── attic/                       28K  — retired files
@@ -246,39 +246,38 @@ occupies, so it is broken until Phase 5.
 
 ## Debug
 
-`engine/NM_Debug.pas` exists and compiles clean on all targets — the two Inno
-init-time AVs are untraceable without it, and M3 (live connection)
-will need wire-level logging.
+`engine/NM_Debug.pas` — central debug logging with Play/Stop, inspired
+by Carl Gorringe's [RIPtermJS](https://github.com/cgorringe/RIPtermJS)
+debug log panel. Compiles clean on all targets. Wired into MainForm.
 
-`NM_Debug` provides:
+Three output channels, all active simultaneously:
+
+| Channel | What | Paused? |
+|---|---|---|
+| `OutputDebugString` (Win32) | kernel debug log, readable with DebugView | never — crash-recovery channel |
+| Log file | per-line flush, survives crashes | never |
+| Line handler callback | the visual debug panel in the GUI | **yes — Play/Stop controls this** |
+
+API:
 
 | Function | What |
 |---|---|
-| `DebugLog(msg)` | writes to a central log file and/or `OutputDebugString` |
-| `DebugInit` | opens the log, reads the debug level from config or command line |
-| `DebugShutdown` | flushes and closes cleanly |
+| `DebugLog(subsystem, msg)` | writes to all three channels |
+| `DebugLogFmt(subsystem, fmt, args)` | `Format` + `DebugLog` |
+| `DebugInitFile(filename)` | opens the log file |
+| `DebugShutdown` | flushes and closes |
+| `DebugPause` / `DebugResume` | freeze/unfreeze the visual panel — recording continues |
+| `DebugIsPaused` / `DebugIsActive` | query state |
+| `DebugSetLineHandler(handler)` | GUI registers a callback for the debug panel |
 
-Controlled by a define (`-dNM_DEBUG`) so release builds carry zero
-overhead. `NM_GlobalConfig` already has `LogFileDays` and
-`LogFileMaxSize` registry settings waiting for something to write to
-them.
+`TDebugLineEvent` receives subsystem and message separately so the GUI
+can color-code by subsystem without parsing. HAZARD documented: the
+handler runs on whatever thread calls `DebugLog`, so GUI access needs
+`TThread.Synchronize` or `Application.QueueAsyncCall`.
 
-Target consumers: `NMServer` init path (the form-init AV), `ISCmplr`
-DLL init, `NM_SynapseLink` connection lifecycle, and the FOSSIL
-driver's INT 14h dispatch.
-
-Win32: `OutputDebugString` goes to the system debug log, readable with
-DebugView (Sysinternals) without attaching a debugger — important for
-tracing init crashes where a debugger changes timing. Win98 supports
-`OutputDebugString` natively.
-
-DOS: `WriteLn` to a file or `stderr`. No OS debug API.
-
-**Planned additions** (inspired by Carl Gorringe's
-[RIPtermJS](https://github.com/cgorringe/RIPtermJS) debug log):
-Play/Stop runtime toggle for the visual panel, color-coded subsystem
-tags, and a `TDebugLineEvent` callback so NMServer's form can host a
-docked debug panel.
+Controlled by `-dNM_DEBUG`. Without it, every call compiles to nothing.
+Wired into `MainForm.FormCreate` (init + log file), every `CM_*`
+handler, `RefreshNodes`, `miSetupClick`, and `FormDestroy`.
 
 ## Platforms
 

@@ -79,7 +79,7 @@ these drops in cleanly: bind each nav item's `OnClick` to show the corresponding
 ## 4. Wiring the GUI to the driver
 
 The rebuilt GUI talks to the recovered `NETMODEM.VXD` through the IOCTL/message
-interface documented in **NetModem2_Port_Guide.md** (from the driver-source
+interface documented in **DRIVER_INTERFACE.md** (from the driver-source
 recovery). The mapping:
 
 * **Config app (CPL):** reads/writes `HKLM\Software\Allen Software\NetModem`

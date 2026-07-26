@@ -45,8 +45,8 @@ netmodem2irc is maintained by **Antonio Rico** — handles **Reapern66** (Ecstas
 BBS; NetModem beta tester who worked with Dedrick/mag69) and **verta** (footing).
 The maintenance discipline of this project — understand before you port, no shims,
 retire don't delete, record the why, and above all keep attribution intact — is
-recorded across the project docs (see `tremedy2c.md`, `seeing_the_structure.md`,
-`preservation_and_licenses.md`).
+recorded across the project docs (see `netmodem2irc_SEAM_protocol.md` §"Naming
+for readability", and `LICENSES.md`).
 
 ## Why this file exists
 

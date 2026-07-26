@@ -142,9 +142,18 @@ begin
   R.BX := BX;
   R.CX := CX;
   R.DX := DX;
-  { ES:DI -> R.Buf (far pointer -> PByte). Real-mode-specific; verify on VM.
-    R.Buf := PByte(Ptr(ES, DI)); }
-  R.Buf := nil;   { placeholder until the far-pointer form is filled in }
+  { ES:DI -> R.Buf (far pointer -> PByte).
+    On real-mode DOS (i8086), ES:DI is a segment:offset pair that
+    forms the 20-bit linear address. Ptr() constructs the far pointer.
+    On Win32 this ISR is never called — the NT path uses synthetic
+    TFossilRegs frames without real segment registers.
+    HAZARD: Ptr(ES, DI) is only valid under {$IFDEF DOS_TARGET}.
+    On a flat-memory target it would produce a garbage pointer. }
+  {$IFDEF DOS_TARGET}
+  R.Buf := PByte(Ptr(ES, DI));
+  {$ELSE}
+  R.Buf := nil;   { flat memory — no real segment:offset; caller must set R.Buf }
+  {$ENDIF}
   R.Handled := False;
 
   { 3. call the TESTED core — all FOSSIL logic lives here, not in the ISR }

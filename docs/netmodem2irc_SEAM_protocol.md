@@ -65,7 +65,7 @@ ISR/residency wrapper — the driver<->server messaging is done.
 
 ---
 
-## Naming for readability (tremedy2c)
+## Naming for readability
 
 The frame's fields and the frame variable are named to explain themselves, so the
 code reads in plain language instead of cryptic shorthand:

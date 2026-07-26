@@ -5,7 +5,7 @@ be rebuilt in user-mode Pascal (fpc264irc) for the NT branch. Every item here
 implements a PUBLISHED standard (NS-16550 datasheet, FOSSIL spec, Hayes AT), which
 is why it's portable — it's spec-implementation, not black-box assembly.
 
-Source: driver/src/NETMODEM.ASM + NETMODEM.INC (structs). Companion to DRIVER_MAP.md.
+Source: driver/src/NETMODEM.ASM + NETMODEM.INC (structs). Companion to netmodem2irc_DRIVER_MAP.md.
 
 ---
 

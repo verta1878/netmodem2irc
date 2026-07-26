@@ -77,12 +77,12 @@ AVs or test a live connection without it.
 
 | Step | What | Status |
 |---|---|---|
-| R1.1 | `NM_Debug.pas` — central logging | ✅ exists, compiles clean |
-| R1.2 | Wire into `MainForm.FormCreate` and `WndProc` | ⬜ |
-| R1.3 | Debug panel — `TMemo` docked to main form, hidden by default | ⬜ |
-| R1.4 | Play/Stop runtime toggle (inspired by RIPtermJS) | ⬜ |
-| R1.5 | Color-coded subsystem tags in the panel | ⬜ |
-| R1.6 | `DebugSetLineHandler` callback so the panel subscribes | ⬜ |
+| R1.1 | `NM_Debug.pas` — central logging | ✅ |
+| R1.2 | Wire into `MainForm.FormCreate` and `WndProc` | ✅ |
+| R1.3 | Play/Stop runtime toggle (RIPtermJS-inspired) | ✅ `DebugPause`/`DebugResume` |
+| R1.4 | `TDebugLineEvent` callback for the visual panel | ✅ `DebugSetLineHandler` |
+| R1.5 | Debug panel — `TMemo` docked to main form, hidden by default | ⬜ GUI work |
+| R1.6 | Color-coded subsystem tags in the panel | ⬜ GUI work |
 | R1.7 | Wire into `NM_SynapseLink` connect/send/recv | ⬜ |
 
 ### R2 — Fix the init AVs (Inno Phase 9/10)

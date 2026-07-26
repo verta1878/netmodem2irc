@@ -1,5 +1,15 @@
 # netfossl.exe
 
+> **HISTORICAL — predates the 2026-07-25 architecture decision.**
+>
+> This document describes the original design where netfossl sat on an
+> emulated 16550 backed by TCP via Watt-32. That design was replaced:
+> **netfosdl** (renamed, d=driver) is now a standalone FOSSIL driver on
+> a **real UART** with **no network**. Watt-32 was removed entirely.
+> See `netmodem2irc_fossil_separation.md` for the current architecture.
+>
+> Kept as the record of what the design was before it settled.
+
 A FOSSIL driver that has no serial port behind it.
 
 BBS software calls INT 14h believing it is driving a modem on a COM port.

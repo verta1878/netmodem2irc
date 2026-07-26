@@ -49,7 +49,7 @@ driver's `IOCTL 0E`.
 
 ## Rebuilding the forms
 
-`server/MainForm.pas` and `config/ConfigMain.pas` are scaffolds. The full original
+`server/MainForm.pas` has all CM_* handlers wired to the bridge (no TODOs remain). `config/ConfigMain.pas` is a scaffold. The full original
 layouts (all 8 forms, every control/caption/position) are documented in
 [`GUI_BLUEPRINT.md`](GUI_BLUEPRINT.md); rebuild the remaining forms (`Form2`–`Form6`,
 splash) as `.lfm` files from those, then attach the listed event handlers.
