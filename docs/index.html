@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>netmodem2irc — Documentation Index</title>
+<style>
+:root { --bg: #1a1a2e; --card: #16213e; --accent: #0f3460; --blue: #53a8ff;
+        --green: #4ecca3; --yellow: #f0c040; --red: #e94560; --text: #e0e0e0;
+        --dim: #888; --border: #2a3a5e; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Consolas','Courier New',monospace; background: var(--bg);
+       color: var(--text); padding: 20px; line-height: 1.5; }
+h1 { color: var(--blue); margin-bottom: 4px; font-size: 1.5em; }
+h2 { color: var(--green); margin: 28px 0 12px; font-size: 1.15em;
+     border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+h3 { color: var(--yellow); margin: 20px 0 8px; font-size: 1em; }
+.subtitle { color: var(--dim); margin-bottom: 20px; font-size: 0.9em; }
+.stats { display: flex; gap: 24px; flex-wrap: wrap; margin: 16px 0; }
+.stat { background: var(--card); padding: 10px 16px; border-radius: 6px;
+        border: 1px solid var(--border); }
+.stat .n { font-size: 1.4em; color: var(--blue); font-weight: bold; }
+.stat .label { color: var(--dim); font-size: 0.8em; }
+table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 0.85em; }
+th { text-align: left; color: var(--green); border-bottom: 2px solid var(--border);
+     padding: 6px 10px; }
+td { padding: 5px 10px; border-bottom: 1px solid var(--border); }
+tr:hover { background: var(--accent); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.tag { display: inline-block; padding: 1px 6px; border-radius: 3px;
+       font-size: 0.75em; margin-left: 6px; }
+.tag-ok { background: #1a4a3a; color: var(--green); }
+.tag-warn { background: #4a3a1a; color: var(--yellow); }
+.tag-miss { background: #4a1a1a; color: var(--red); }
+.tag-new { background: #1a2a5a; color: var(--blue); }
+.missing-row td { color: var(--red); }
+.note { color: var(--dim); font-size: 0.8em; font-style: italic; margin: 4px 0 12px; }
+</style>
+</head>
+<body>
+<h1>netmodem2irc — Documentation Index</h1>
+<p class="subtitle">Generated 2026-07-26 from repo at commit 86a8595. See docs-repair-roadmap.md for fixes.</p>
+
+<div class="stats">
+<div class="stat"><div class="n">59</div><div class="label">docs in docs/</div></div>
+<div class="stat"><div class="n">6</div><div class="label">root .md files</div></div>
+<div class="stat"><div class="n">6</div><div class="label">missing docs</div></div>
+<div class="stat"><div class="n">3</div><div class="label">missing dirs</div></div>
+</div>
+<h2>❌ Missing Directories (deleted during upload, must restore)</h2>
+<table><tr><th>Directory</th><th>Contents</th><th>Impact</th></tr>
+<tr class="missing-row"><td>libs/synapse/</td><td>17 files — Ararat Synapse TCP library</td><td>NMServer won&#x27;t compile without it</td></tr>
+<tr class="missing-row"><td>history/</td><td>Dedrick&#x27;s original distributions</td><td>Licensing provenance</td></tr>
+<tr class="missing-row"><td>driver/src/ (contents)</td><td>9 files — NETMODEM.ASM, .INC, .DEF, .RC</td><td>Only LICENSE-NOTICE.md survived</td></tr>
+</table>
+<h2>❌ Missing Documents (referenced but not on disk)</h2>
+<table><tr><th>File</th><th>Description</th><th>Source</th></tr>
+<tr class="missing-row"><td>DEFERRED-20260725.md</td><td>Deferred items from session 2026-07-25</td><td>In container, never committed</td></tr>
+<tr class="missing-row"><td>fpc-sockets-request.md</td><td>FPC GitLab feature request for i8086 sockets backend</td><td>Was in dos/, lost</td></tr>
+<tr class="missing-row"><td>NetModem2_Port_Guide.md</td><td>Driver-source port guide</td><td>Referenced by GUI_BLUEPRINT.md</td></tr>
+<tr class="missing-row"><td>preservation_and_licenses.md</td><td>Licensing preservation notes</td><td>Referenced by CREDITS.md, may be covered by LICENSES.md</td></tr>
+<tr class="missing-row"><td>seeing_the_structure.md</td><td>Design insight — the lesson behind the audit method</td><td>Referenced by CREDITS.md, overflow_audit.md, testing_the_boundary.md</td></tr>
+<tr class="missing-row"><td>tremedy2c.md</td><td>Unknown scope</td><td>Referenced by CREDITS.md</td></tr>
+</table>
+<h2>📄 Root Documents</h2>
+<table><tr><th>File</th><th>Title</th><th>Lines</th></tr>
+<tr><td><a href="CHANGELOG.md">CHANGELOG.md</a></td><td>Changelog</td><td>83</td></tr>
+<tr><td><a href="CREDITS.md">CREDITS.md</a></td><td>Credits &amp; attribution — netmodem2irc</td><td>56</td></tr>
+<tr><td><a href="LICENSES.md">LICENSES.md</a></td><td>Licensing</td><td>179</td></tr>
+<tr><td><a href="README.md">README.md</a></td><td>netmodem2irc</td><td>386</td></tr>
+<tr><td><a href="ROADMAP.md">ROADMAP.md</a></td><td>netmodem2irc — Master Roadmap</td><td>317</td></tr>
+<tr><td><a href="THIRD_PARTY.md">THIRD_PARTY.md</a></td><td>netmodem2irc — third-party libraries</td><td>87</td></tr>
+</table>
+<h2>📚 Documentation (docs/)</h2>
+<h3>Architecture &amp; Specification (8)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/DRIVER_INTERFACE.md">DRIVER_INTERFACE.md</a></td><td>NetModem 2 — Recovery Record &amp; Free Pascal Port Guide</td><td>226</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_DRIVER_MAP.md">netmodem2irc_DRIVER_MAP.md</a></td><td>NetModem/32 driver — functional map (NETMODEM.ASM)</td><td>125</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_LAYER_A_SPEC.md">netmodem2irc_LAYER_A_SPEC.md</a></td><td>netmodem2irc — Layer A spec map (UART + FOSSIL emulation)</td><td>133</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_NT_TRANSPORT_LAYER.md">netmodem2irc_NT_TRANSPORT_LAYER.md</a></td><td>netmodem2irc — NT-branch transport layer (the user-mode replacement for Layer B)</td><td>94</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_SEAM_protocol.md">netmodem2irc_SEAM_protocol.md</a></td><td>netmodem2irc — driver&lt;-&gt;server seam protocol</td><td>87</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_driver_boundary.md">netmodem2irc_driver_boundary.md</a></td><td>netmodem2irc / virtual-COM driver — the boundary (step 1: clean, verified)</td><td>47</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_serverlink.md">netmodem2irc_serverlink.md</a></td><td>Concrete TServerLink (NM_ServerLink) — a real link for the TSR</td><td>30</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_switch_upgrade.md">netmodem2irc_switch_upgrade.md</a></td><td>Switch-style bridge — fixing the original&#x27;s multinode sluggishness</td><td>81</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>FOSSIL (9)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/NETFOSSL.md">NETFOSSL.md</a></td><td>netfossl.exe</td><td>381</td><td><span class="tag tag-warn">⚠️ Pre-decision: says &quot;no serial port&quot; — netfosdl IS on real UART now</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_FOSSIL_crossvalidation.md">netmodem2irc_FOSSIL_crossvalidation.md</a></td><td>FOSSIL cross-validation — our driver vs. ELECOM FOS_COM</td><td>45</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_FOSSIL_driver_scoping.md">netmodem2irc_FOSSIL_driver_scoping.md</a></td><td>netmodem2irc — FOSSIL driver (NetFOSSIL/32 revival) scoping — M3.5</td><td>143</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_fossil_audit_summary.md">netmodem2irc_fossil_audit_summary.md</a></td><td>FOSSIL/COM audit — summary of findings and fixes</td><td>34</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_fossil_audit_todo.md">netmodem2irc_fossil_audit_todo.md</a></td><td>FOSSIL/COM audit — parked (resume here later)</td><td>43</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_fossil_block_io.md">netmodem2irc_fossil_block_io.md</a></td><td>FOSSIL Fn 18h/19h block read/write — gap found by the audit, now implemented</td><td>35</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_fossil_dtr_fix.md">netmodem2irc_fossil_dtr_fix.md</a></td><td>FOSSIL Fn 06h (SET_DTR) fix — found by checking against ELECOM/SyncFos</td><td>53</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_fossil_getinfo.md">netmodem2irc_fossil_getinfo.md</a></td><td>FOSSIL Fn 1Bh (GET_INFO) — wired to fill the struct via the buffer mechanism</td><td>22</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_fossil_separation.md">netmodem2irc_fossil_separation.md</a></td><td>FOSSIL Code Separation and Output Layout</td><td>253</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>16-bit / DOS / TSR (4)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/netmodem2irc_TSR_skeleton.md">netmodem2irc_TSR_skeleton.md</a></td><td>The TSR skeleton (NM_TSR) — the resident-program shell, i8086-ready</td><td>57</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_WHY_16BIT.md">netmodem2irc_WHY_16BIT.md</a></td><td>Why 16-bit — the preservation stance behind this project</td><td>35</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_i8086_TSR_finish_guide.md">netmodem2irc_i8086_TSR_finish_guide.md</a></td><td>Finishing the i8086 TSR when the backport lands — a fill-in guide</td><td>53</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_watt32_cleanup_phases.md">netmodem2irc_watt32_cleanup_phases.md</a></td><td>Watt-32 Cleanup and DOS FOSSIL Driver — Phase Plan</td><td>361</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>Virtual COM / COM port (6)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/PROPOSAL_comport_library_for_fpc.md">PROPOSAL_comport_library_for_fpc.md</a></td><td>Proposal: A standard COM-port / serial library for the FPC ecosystem</td><td>119</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_Option_A_scoping.md">netmodem2irc_Option_A_scoping.md</a></td><td>netmodem2irc — Option A: native user-mode virtual COM driver (the frontier)</td><td>109</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_com0com_notes.md">netmodem2irc_com0com_notes.md</a></td><td>com0com (virtual-COM fallback) — how it works on modern Windows</td><td>57</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_com2tcp_findings.md">netmodem2irc_com2tcp_findings.md</a></td><td>com0com + com2tcp source analysis — prior art and cross-validation</td><td>57</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_comlib_scoping.md">netmodem2irc_comlib_scoping.md</a></td><td>Scoping: a single COM-port library across all targets + slimming netmodem2irc</td><td>111</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_driver_signing_notes.md">netmodem2irc_driver_signing_notes.md</a></td><td>Driver signing — where it does and doesn&#x27;t apply to netmodem2irc</td><td>55</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>Configuration &amp; GUI (5)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/GUI_BLUEPRINT.md">GUI_BLUEPRINT.md</a></td><td>NetModem 2 — Windows GUI Recovery &amp; Rebuild Guide</td><td>128</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/NetModem2_GUI_Rebuild_Guide.md">NetModem2_GUI_Rebuild_Guide.md</a></td><td>NetModem 2 — Windows GUI Recovery &amp; Rebuild Guide</td><td>128</td><td><span class="tag tag-new">RECOVERED</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_config.md">netmodem2irc_config.md</a></td><td>netmodem2irc — configuration</td><td>34</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_cpl_config_design.md">netmodem2irc_cpl_config_design.md</a></td><td>netmodem2irc CPL configuration — design</td><td>101</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_registry.md">netmodem2irc_registry.md</a></td><td>NetModem/32 Registry Layout (Original)</td><td>100</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>Audits (7)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/netmodem2irc_TELNET_crossvalidation.md">netmodem2irc_TELNET_crossvalidation.md</a></td><td>ELECOM TELNET — cross-validation of our NetTransport</td><td>45</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_at_ghost_audit.md">netmodem2irc_at_ghost_audit.md</a></td><td>NM_ATCommand structural-sight audit — findings</td><td>29</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_boundary_audit_full.md">netmodem2irc_boundary_audit_full.md</a></td><td>Full boundary audit — applying structural sight to the whole seam/switch path</td><td>42</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_link_audit.md">netmodem2irc_link_audit.md</a></td><td>Link units audit — NM_NamedPipeLink (structural-sight sweep)</td><td>42</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_overflow_audit.md">netmodem2irc_overflow_audit.md</a></td><td>Structural-sight audit: the seam LEN overflow ghost (found + fixed)</td><td>58</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_transport_audit.md">netmodem2irc_transport_audit.md</a></td><td>NetTransport structural-sight audit — findings</td><td>38</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/testing_the_boundary.md">testing_the_boundary.md</a></td><td>Testing the boundary — proving a fix without reproducing the real condition</td><td>55</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>Build &amp; Process (7)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/BUGS.md">BUGS.md</a></td><td>netmodem2irc — known fpc264irc bugs</td><td>36</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/BUILD.md">BUILD.md</a></td><td>Building NetModem/32</td><td>62</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/GITHUB_UPLOAD_WALKTHROUGH.md">GITHUB_UPLOAD_WALKTHROUGH.md</a></td><td>Publishing NetModem/32 on GitHub — a first-timer&#x27;s walkthrough</td><td>92</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/NetModem2_Build_Roadmap.md">NetModem2_Build_Roadmap.md</a></td><td>NetModem/32 Revival — Build Roadmap</td><td>112</td><td><span class="tag tag-warn">⚠️ May be superseded by root ROADMAP.md</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_M2_NT4_build_runbook.md">netmodem2irc_M2_NT4_build_runbook.md</a></td><td>netmodem2irc — M2 / Windows NT4 build-and-test runbook</td><td>98</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_M2_build_guide.md">netmodem2irc_M2_build_guide.md</a></td><td>M2 — building the server in Lazarus (LCL ready)</td><td>38</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_commit_message_template.md">netmodem2irc_commit_message_template.md</a></td><td>netmodem2irc — commit message template (GitHub Desktop)</td><td>85</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>Milestones &amp; Roadmap (6)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/MILESTONE_netmodem2irc.md">MILESTONE_netmodem2irc.md</a></td><td>MILESTONE — netmodem2irc</td><td>79</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/ROADMAP.md">ROADMAP.md</a></td><td>netmodem2irc — Master Roadmap</td><td>275</td><td><span class="tag tag-warn">⚠️ DUPLICATE of root ROADMAP.md — delete this copy</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_M1_COMPLETE.md">netmodem2irc_M1_COMPLETE.md</a></td><td>M1 COMPLETE — full server&lt;-&gt;engine integration</td><td>100</td><td><span class="tag tag-ok">OK</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_M1_HANDOFF.md">netmodem2irc_M1_HANDOFF.md</a></td><td>M1 handoff — engine ready for the Lazarus 1.2.6 + FPC 2.6.4irc build</td><td>50</td><td><span class="tag tag-new">RECOVERED</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_M1_MainForm_integration.md">netmodem2irc_M1_MainForm_integration.md</a></td><td>M1 — MainForm.pas integration (drop-in code)</td><td>150</td><td><span class="tag tag-new">RECOVERED</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_RELEASE_ROADMAP.md">netmodem2irc_RELEASE_ROADMAP.md</a></td><td>netmodem2irc — release roadmap &amp; milestones</td><td>82</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>VxD / Driver (2)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/netmodem2irc_VMM_INC_buildnote.md">netmodem2irc_VMM_INC_buildnote.md</a></td><td>netmodem2irc — build note: VMM.INC is corrupted, use a clean DDK copy (9x VxD)</td><td>113</td><td><span class="tag tag-new">RECOVERED</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_VMM_INC_notice.md">netmodem2irc_VMM_INC_notice.md</a></td><td>netmodem2irc — VMM.INC is CORRUPTED: replace with a clean DDK copy</td><td>52</td><td><span class="tag tag-warn">⚠️ Covers same finding as VMM_INC_buildnote — keep one</span></td></tr>
+</table>
+<h3>Synapse &amp; Networking (3)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/SYNAPSE_README.md">SYNAPSE_README.md</a></td><td>(Ararat) Synapse TCP/IP library for Pascal</td><td>50</td><td><span class="tag tag-new">RECOVERED</span></td></tr>
+<tr><td><a href="docs/THIRD_PARTY.md">THIRD_PARTY.md</a></td><td>netmodem2irc — third-party libraries</td><td>84</td><td><span class="tag tag-warn">⚠️ DUPLICATE of root THIRD_PARTY.md — delete this copy</span></td></tr>
+<tr><td><a href="docs/netmodem2irc_synapse.md">netmodem2irc_synapse.md</a></td><td>Synapse — the bundled TCP library, the link unit, and its tests</td><td>179</td><td><span class="tag tag-ok">OK</span></td></tr>
+</table>
+<h3>ELECOM (1)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/elecom_modernization.md">elecom_modernization.md</a></td><td>ELECOM — modernization for modern FPC / NT (progress + method)</td><td>61</td><td><span class="tag tag-new">RECOVERED</span></td></tr>
+</table>
+<h3>Other / Uncategorized (1)</h3>
+<table><tr><th>File</th><th>Title</th><th>Lines</th><th>Status</th></tr>
+<tr><td><a href="docs/README.md">README.md</a></td><td>netmodem2irc — session updates bundle</td><td>49</td><td><span class="tag tag-warn">⚠️ OVERWRITTEN — was doc index, now a session bundle narrative</span></td></tr>
+</table>
+
+<h2>🔧 Repair Priority</h2>
+<table>
+<tr><th>#</th><th>Action</th><th>Impact</th></tr>
+<tr><td>1</td><td>Restore <code>libs/synapse/</code>, <code>history/</code>, <code>driver/src/</code> contents</td><td>Compilation, licensing provenance</td></tr>
+<tr><td>2</td><td>Fix duplicates: delete <code>docs/ROADMAP.md</code> and <code>docs/THIRD_PARTY.md</code></td><td>Two versions = confusion</td></tr>
+<tr><td>3</td><td>Restore <code>docs/README.md</code> to the 148-line doc index</td><td>The index is the map</td></tr>
+<tr><td>4</td><td>Commit <code>DEFERRED-20260725.md</code> to root</td><td>Two docs reference it</td></tr>
+<tr><td>5</td><td>Add banners to stale recovered docs (NETFOSSL.md, Build_Roadmap)</td><td>Pre-decision docs mislead</td></tr>
+<tr><td>6</td><td>Index the 9 recovered docs into <code>docs/README.md</code></td><td>Undiscoverable without the index</td></tr>
+<tr><td>7</td><td>Recreate or resolve 5 missing docs</td><td>Broken cross-references</td></tr>
+</table>
+
+<p class="note">Generated from the repo. See docs-repair-roadmap.md for full detail on each item.</p>
+</body>
+</html>
