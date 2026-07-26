@@ -1,0 +1,6 @@
+unit Clipbrd;
+{$MODE DELPHI}
+interface
+uses Classes;
+implementation
+end.

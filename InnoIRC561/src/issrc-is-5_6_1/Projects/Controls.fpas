@@ -1,0 +1,29 @@
+unit Controls;
+{ Minimal Controls stub for FPC. }
+{$MODE DELPHI}
+interface
+
+uses
+  Windows, Classes, Graphics;
+
+type
+  TWinControl = class(TComponent)
+  private
+    FHandle: HWND;
+  public
+    property Handle: HWND read FHandle write FHandle;
+  end;
+
+const
+  mrNone   = 0;
+  mrOk     = 1;
+  mrCancel = 2;
+  mrAbort  = 3;
+  mrRetry  = 4;
+  mrIgnore = 5;
+  mrYes    = 6;
+  mrNo     = 7;
+
+implementation
+
+end.

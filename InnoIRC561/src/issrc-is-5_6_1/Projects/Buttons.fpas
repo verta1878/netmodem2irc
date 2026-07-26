@@ -1,0 +1,6 @@
+unit Buttons;
+{$MODE DELPHI}
+interface
+uses Classes;
+implementation
+end.

@@ -53,7 +53,7 @@ build_win32() {
     find "$FPCIRC/bin/units" "$FPCIRC/bin/lazarus/units" \
         \( -name "*.ppu" -o -name "*.o" \) -exec touch {} + 2>/dev/null
 
-    mkdir -p out/win32
+    mkdir -p out/i386
 
     # Build resources
     build_resources
@@ -66,9 +66,9 @@ build_win32() {
         -Fu"$W32FCLIMG" -Fu"$W32FCLBASE" -Fu"$W32WINUNITS" \
         -Fi"$W32LCL" -Fi"$W32LCL/include" \
         -FD"$W32TOOLS" \
-        -FEout/win32 \
+        -FEout/i386 \
         server/NMServer.lpr 2>&1 | tail -3
-    [ -f out/win32/NMServer.exe ] && echo "  NMServer.exe — $(ls -lh out/win32/NMServer.exe | awk '{print $5}')" || echo "  NMServer.exe — FAILED"
+    [ -f out/i386/NMServer.exe ] && echo "  NMServer.exe — $(ls -lh out/i386/NMServer.exe | awk '{print $5}')" || echo "  NMServer.exe — FAILED"
 
     echo "--- NMConfig.exe ---"
     $W32FPC -Twin32 -Mobjfpc \
@@ -78,28 +78,30 @@ build_win32() {
         -Fu"$W32FCLIMG" -Fu"$W32FCLBASE" -Fu"$W32WINUNITS" \
         -Fi"$W32LCL" -Fi"$W32LCL/include" \
         -FD"$W32TOOLS" \
-        -FEout/win32 \
+        -FEout/i386 \
         config/NMConfig.lpr 2>&1 | tail -3
-    [ -f out/win32/NMConfig.exe ] && echo "  NMConfig.exe — $(ls -lh out/win32/NMConfig.exe | awk '{print $5}')" || echo "  NMConfig.exe — FAILED"
+    [ -f out/i386/NMConfig.exe ] && echo "  NMConfig.exe — $(ls -lh out/i386/NMConfig.exe | awk '{print $5}')" || echo "  NMConfig.exe — FAILED"
 
     echo "--- NETMODEM.CPL (original Dedrick Allen binary) ---"
-    cp history/NETMODEM.CPL out/win32/
-    echo "  NETMODEM.CPL — $(ls -lh out/win32/NETMODEM.CPL | awk '{print $5}')"
+    cp history/NETMODEM.CPL out/i386/
+    echo "  NETMODEM.CPL — $(ls -lh out/i386/NETMODEM.CPL | awk '{print $5}')"
 }
 
 build_fossil() {
-    echo "=== FOSSIL (netfossl.exe) ==="
+    echo "=== FOSSIL (netfosdl — not yet implemented) ==="
     cd dos && sh build.sh && cd ..
 }
 
 build_clean() {
     echo "=== Cleaning build artifacts ==="
-    find . -not -path './.git/*' -not -path './dos/bin/*' -not -path './installer/*' \
+    find . -not -path './.git/*' -not -path './InnoIRC561/*' \
         \( -name "*.o" -o -name "*.ppu" -o -name "*.or" \
         -o -name "*.s" -o -name "*.rst" -o -name "ppas.sh" \
         -o -name "*.bak" -o -name "link.res" -o -name "*.res" \) \
         -type f -delete 2>/dev/null || true
     rm -rf out/
+    # dos/bin/ removed — old Watt-32 relay binary was retired 2026-07-25.
+    # DOS driver (netfosdl) will build to out/dos/ once Phase 5 lands.
     echo "  done"
 }
 

@@ -1,0 +1,6 @@
+unit Consts;
+{$MODE DELPHI}
+interface
+uses Classes;
+implementation
+end.

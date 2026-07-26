@@ -1,0 +1,18 @@
+LazarusResources.Add('TSelectLanguageForm','FORMDATA',[
+  'TPF0'#19'TSelectLanguageForm'#18'SelectLanguageForm'#4'Left'#3#200#0#3'Top'#2
+  +'l'#11'BorderIcons'#11#12'biSystemMenu'#0#11'BorderStyle'#7#8'bsDialog'#7'Ca'
+  +'ption'#6#18'SelectLanguageForm'#12'ClientHeight'#2'}'#11'ClientWidth'#3')'#1
+  +#10'Font.Color'#7#12'clWindowText'#11'Font.Height'#2#245#9'Font.Name'#6#13'M'
+  +'S Sans Serif'#10'Font.Style'#11#0#6'Scaled'#8#13'PixelsPerInch'#2'`'#10'Tex'
+  +'tHeight'#2#13#0#12'TBitmapImage'#15'IconBitmapImage'#4'Left'#2#8#3'Top'#2#8
+  +#5'Width'#2' '#6'Height'#2' '#0#0#10'TNewButton'#12'CancelButton'#4'Left'#3
+  +#214#0#3'Top'#2']'#5'Width'#2'K'#6'Height'#2#23#6'Cancel'#9#7'Caption'#6#1'*'
+  +#11'ModalResult'#2#2#8'TabOrder'#2#3#0#0#10'TNewButton'#8'OKButton'#4'Left'#3
+  +#133#0#3'Top'#2']'#5'Width'#2'K'#6'Height'#2#23#7'Caption'#6#1'*'#7'Default'
+  +#9#11'ModalResult'#2#1#8'TabOrder'#2#2#0#0#12'TNewComboBox'#9'LangCombo'#4'L'
+  +'eft'#2'8'#3'Top'#2'8'#5'Width'#3#233#0#6'Height'#2#21#5'Style'#7#14'csDropD'
+  +'ownList'#13'DropDownCount'#2#16#10'ItemHeight'#2#13#6'Sorted'#9#8'TabOrder'
+  +#2#1#0#0#14'TNewStaticText'#11'SelectLabel'#4'Left'#2'8'#3'Top'#2#8#5'Width'
+  +#3#233#0#6'Height'#2''''#8'AutoSize'#8#7'Caption'#6#1'*'#8'TabOrder'#2#0#8'W'
+  +'ordWrap'#9#0#0#0
+]);

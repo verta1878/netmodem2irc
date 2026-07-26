@@ -1,0 +1,13 @@
+[Setup]
+AppName=Test
+AppVersion=1.0
+DefaultDirName={pf}\Test
+OutputBaseFilename=test-setup
+OutputDir=.
+Compression=zip
+DEPCompatible=no
+ASLRCompatible=no
+TerminalServicesAware=no
+
+[Files]
+Source: "Default.isl"; DestDir: "{app}"

@@ -1,0 +1,6 @@
+unit ComCtrls;
+{$MODE DELPHI}
+interface
+uses Classes;
+implementation
+end.

@@ -1,0 +1,49 @@
+unit Graphics;
+{ Minimal Graphics stub for FPC — type declarations only. }
+{$MODE DELPHI}
+interface
+
+uses
+  Windows, Classes;
+
+type
+  TColor = -$7FFFFFFF-1..$7FFFFFFF;
+  TCanvas = class(TPersistent)
+  private
+    FHandle: HDC;
+  public
+    property Handle: HDC read FHandle write FHandle;
+  end;
+  TBitmap = class(TPersistent)
+  private
+    FWidth, FHeight: Integer;
+    FHandle: HBITMAP;
+  public
+    property Width: Integer read FWidth;
+    property Height: Integer read FHeight;
+    property Handle: HBITMAP read FHandle;
+  end;
+  TFont = class(TPersistent)
+  private
+    FName: string;
+    FSize: Integer;
+    FHandle: HFONT;
+  public
+    property Name: string read FName write FName;
+    property Size: Integer read FSize write FSize;
+    property Handle: HFONT read FHandle;
+  end;
+
+const
+  clNone    = TColor($1FFFFFFF);
+  clDefault = TColor($20000000);
+  clBlack   = TColor($000000);
+  clWhite   = TColor($FFFFFF);
+  clRed     = TColor($0000FF);
+  clGreen   = TColor($008000);
+  clBlue    = TColor($FF0000);
+  clBtnFace = TColor($C0C0C0);
+
+implementation
+
+end.

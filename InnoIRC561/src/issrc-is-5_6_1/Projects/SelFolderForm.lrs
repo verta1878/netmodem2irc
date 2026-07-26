@@ -1,0 +1,18 @@
+LazarusResources.Add('TSelectFolderForm','FORMDATA',[
+  'TPF0'#17'TSelectFolderForm'#16'SelectFolderForm'#4'Left'#3#200#0#3'Top'#2'l'
+  +#11'BorderIcons'#11#12'biSystemMenu'#0#11'BorderStyle'#7#8'bsDialog'#7'Capti'
+  +'on'#6#16'SelectFolderForm'#12'ClientHeight'#3'Q'#1#11'ClientWidth'#3']'#1#10
+  +'Font.Color'#7#12'clWindowText'#11'Font.Height'#2#245#9'Font.Name'#6#13'MS S'
+  +'ans Serif'#10'Font.Style'#11#0#6'Scaled'#8#13'PixelsPerInch'#2'`'#10'TextHe'
+  +'ight'#2#13#0#10'TNewButton'#12'CancelButton'#4'Left'#3'@'#1#3'Top'#3'1'#1#5
+  +'Width'#2#17#6'Height'#2#23#6'Cancel'#9#7'Caption'#6#1'*'#11'ModalResult'#2#2
+  +#8'TabOrder'#2#4#0#0#10'TNewButton'#8'OKButton'#4'Left'#3'0'#1#3'Top'#3'1'#1
+  +#5'Width'#2#16#6'Height'#2#23#7'Caption'#6#1'*'#7'Default'#9#7'Enabled'#8#11
+  +'ModalResult'#2#1#8'TabOrder'#2#3#0#0#10'TNewButton'#15'NewFolderButton'#4'L'
+  +'eft'#2#12#3'Top'#3'1'#1#5'Width'#2#17#6'Height'#2#23#6'Cancel'#9#7'Caption'
+  +#6#1'*'#7'Enabled'#8#8'TabOrder'#2#2#7'OnClick'#7#20'NewFolderButtonClick'#0
+  +#0#5'TEdit'#8'PathEdit'#4'Left'#2#16#3'Top'#2'$'#5'Width'#3'='#1#6'Height'#2
+  +#21#8'TabOrder'#2#1#8'OnChange'#7#14'PathEditChange'#0#0#14'TNewStaticText'
+  +#11'BrowseLabel'#4'Left'#2#12#3'Top'#2#12#5'Width'#3'E'#1#6'Height'#2#14#8'A'
+  +'utoSize'#8#7'Caption'#6#1'*'#8'TabOrder'#2#0#8'WordWrap'#9#0#0#0
+]);

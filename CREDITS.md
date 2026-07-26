@@ -13,7 +13,9 @@ source code to carry it forward are the same man, two sides of one coin.
 - **Author:** Dedrick Allen / mag69 — wrote NetModem/32 and NetFOSSIL/32.
 - **Source hand-off:** Dedrick (mag69) gave the NetModem source directly to the
   netmodem2irc maintainer (Reapern66 / verta / Antonio Rico), who was a NetModem
-  beta tester and worked with Dedrick during the original era.
+  beta tester and worked with Dedrick during the original era. Dedrick was the
+  sole author of the original; the beta-testing role earns credit, not copyright.
+  He later released the source to Antonio under GPLv2.
 
 This matters: the revival is not built on merely *found* code. It is built on a
 **hand-off between people who knew each other** — the author entrusting his work to
@@ -21,7 +23,10 @@ someone he trusted to carry it. That is the most honorable provenance there is, 
 it is the reason this project treats NetModem's preservation with the care it does.
 Dedrick's original `FILE_ID.DIZ` is preserved verbatim in `history/`; his original
 9x VxD driver source is kept in `driver/src/`; nothing of his is renamed or
-obscured. GPLv2 throughout.
+obscured. Antonio's role in the original era was beta testing, not authorship —
+the original code is Dedrick's alone. NetModem/32 is no longer shareware; it is
+free software. His material is treated as GPLv2, respectfully and unchanged;
+work written for the revival is GPLv3. See `LICENSES.md`.
 
 ## Other credited work carried forward
 

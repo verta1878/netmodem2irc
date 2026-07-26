@@ -1,0 +1,18 @@
+unit ExtCtrls;
+{$MODE DELPHI}
+interface
+uses Windows, Classes, Controls;
+type
+  TPanel = class(TWinControl) end;
+  TTimer = class(TComponent)
+  private
+    FEnabled: Boolean;
+    FInterval: Cardinal;
+    FOnTimer: TNotifyEvent;
+  public
+    property Enabled: Boolean read FEnabled write FEnabled;
+    property Interval: Cardinal read FInterval write FInterval;
+    property OnTimer: TNotifyEvent read FOnTimer write FOnTimer;
+  end;
+implementation
+end.

@@ -3,7 +3,22 @@
 Files here are superseded or no longer part of the build, but preserved rather than
 deleted (nothing that had a place is thrown away). Each entry says WHY it's retired.
 
+> **Audited 2026-07-25.** `attic/docs/` held 26 files, every one
+> byte-identical to its counterpart in `docs/` — copied rather than
+> moved, so each document was simultaneously active and retired. The
+> shadow copies were removed; `docs/` is now the only location.
+> Recoverable from git history if ever needed.
+>
+> `netmodem2irc_CREDITS.md` was in the same state: recorded below as
+> retired, but an identical copy remained at the repo root. The root
+> copy has been removed and this one kept, which is what the entry
+> below always described.
+
 ## Contents
+- **watt32/** — the Watt-32 / Watcom mixed-link apparatus, retired 2026-07-25
+  when the DOS side was settled as standalone with no network. Holds
+  `stubs.asm` and a README recording the toolchain pieces that were never
+  tracked here. See `docs/netmodem2irc_watt32_cleanup_phases.md`.
 - **WIN32COM.PAS** — the old ELECOM Win32 comms unit, retired when the ELECOM port
   moved to the FPC-target units (FOS_COM / win32_pending). Superseded, kept for
   reference.

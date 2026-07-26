@@ -8,9 +8,10 @@ The NT-branch transport's real socket backend (NM_SynapseLink.pas) uses
 ### License & cost — FREE, and bundle-legal
 - **Free / open source**, under a **modified BSD-style license** (per the
   project's own download page). Copyright (c) 1999-2024 Lukas Gebauer.
-- The modified-BSD license is **compatible with this repo's GPLv2** — so Synapse
-  MAY be bundled into the repo (unlike Watt-32 in fpc264irc, whose licensing kept
-  it reference-only). Bundling is legal here.
+- The modified-BSD license is **compatible with both licences in this repo** —
+  GPLv3 for the revival work and GPLv2 for Dedrick Allen's original material — so
+  Synapse MAY be bundled (unlike Watt-32 in fpc264irc, whose licensing kept it
+  reference-only). Bundling is legal here. See `LICENSES.md`.
 
 ### Where to get it (verified)
 - **Official repository (current):** https://github.com/geby/synapse
@@ -68,8 +69,10 @@ Core units needed by NM_SynapseLink + their dependencies:
 ### License (verified from the actual source headers)
 Modified BSD: "Copyright (c)1999-2026, Lukas Gebauer ... Redistribution and use
 in source and binary forms, with or without modification, are permitted..."
-=> GPLv2-compatible, bundling is legal. Keep the copyright headers intact (they
-are embedded in each .pas file — do not strip them).
+=> compatible with GPLv2 and GPLv3 alike, bundling is legal. Keep the copyright
+headers intact (they are embedded in each .pas file — do not strip them). The
+GPLv3 headers added to netmodem2irc source in 2026-07 were deliberately NOT
+applied to libs/synapse — those files are Lukas Gebauer's.
 
 ### VERIFIED
 - Stub build (no -dHAS_SYNAPSE): compiles, CreateSocketLink returns nil.

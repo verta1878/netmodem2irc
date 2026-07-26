@@ -1,0 +1,14 @@
+unit StdCtrls;
+{$MODE DELPHI}
+interface
+uses Windows, Classes, Controls;
+type
+  TLabel = class(TComponent) end;
+  TButton = class(TWinControl) end;
+  TEdit = class(TWinControl) end;
+  TMemo = class(TWinControl) end;
+  TListBox = class(TWinControl) end;
+  TComboBox = class(TWinControl) end;
+  TCheckBox = class(TWinControl) end;
+implementation
+end.

@@ -1,0 +1,23 @@
+unit Dialogs;
+{$MODE DELPHI}
+interface
+uses Windows, Classes, Forms, Graphics;
+const
+  mtWarning      = 0;
+  mtError        = 1;
+  mtInformation  = 2;
+  mtConfirmation = 3;
+  mtCustom       = 4;
+  mbYes      = $1;
+  mbNo       = $2;
+  mbOK       = $4;
+  mbCancel   = $8;
+  mbAbort    = $10;
+  mbRetry    = $20;
+  mbIgnore   = $40;
+  mrNone = 0;
+function MessageDlg(const Msg: string; DlgType: Integer; Buttons: Integer; HelpCtx: Longint): Integer;
+implementation
+function MessageDlg(const Msg: string; DlgType: Integer; Buttons: Integer; HelpCtx: Longint): Integer;
+begin Result := Windows.MessageBox(0, PChar(Msg), 'Inno Setup', MB_OK); end;
+end.

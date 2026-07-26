@@ -9,15 +9,61 @@ for modern Windows, with a portable, tested Pascal modem-emulation engine.
 
 ## Status
 
-**38 test programs, 0 failures.** Server, config, and FOSSIL bridge compile. Original CPL included.
+Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 
-| Component | Target | Status |
-|-----------|--------|--------|
-| Engine (emulation core) | Any platform | ✅ 38/38 tests pass |
-| NMServer.exe | Win98 / NT | ✅ Compiles (needs LCL to link) |
-| NMConfig.exe | Win98 / NT | ✅ Compiles (needs LCL to link) |
-| NETMODEM.CPL | Win98 / NT | ✅ Original Dedrick Allen binary (657KB) |
-| netfossl.exe | DOS (i8086) | ✅ Built — 179KB FOSSIL binary |
+### i386 — the server (the core product)
+
+| Milestone | What | Status |
+|---|---|---|
+| M0 | Recover Dedrick's original source | ✅ |
+| M1 | Engine integrated — 38 tests, 0 failures | ✅ |
+| M2 | Builds on Windows | ⚠️ cross-compiles, not runtime-tested |
+| **M3** | **Live connection — real BBS door, real Telnet, binary-safe** | ⬜ |
+| M4 | Virtual COM path (VxD 9x / com0com NT / native UMDF2) | ⬜ |
+| M5 | Tagged installable release | ⬜ |
+
+| Binary | Size | Status |
+|---|---|---|
+| NMServer.exe | 2.0M | ✅ compiles |
+| NMConfig.exe | 2.0M | ✅ compiles |
+| NETMODEM.CPL | 657K | ✅ original Dedrick Allen binary |
+
+**M3 is the milestone that makes it "NetModem, revived."** Everything it
+needs already compiles. What's missing is a live Telnet session through
+NMServer with a real BBS door on the other end.
+
+**No debug infrastructure exists.** There is no central debug unit, no
+`OutputDebugString` wrapper, no log-to-file during init. The two Inno
+init-time AVs and the absence of runtime testing both argue for one.
+`NM_GlobalConfig` has `LogFileDays` / `LogFileMaxSize` settings for
+future use but nothing writes to them yet.
+
+### DOS — the driver (standalone, not part of netmodem)
+
+| Phase | What | Status |
+|---|---|---|
+| 6 | **Real 16550 UART** — port I/O, IRQ, rings | ⬜ can start now |
+| 7 | FOSSIL set + INT 14h + `Keep` (FTSC) | ⬜ needs 6 |
+| 8 | X00/BNU/ADF/NetFoss conformance | ⬜ needs 7 |
+| 4 | Strip Watt-32, rewrite relay to port I/O | ⬜ needs 6 |
+| 5 | Two builds, `ppcross8086` + msdos RTL only | ⬜ needs 4 |
+
+`netfosdl.exe` — planned, not yet built.
+
+### Installer (Inno Setup 5.6.1 FPC port)
+
+| Phase | What | Status |
+|---|---|---|
+| 1–8 | ISCC through Compil32 | ✅ |
+| 9 | Runtime testing | ⚠️ ISCC verified Win98 SE; Setup.exe + ISCmplr AV at init |
+| 10 | ISCmplr DLL-init AV + FPC 3.2.2 portability | ⬜ |
+
+### Blockers (cross-cutting)
+
+- **151 paths uncommitted** — licensing, docs, layout all working-tree only
+- **fpc264irc is an empty repository** — build recipes can't run
+- **No runtime test anywhere** — Synapse untested live, no BBS door session
+- **No debug unit** — no way to trace init-time crashes
 
 ## Architecture
 
@@ -36,11 +82,14 @@ VxD Driver (NETMODEM.VXD on 9x) or com0com (on NT)
 NMServer.exe
     ↑ IOCTL 08 (register window)
     ↓ reacts to CM_CONNECT/DISCONNECT/BREAK
-    ↓ opens/closes TCP sockets via Synapse
+    ↓ opens/closes TCP sockets via WinSock (Synapse = the Pascal wrapper)
 
-FOSSIL bridge (netfossl.exe)
-    ↑ FOSSIL INT 14h + fpcirc TCP/IP
-    ↓ direct serial↔TCP relay (no Windows needed)
+--- separate platform, no network ---
+
+DOS: netfosdl.exe (standalone FOSSIL driver)
+    ↑ BBS calls FOSSIL INT 14h
+    ↓ real 16550 UART
+    (not part of netmodem — no TCP, no NM_* units)
 ```
 
 ## Configuration
@@ -74,21 +123,66 @@ Connection targets come from AT dial commands (`ATDT host:port`), not config.
 ## Repository layout
 
 ```
-engine/         emulation engine — UART, FOSSIL, Telnet transport, AT commands,
-                multinode, Synapse + named-pipe links, server bridge, seam
-                protocol, TSR skeleton, per-node + global config
-engine/test/    test suite (sh engine/test/run-tests.sh) — 38 tests
-server/         NMServer — Lazarus GUI, Telnet server (was NETMODEM.EXE)
-config/         NMConfig — Lazarus config app, all per-node + global settings
-cpl/            Original CPL forms (decompiled DFMs for reference)
-dos/            i8086 DOS FOSSIL↔TCP bridge (netfossl.exe, fpcirc cross-compile)
-common/         NMVxD.pas — driver interface (IOCTL, CM_* messages, ComportStruct)
-driver/src/     Dedrick's original 9x VxD source (MASM, experimental)
-libs/synapse/   Ararat Synapse networking (modified-BSD, GPLv2-compatible)
-history/        Dedrick's original distributions + NETMODEM.CPL binary
-installer/      Inno Setup installer script (.iss)
-docs/           active engineering docs, specs, bug reports
-attic/          retired docs and files
+netmodem2irc/
+├── engine/                     392K  — emulation core, 22 units
+│   │                                   includes the virtual-comport FOSSIL —
+│   │                                   answers INT 14h on an EMULATED UART
+│   │                                   UART 16550, FOSSIL INT 14h, Telnet transport,
+│   │                                   AT commands, multinode, Synapse + named-pipe
+│   │                                   links, server bridge, SEAM protocol, TSR
+│   │                                   skeleton, per-node + global config
+│   └── test/                   39 files — test suite, 38 tests
+│                                          `sh engine/test/run-tests.sh`
+├── server/                     152K  — NMServer, Lazarus GUI Telnet server
+│   │                                   (was Dedrick's NETMODEM.EXE)
+│   └── resources/              15 files — server.ico + .rc
+├── config/                     236K  — NMConfig, Lazarus config app
+│   │                                   all per-node + global settings, 5 tabs
+│   └── resources/              49 files — icons + bitmaps from the original CPL
+├── common/                      28K  — NMVxD.pas: driver interface
+│                                       IOCTL, CM_* messages, ComportStruct
+├── driver/
+│   └── src/                    14 files — Dedrick's original 9x VxD source
+│                                          MASM, experimental
+├── dos/                        232K  — DOS FOSSIL driver (netfosdl), i8086
+│   │                                   ANSWERS INT 14h, sits on a REAL UART.
+│   │                                   Same role as the engine's FOSSIL, but
+│   │                                   on hardware instead of emulation —
+│   │                                   see docs/netmodem2irc_fossil_separation.md
+│   │                                   FTSC FSC-0015/0072; drop-in for
+│   │                                   X00 / BNU / ADF / NetFoss
+│   │                                   (fossil_dos.pas is the superseded client)
+│   └── retired/                superseded attempts
+├── cpl/                         68K  — original Control Panel applet
+│   ├── original_forms/          6 files — decompiled DFMs, reference only
+│   └── resources/               2 files
+├── libs/
+│   └── synapse/                17 files — Ararat Synapse networking
+│                                          modified-BSD, GPLv2-compatible
+├── InnoIRC561/                  26M  — Inno Setup 5.6.1 FPC port
+│                                       see InnoIRC561/README.md
+├── history/                    2.7M  — Dedrick's original distributions
+│   ├── net32_b4/               11 files
+│   └── netmdb15/                6 files — plus NETMODEM.CPL, 657K, 1997-2001
+├── docs/                       296K  — engineering docs, 48 files
+│   │                                   index + status: docs/README.md
+│   └── original/                3 files — Dedrick's own documentation
+├── attic/                       28K  — retired files
+│   ├── WIN32COM.PAS                    — old ELECOM Win32 comms unit
+│   └── netmodem2irc_CREDITS.md         — early credits, superseded by CREDITS.md
+├── out/                              — build output, split by target arch
+│   ├── dos/                    netfosdl.exe — i8086 real mode, MZ
+│   ├── i386/                   NMServer.exe  NMConfig.exe  NETMODEM.CPL  *.res
+├── build.sh                            — tests / win32 / fossil / resources / clean
+├── Makefile                            — thin wrapper over build.sh
+├── ROADMAP.md                          — master roadmap, order of work, coding standards
+├── VERSION  CHANGELOG.md
+├── AUTHORS  CREDITS.md  THIRD_PARTY.md
+├── LICENSE                             — GPLv3 (the revival)
+├── LICENSE-GPLv2                       — GPLv2 (Dedrick's material)
+├── LICENSES.md                         — which licence covers what, and why
+├── .gitmessage                         — commit template
+└── .github/                            — CI workflow
 ```
 
 ## Building
@@ -108,8 +202,8 @@ make clean                                     # same via Makefile
 ### Win32 cross-compile
 
 `./build.sh win32` cross-compiles NMServer.exe and NMConfig.exe from Linux
-using fpc264irc ppc386 + Win32 LCL. Copies original NETMODEM.CPL to out/win32/.
-Output goes to `out/win32/`. Requires `i686-w64-mingw32-windres` for
+using fpc264irc ppc386 + Win32 LCL. Copies original NETMODEM.CPL to out/i386/.
+Output goes to `out/i386/`. Requires `i686-w64-mingw32-windres` for
 icon embedding (`apt install binutils-mingw-w64-i686`).
 
 ### Icon resources
@@ -120,12 +214,15 @@ Compiled via windres into `.res` files embedded in each binary:
     server/resources/NMServer.rc   → server.ico
     config/resources/NMConfig.rc   → mainicon.ico
 
-### DOS (netfossl.exe)
+### DOS (netfosdl.exe)
 
-Requires fpc264irc r3.1+ with i8086 cross-compiler + OpenWatcom wlink:
-```
-FPCIRC=/path/to/fpc264irc ./build.sh fossil
-```
+**The DOS build is mid-rewrite.** See
+`docs/netmodem2irc_watt32_cleanup_phases.md`.
+
+Target: `ppcross8086` plus the msdos RTL only — no OpenWatcom, no
+Watt-32, no OMF conversion. The current `build.sh fossil` still builds
+the superseded relay and references `stubs.asm` at a path it no longer
+occupies, so it is broken until Phase 5.
 
 ## Engine (tested)
 
@@ -145,59 +242,119 @@ FPCIRC=/path/to/fpc264irc ./build.sh fossil
 - **NM_Listserv** — BBS Listserv directory registration
 - **NM_AutoNews** — periodic news/announcement broadcast
 - **NM_FossilDriver** — INT 14h register-frame dispatch (testable)
+- **NM_Debug** — central debug logging (`-dNM_DEBUG`), OutputDebugString + file
+
+## Debug
+
+`engine/NM_Debug.pas` exists and compiles clean on all targets — the two Inno
+init-time AVs are untraceable without it, and M3 (live connection)
+will need wire-level logging.
+
+`NM_Debug` provides:
+
+| Function | What |
+|---|---|
+| `DebugLog(msg)` | writes to a central log file and/or `OutputDebugString` |
+| `DebugInit` | opens the log, reads the debug level from config or command line |
+| `DebugShutdown` | flushes and closes cleanly |
+
+Controlled by a define (`-dNM_DEBUG`) so release builds carry zero
+overhead. `NM_GlobalConfig` already has `LogFileDays` and
+`LogFileMaxSize` registry settings waiting for something to write to
+them.
+
+Target consumers: `NMServer` init path (the form-init AV), `ISCmplr`
+DLL init, `NM_SynapseLink` connection lifecycle, and the FOSSIL
+driver's INT 14h dispatch.
+
+Win32: `OutputDebugString` goes to the system debug log, readable with
+DebugView (Sysinternals) without attaching a debugger — important for
+tracing init crashes where a debugger changes timing. Win98 supports
+`OutputDebugString` natively.
+
+DOS: `WriteLn` to a file or `stderr`. No OS debug API.
+
+**Planned additions** (inspired by Carl Gorringe's
+[RIPtermJS](https://github.com/cgorringe/RIPtermJS) debug log):
+Play/Stop runtime toggle for the visual panel, color-coded subsystem
+tags, and a `TDebugLineEvent` callback so NMServer's form can host a
+docked debug panel.
 
 ## Platforms
+
+All Windows binaries are **i386-win32 (32-bit PE)**. They run natively
+on 32-bit Windows and under **WoW64** on 64-bit Windows (XP x64 through
+Win11). There is no native x86_64 build — that is a future target, not
+a current limitation, since WoW64 handles the 32-bit binaries
+transparently.
+
+The Win98 → Win11 range is covered by a single binary: min OS 4.0 with
+DEP and ASLR disabled keeps Win9x happy while WoW64 handles the modern
+end.
 
 | Platform | Driver | Transport |
 |----------|--------|-----------|
 | Windows 95/98/ME | NETMODEM.VXD (Dedrick's original) | WinSock via Synapse |
-| Windows NT/2K/XP+ | com0com virtual COM port | WinSock via Synapse |
-| DOS (real mode) | FOSSIL INT 14h (fossil_dos.pas) | fpcirc TCP/IP (BSD sockets) |
+| Windows NT/2K/XP — Win11 (32 and 64-bit) | com0com virtual COM port | WinSock via Synapse |
+| DOS (real mode) | netfosdl — FTSC FOSSIL driver on a real UART (X00/BNU/ADF/NetFoss drop-in) | none — standalone, no network |
+
+**Native x86_64 (win64) is not yet supported.** When it is, it will be
+a separate build target (`make win64`), not a replacement for win32 —
+Win9x and early NT need the 32-bit binary.
 
 ## Credits
 
 Original NetModem/32: **Dedrick Allen** (mag69), 1997-2001. Allen Software.
-Released under GNU General Public License v2.
+His material remains under GNU General Public License v2.
 
 Revival: **Antonio Rico** (Reapern66 / verta1878).
 Built with fpc264irc r3.1+ (github.com/verta1878/fpc264irc).
 
 ## License
 
-GNU General Public License v2 — see [LICENSE](LICENSE).
+**Free software. No longer shareware.**
+
+The 1997 distribution was shareware. It isn't any more — Dedrick Allen
+handed NetModem/32 forward for release under GPL. Dedrick's original
+work is **GPLv2**, respectfully and unchanged. The revival work is
+**GPLv3**.
+
+| | |
+|---|---|
+| `engine/` `server/` `config/` `common/` `dos/` | GPLv3+ — Antonio Rico |
+| `driver/src/` `history/` `cpl/original_forms/` | GPLv2 — Dedrick Allen |
+| `libs/synapse/` | modified BSD — Lukas Gebauer |
+
+[LICENSE](LICENSE) is GPLv3. [LICENSE-GPLv2](LICENSE-GPLv2) covers
+Dedrick's material. See [LICENSES.md](LICENSES.md) for the full
+breakdown, the reasoning, and open questions that should be settled
+before a public release.
 
 ## Roadmap
 
-Features from Dedrick's original CPL that were designed but never finished
-(NetModem/32 v2.0 was alpha when development stopped):
+See [ROADMAP.md](ROADMAP.md) — the single document that says what to do
+next, in what order, across all three tracks. It also codifies the
+aggressive commenting standard this codebase follows.
 
-- **Auto-News** — periodic SMTP announcement broadcast ("BBS is online").
-  CPL has the checkbox + interval setting. Engine unit ready (`NM_AutoNews`),
-  needs SMTP send via Synapse `smtpsend.pas` (same license, drop-in).
+Quick view of what's next:
 
-- **BBS Listserv** — SMTP mailing list registration. CPL has the full info
-  form (BBS Name, Software, Speed, Hostname, IP, Port, Comment). Engine unit
-  ready (`NM_Listserv`), needs Synapse `smtpsend.pas` + `mimemess.pas` +
-  `mimepart.pas` for SMTP subscribe/announce. Both features were designed
-  by Dedrick but never implemented — the CPL UI exists, the backend doesn't.
-  Synapse units needed are modified-BSD, same license as our existing copy.
-
-- **Phonebook** — AT dial directory (ATDS/AT&Z). Design doc done
-
-- **Blocking/Forwarding** — address-based connection filtering. CPL has
-  TForm6 (address entry with wildcards) and NETMODEM.BLK file. Not implemented.
-
-- **Full CPL GUI rebuild** — using Dedrick's original NETMODEM.CPL binary.
-  6 decompiled DFM forms preserved in `cpl/original_forms/` for reference.
-
-- **Live Telnet connection** — AT command parser exists, nothing dials yet.
+1. **Commit** the 153 uncommitted paths (4 commits)
+2. **Wire debug** into MainForm and add the debug panel
+3. **Fix the init AVs** — they block everything downstream
+4. **Real 16550 UART** for the DOS driver (parallel with #3)
+5. **Live connection test** — the milestone that makes it real
+6. **Ship**
 
 ## Installer
 
-Inno Setup 5.6.1 fully ported to FPC 2.6.4irc. All 9 phases complete.
-5/5 targets compile (ISCC.exe, ISCmplr.dll, Setup.exe, SetupLdr.exe,
-Compil32.exe). ISCC.exe verified working on Windows 98 SE — produces
-installer packages. Rebuilt with BUG-029 source-level fix.
+Inno Setup 5.6.1 fully ported to FPC 2.6.4irc. Phases 1-9 complete,
+Phase 10 open. 5/5 targets compile (ISCC.exe, ISCmplr.dll, Setup.exe,
+SetupLdr.exe, Compil32.exe). ISCC.exe verified working on Windows 98 SE
+— produces installer packages. Rebuilt with BUG-029 source-level fix.
+
+Two binaries currently access-violate at initialization: Setup.exe
+during form init, ISCmplr.dll during DLL init. Both are open. See
+`InnoIRC561/README.md`.
 
 The virtual COM port is the foundation — without it, DOS BBS software
 is dead hardware. netmodem2irc makes DOS Mystic work on the modern
@@ -214,7 +371,8 @@ they're not legacy, they're the bridge.
 | 6 | DFM→LFM forms (7 installer forms via lazres) | ✅ Done |
 | 7 | PascalScript [Code] section (35K lines) | ✅ Done |
 | 8 | Compil32.exe IDE (Scintilla editor) | ✅ Done |
-| 9 | Runtime testing (Win98 + Win11) | ✅ ISCC verified |
+| 9 | Runtime testing (Win98 + Win11) | ⚠️ ISCC verified; 2 AVs open |
+| 10 | ISCmplr — DLL-init AV + FPC 3.2.2 portability | ⬜ Open |
 
 ### Key fixes
 
@@ -224,5 +382,5 @@ they're not legacy, they're the bridge.
 - BUG-029: `fpc_AnsiStr_Decr_Ref` sub $12 fix (source-level, all targets)
 - fpcres BUG-032: LangID fallback for Borland Dutch icon .res files
 
-See `installer/INNO_FPC_PORT.md` for detailed build instructions.
+See `InnoIRC561/INNO_FPC_PORT.md` for detailed build instructions.
 

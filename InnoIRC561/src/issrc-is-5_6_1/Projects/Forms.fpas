@@ -1,0 +1,84 @@
+unit Forms;
+{ Minimal Forms stub for FPC — allows engine units to compile without LCL.
+  Provides just enough of TApplication and TScreen for non-GUI use. }
+{$MODE DELPHI}
+interface
+
+uses
+  Windows, SysUtils, Classes;
+
+type
+  TApplication = class(TComponent)
+  private
+    FHandle: HWND;
+    FTitle: string;
+    FTerminated: Boolean;
+  public
+    constructor Create(AOwner: TComponent); override;
+    procedure HandleException(Sender: TObject);
+    procedure Initialize;
+    procedure Run;
+    procedure Terminate;
+    function MessageBox(const Text, Caption: PChar; Flags: Longint): Integer;
+    property Handle: HWND read FHandle write FHandle;
+    property Title: string read FTitle write FTitle;
+    property Terminated: Boolean read FTerminated;
+  end;
+
+  TMonitor = class
+  public
+    Left, Top, Width, Height: Integer;
+  end;
+
+  TScreen = class(TComponent)
+  private
+    FMonitorCount: Integer;
+  public
+    property MonitorCount: Integer read FMonitorCount;
+  end;
+
+  TForm = class(TComponent)
+  private
+    FHandle: HWND;
+  public
+    property Handle: HWND read FHandle write FHandle;
+  end;
+
+  TCustomForm = TForm;
+
+var
+  Application: TApplication;
+  Screen: TScreen;
+
+implementation
+
+constructor TApplication.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FHandle := 0;
+  FTitle := '';
+  FTerminated := False;
+end;
+
+procedure TApplication.HandleException(Sender: TObject);
+begin end;
+
+procedure TApplication.Initialize;
+begin end;
+
+procedure TApplication.Run;
+begin end;
+
+procedure TApplication.Terminate;
+begin FTerminated := True; end;
+
+function TApplication.MessageBox(const Text, Caption: PChar; Flags: Longint): Integer;
+begin Result := Windows.MessageBox(FHandle, Text, Caption, Flags); end;
+
+initialization
+  Application := TApplication.Create(nil);
+  Screen := TScreen.Create(nil);
+finalization
+  Screen.Free;
+  Application.Free;
+end.
