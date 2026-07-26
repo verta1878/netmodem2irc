@@ -1,5 +1,0 @@
-netmodem2irc 2.0-dev
-build: 20260722
-compiler: fpc264irc r3.1+ (BUG-029 fixed, source-level)
-inno: 5.6.1 FPC port — rebuilt with fixed system.o
-targets: i386-win32 (Windows 98 — Windows 11)
