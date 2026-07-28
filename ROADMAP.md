@@ -146,9 +146,9 @@ NetFoss.
 
 | Phase | What | Depends on | Status |
 |---|---|---|---|
-| **D1** | **Real 16550 UART** — port I/O, IRQ 3/4, 8259 PIC, ring buffers, FIFO, divisor latch | nothing — **start here** | ⬜ |
-| D2 | FOSSIL function set — full FSC-0015 rev 5 + FSC-0072 on top of D1 | D1 | ⬜ |
-| D3 | INT 14h vector hook + residency via `Keep` | D2 | ⬜ |
+| **D1** | **Real 16550 UART** — port I/O, IRQ 3/4, 8259 PIC, ring buffers, FIFO, divisor latch | — | ✅ serial.pas + serial_irq.pas |
+| D2 | FOSSIL function set — full FSC-0015 rev 5 + FSC-0072 on top of D1 | D1 | ✅ fossil.pas |
+| D3 | INT 14h vector hook + residency via `Keep` | D2 | ✅ netfosdl.pas |
 | D4 | Conformance — X00 / BNU / ADF / NetFoss drop-in testing | D3 | ⬜ |
 | D5 | Relay rewrite — delete `_w32_*` externals, rewrite to direct port I/O using D1 | D1 | ⬜ |
 | D6 | Two builds — driver + relay, `ppcross8086` + msdos RTL only | D5 | ⬜ |

@@ -1,0 +1,13 @@
+# Force consistent line endings
+*.pas text eol=crlf
+*.inc text eol=crlf
+*.md text eol=lf
+*.txt text eol=lf
+*.htm text eol=lf
+*.ASM text eol=crlf
+*.INC text eol=crlf
+*.DEF text eol=crlf
+*.RC text eol=crlf
+*.H text eol=crlf
+*.exe binary
+*.zip binary

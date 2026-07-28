@@ -48,7 +48,9 @@ settings for future log rotation.
 | 4 | Strip Watt-32, rewrite relay to port I/O | ⬜ needs 6 |
 | 5 | Two builds, `ppcross8086` + msdos RTL only | ⬜ needs 4 |
 
-`netfosdl.exe` — planned, not yet built.
+`netfosdl.exe` — compiles under FPC 3.2.2 go32v2 (71K). Needs
+fpc264irc `ppcross8086` for the real i8086 target. Code complete:
+serial.pas (sysop/0) + serial_irq.pas (kiddo) + fossil.pas + netfosdl.pas.
 
 ### Installer (Inno Setup 5.6.1 FPC port)
 
@@ -144,7 +146,7 @@ netmodem2irc/
 ├── driver/
 │   └── src/                    14 files — Dedrick's original 9x VxD source
 │                                          MASM, experimental
-├── dos/                        232K  — DOS FOSSIL driver (netfosdl), i8086
+├── dos/                        264K  — DOS FOSSIL driver (netfosdl), i8086
 │   │                                   ANSWERS INT 14h, sits on a REAL UART.
 │   │                                   Same role as the engine's FOSSIL, but
 │   │                                   on hardware instead of emulation —
