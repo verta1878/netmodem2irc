@@ -1,0 +1,12 @@
+Netmodem is a virtual com port driver for windows 95/98/ME. Its main 
+development was for BBS users to run old BBS 16bit door games.
+
+You'll need masm 6.14, win9x ddk and vc ++ 5/6 to compile netmodem for 95/98/me.
+The driver would need to be completely rewritten for use in NT/2K/XP.
+
+The Authors support if any can be obtained at:
+http://www.xtcbox.org/forums/
+
+
+
+
