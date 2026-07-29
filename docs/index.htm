@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>netmodem2irc — docs</title><style>
-:root{--bg:#1a1a2e;--card:#16213e;--accent:#0f3460;--blue:#53a8ff;--green:#4ecca3;--yellow:#f0c040;--text:#e0e0e0;--dim:#888;--border:#2a3a5e}
+:root{--bg:#1a1a2e;--card:#16213e;--accent:#0f3460;--blue:#53a8ff;--green:#4ecca3;--yellow:#f0c040;--red:#ff6b6b;--text:#e0e0e0;--dim:#888;--border:#2a3a5e}
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:Consolas,monospace;background:var(--bg);color:var(--text);padding:20px;line-height:1.5}
 h1{color:var(--blue);font-size:1.5em}h2{color:var(--green);margin:24px 0 10px;font-size:1.1em;border-bottom:1px solid var(--border);padding-bottom:4px}
 h3{color:var(--yellow);margin:16px 0 6px;font-size:1em}.sub{color:var(--dim);font-size:.9em;margin-bottom:16px}
@@ -10,11 +10,39 @@ h3{color:var(--yellow);margin:16px 0 6px;font-size:1em}.sub{color:var(--dim);fon
 table{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:.85em}th{text-align:left;color:var(--green);border-bottom:2px solid var(--border);padding:5px 8px}
 td{padding:4px 8px;border-bottom:1px solid var(--border)}tr:hover{background:var(--accent)}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .t{display:inline-block;padding:1px 5px;border-radius:3px;font-size:.75em;margin-left:4px}
-.tok{background:#1a4a3a;color:var(--green)}.tw{background:#4a3a1a;color:var(--yellow)}
+.tok{background:#1a4a3a;color:var(--green)}.tw{background:#4a3a1a;color:var(--yellow)}.terr{background:#4a1a1a;color:var(--red)}
 </style></head><body>
 <h1>netmodem2irc — Documentation Index</h1>
-<p class="sub">Generated 2026-07-26. 60 docs, 0 missing, 0 stubs. D1-D3 ✅ netfosdl wired.</p>
-<div class="stats"><div class="stat"><div class="n">60</div><div class="l">docs/</div></div><div class="stat"><div class="n">7</div><div class="l">root</div></div><div class="stat"><div class="n">6</div><div class="l">attic</div></div><div class="stat"><div class="n">0</div><div class="l">missing</div></div><div class="stat"><div class="n">0</div><div class="l">stubs</div></div></div>
+<p class="sub">Generated 2026-07-28. 74 docs in docs/. D1-D3 ✅. <span style="color:var(--red)">⚠️ MISSING FROM GITHUB: driver/src/ (16 files), libs/synapse/ (18 files)</span></p>
+<div class="stats"><div class="stat"><div class="n">74</div><div class="l">docs/</div></div><div class="stat"><div class="n">7</div><div class="l">root</div></div><div class="stat"><div class="n">5</div><div class="l">phases done</div></div><div class="stat"><div class="n">14</div><div class="l">phases remaining</div></div><div class="stat"><div class="n">2</div><div class="l">dirs missing</div></div></div>
+<h2>Phases — What Needs Finishing</h2>
+<table><tr><th>Phase</th><th>What</th><th>Status</th></tr>
+<tr><td>R1.1-R1.4</td><td>NM_Debug + MainForm wired</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>R1.5-R1.6</td><td>Debug panel GUI (TMemo + color tags)</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R1.7</td><td>Wire NM_Debug into NM_SynapseLink</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R2.1-R2.5</td><td>Setup.exe + ISCmplr DLL-init AV fix</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R3.1</td><td>NMServer accepts real Telnet connection</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R3.2</td><td>DOS BBS door talks end-to-end</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R3.3</td><td>Binary safety (CP437/Zmodem)</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R3.4</td><td>Multinode (2+ simultaneous)</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R4.1</td><td>Win9x NETMODEM.VXD test</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R4.2</td><td>NT com0com path</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R4.3</td><td>NT native UMDF2 driver</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R5.1</td><td>Inno Setup installer packaging</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>D1</td><td>Real 16550 UART (serial.pas)</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>D2</td><td>FOSSIL function set (fossil.pas)</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>D3</td><td>INT 14h + Keep (netfosdl.pas)</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>D4</td><td>Conformance testing (real hardware)</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>D5</td><td>Relay rewrite (direct port I/O)</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>M0-M1</td><td>Engine + tests (38 pass)</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>M2</td><td>Builds on Windows (cross-compiles)</td><td><span class="t tw">PARTIAL</span></td></tr>
+<tr><td>M3</td><td>Live connection</td><td><span class="t terr">TODO</span></td></tr>
+</table>
+<h2>⚠️ Missing from GitHub</h2>
+<table><tr><th>Directory</th><th>Status</th><th>Fix</th></tr>
+<tr><td>driver/src/</td><td><span class="t terr">16 files not pushed</span></td><td>git add driver/src/ &amp;&amp; git push</td></tr>
+<tr><td>libs/synapse/</td><td><span class="t terr">18 files not pushed</span></td><td>git add libs/synapse/ &amp;&amp; git push</td></tr>
+</table>
 <h2>Root</h2><table><tr><th>File</th><th>Title</th><th>Lines</th></tr>
 <tr><td><a href="../CHANGELOG.md">CHANGELOG.md</a></td><td>Changelog</td><td>84</td></tr>
 <tr><td><a href="../CREDITS.md">CREDITS.md</a></td><td>Credits &amp; attribution — netmodem2irc</td><td>56</td></tr>
@@ -104,16 +132,24 @@ td{padding:4px 8px;border-bottom:1px solid var(--border)}tr:hover{background:var
 <tr><td><a href="elecom_modernization.md">elecom_modernization.md</a></td><td>ELECOM — modernization for modern FPC / NT (progress + method)</td><td>61</td><td><span class="t tok">OK</span></td></tr>
 </table>
 <h3>Meta (3)</h3><table><tr><th>File</th><th>Title</th><th>Lines</th><th></th></tr>
-<tr><td><a href="README.md">README.md</a></td><td>netmodem2irc — session updates bundle</td><td>49</td><td><span class="t tw">needs index rewrite</span></td></tr>
+<tr><td><a href="README.md">README.md</a></td><td>netmodem2irc — session updates bundle</td><td>49</td><td><span class="t tok">OK</span></td></tr>
 <tr><td><a href="docs-fix-phases.md">docs-fix-phases.md</a></td><td>Docs Fix — Phase Plan</td><td>134</td><td><span class="t tok">OK</span></td></tr>
 <tr><td><a href="docs-repair-roadmap.md">docs-repair-roadmap.md</a></td><td>Docs Repair Roadmap</td><td>98</td><td><span class="t tok">OK</span></td></tr>
 </table>
-<h2>Attic</h2><table><tr><th>File</th><th>Title</th><th>Lines</th></tr>
-<tr><td>NetModem2_Build_Roadmap.md</td><td>NetModem/32 Revival — Build Roadmap</td><td>112</td></tr>
-<tr><td>NetModem2_GUI_Rebuild_Guide.md</td><td>NetModem 2 — Windows GUI Recovery &amp; Rebuild Guide</td><td>128</td></tr>
-<tr><td>ROADMAP.md</td><td>netmodem2irc — Master Roadmap</td><td>275</td></tr>
-<tr><td>SYNAPSE_README.md</td><td>(Ararat) Synapse TCP/IP library for Pascal</td><td>50</td></tr>
-<tr><td>THIRD_PARTY.md</td><td>netmodem2irc — third-party libraries</td><td>84</td></tr>
-<tr><td>netmodem2irc_VMM_INC_notice.md</td><td>netmodem2irc — VMM.INC is CORRUPTED: replace with a clean DDK copy</td><td>52</td></tr>
+<h3>Other (14)</h3><table><tr><th>File</th><th>Title</th><th>Lines</th><th></th></tr>
+<tr><td><a href="INNO_FPC_COMPLETE_PATCH_LIST.md">INNO_FPC_COMPLETE_PATCH_LIST.md</a></td><td>Inno Setup 5.6.1 → FPC 2.6.4irc — Complete Patch List</td><td>634</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="INNO_FPC_PORT_FEATURES_LIST.md">INNO_FPC_PORT_FEATURES_LIST.md</a></td><td>Inno Setup 5.6.1 FPC Port — Complete Features List</td><td>284</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="INNO_FPC_PORT_FOLLOWUP2_FOR_FPCIRC_AUTHOR.md">INNO_FPC_PORT_FOLLOWUP2_FOR_FPCIRC_AUTHOR.md</a></td><td>Inno Setup FPC Port — Follow-Up #2 for fpc264irc Author</td><td>209</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="INNO_FPC_PORT_FOLLOWUP_FOR_FPCIRC_AUTHOR.md">INNO_FPC_PORT_FOLLOWUP_FOR_FPCIRC_AUTHOR.md</a></td><td>Inno Setup FPC Port — Follow-Up for fpc264irc Author</td><td>148</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="INNO_FPC_WORKMAP.md">INNO_FPC_WORKMAP.md</a></td><td>Inno Setup 5.6.1 → FPC 2.6.4 Port — Workmap</td><td>194</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="INNO_HOLLOW_FEATURES.md">INNO_HOLLOW_FEATURES.md</a></td><td>Inno Setup 5.6.1 FPC Port — Hollow Features List</td><td>176</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="INNO_PHASE4_LZMA_REPORT.md">INNO_PHASE4_LZMA_REPORT.md</a></td><td>Inno Setup 5.6.1 FPC Port — Phase 4 Feature Report</td><td>144</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="NetModem2_Build_Roadmap.md">NetModem2_Build_Roadmap.md</a></td><td>NetModem/32 Revival — Build Roadmap</td><td>112</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="NetModem2_GUI_Rebuild_Guide.md">NetModem2_GUI_Rebuild_Guide.md</a></td><td>NetModem 2 — Windows GUI Recovery &amp; Rebuild Guide</td><td>128</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="ROADMAP.md">ROADMAP.md</a></td><td>netmodem2irc — Master Roadmap</td><td>275</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="SYNAPSE_README.md">SYNAPSE_README.md</a></td><td>(Ararat) Synapse TCP/IP library for Pascal</td><td>50</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="THIRD_PARTY.md">THIRD_PARTY.md</a></td><td>netmodem2irc — third-party libraries</td><td>84</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="fpc-sockets-request.md">fpc-sockets-request.md</a></td><td>FPC i8086-msdos Sockets Backend — Feature Request (historical)</td><td>58</td><td><span class="t tok">OK</span></td></tr>
+<tr><td><a href="netmodem2irc_VMM_INC_notice.md">netmodem2irc_VMM_INC_notice.md</a></td><td>netmodem2irc — VMM.INC is CORRUPTED: replace with a clean DDK copy</td><td>52</td><td><span class="t tok">OK</span></td></tr>
 </table>
-<p class="sub">See ROADMAP.md for the master plan. D1-D3 complete: serial.pas (sysop/0) + serial_irq.pas (kiddo) + fossil.pas + netfosdl.pas.</p></body></html>
+<p class="sub">See ROADMAP.md for the full plan. Team: verta1878, sysop/0, kiddo, wrench, evga.</p></body></html>
