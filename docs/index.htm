@@ -13,35 +13,39 @@ td{padding:4px 8px;border-bottom:1px solid var(--border)}tr:hover{background:var
 .tok{background:#1a4a3a;color:var(--green)}.tw{background:#4a3a1a;color:var(--yellow)}.terr{background:#4a1a1a;color:var(--red)}
 </style></head><body>
 <h1>netmodem2irc — Documentation Index</h1>
-<p class="sub">Generated 2026-07-28. 74 docs in docs/. D1-D3 ✅. <span style="color:var(--red)">⚠️ MISSING FROM GITHUB: driver/src/ (16 files), libs/synapse/ (18 files)</span></p>
-<div class="stats"><div class="stat"><div class="n">74</div><div class="l">docs/</div></div><div class="stat"><div class="n">7</div><div class="l">root</div></div><div class="stat"><div class="n">5</div><div class="l">phases done</div></div><div class="stat"><div class="n">14</div><div class="l">phases remaining</div></div><div class="stat"><div class="n">2</div><div class="l">dirs missing</div></div></div>
+<p class="sub">Verified from GitHub clone 2026-07-28. 74 docs. ✅ driver/src (16) + libs/synapse (18) present. D1-D3 ✅ netfosdl wired.</p>
+<div class="stats"><div class="stat"><div class="n">74</div><div class="l">docs/</div></div><div class="stat"><div class="n">7</div><div class="l">root</div></div><div class="stat"><div class="n">6</div><div class="l">done</div></div><div class="stat"><div class="n">1</div><div class="l">partial</div></div><div class="stat"><div class="n">22</div><div class="l">remaining</div></div><div class="stat"><div class="n">✅</div><div class="l">driver/src</div></div><div class="stat"><div class="n">✅</div><div class="l">libs/synapse</div></div><div class="stat"><div class="n">✅</div><div class="l">dos/driver</div></div></div>
 <h2>Phases — What Needs Finishing</h2>
 <table><tr><th>Phase</th><th>What</th><th>Status</th></tr>
-<tr><td>R1.1-R1.4</td><td>NM_Debug + MainForm wired</td><td><span class="t tok">DONE</span></td></tr>
-<tr><td>R1.5-R1.6</td><td>Debug panel GUI (TMemo + color tags)</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R1.7</td><td>Wire NM_Debug into NM_SynapseLink</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R2.1-R2.5</td><td>Setup.exe + ISCmplr DLL-init AV fix</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R3.1</td><td>NMServer accepts real Telnet connection</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R3.2</td><td>DOS BBS door talks end-to-end</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R3.3</td><td>Binary safety (CP437/Zmodem)</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R3.4</td><td>Multinode (2+ simultaneous)</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R4.1</td><td>Win9x NETMODEM.VXD test</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R4.2</td><td>NT com0com path</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R4.3</td><td>NT native UMDF2 driver</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>R5.1</td><td>Inno Setup installer packaging</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>D1</td><td>Real 16550 UART (serial.pas)</td><td><span class="t tok">DONE</span></td></tr>
-<tr><td>D2</td><td>FOSSIL function set (fossil.pas)</td><td><span class="t tok">DONE</span></td></tr>
-<tr><td>D3</td><td>INT 14h + Keep (netfosdl.pas)</td><td><span class="t tok">DONE</span></td></tr>
-<tr><td>D4</td><td>Conformance testing (real hardware)</td><td><span class="t terr">TODO</span></td></tr>
-<tr><td>D5</td><td>Relay rewrite (direct port I/O)</td><td><span class="t terr">TODO</span></td></tr>
 <tr><td>M0-M1</td><td>Engine + tests (38 pass)</td><td><span class="t tok">DONE</span></td></tr>
-<tr><td>M2</td><td>Builds on Windows (cross-compiles)</td><td><span class="t tw">PARTIAL</span></td></tr>
-<tr><td>M3</td><td>Live connection</td><td><span class="t terr">TODO</span></td></tr>
-</table>
-<h2>⚠️ Missing from GitHub</h2>
-<table><tr><th>Directory</th><th>Status</th><th>Fix</th></tr>
-<tr><td>driver/src/</td><td><span class="t terr">16 files not pushed</span></td><td>git add driver/src/ &amp;&amp; git push</td></tr>
-<tr><td>libs/synapse/</td><td><span class="t terr">18 files not pushed</span></td><td>git add libs/synapse/ &amp;&amp; git push</td></tr>
+<tr><td>M2</td><td>Builds on Windows (cross-compiles, not runtime-tested)</td><td><span class="t tw">PARTIAL</span></td></tr>
+<tr><td>M3</td><td>Live connection — NMServer accepts real Telnet</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>D1</td><td>Real 16550 UART — serial.pas (sysop/0)</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>D2</td><td>FOSSIL function set — fossil.pas</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>D3</td><td>INT 14h + Keep — netfosdl.pas</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>D4</td><td>Conformance testing against X00/BNU/ADF/NetFoss</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>D5</td><td>Relay rewrite — direct port I/O using D1</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R1.1-R1.4</td><td>NM_Debug + MainForm wired, Play/Stop</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>R1.5</td><td>Debug panel — TMemo docked to main form</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R1.6</td><td>Color-coded subsystem tags in debug panel</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R1.7</td><td>Wire NM_Debug into NM_SynapseLink connect/send/recv</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R2.1</td><td>Instrument Setup.exe init path</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R2.2</td><td>Instrument ISCmplr.dll DLL init</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R2.3</td><td>Run under DebugView on real Windows</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R2.4</td><td>Identify and fix the shared init AV defect</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R2.5</td><td>ISCmplr TColor range fix for FPC 3.2.2</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R3.1</td><td>Synapse runtime — NMServer accepts real Telnet</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R3.2</td><td>DOS BBS door talks through it end-to-end</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R3.3</td><td>Binary safety — CP437 / Zmodem through real session</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R3.4</td><td>Multinode — 2+ simultaneous connections</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R4.1</td><td>Win9x — test NETMODEM.VXD against the engine</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R4.2</td><td>NT — document and test com0com path</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R4.3</td><td>NT — native UMDF2 driver (Option A)</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>R5.1</td><td>Inno Setup installer packages NMServer + NMConfig + CPL</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>Inno 1-8</td><td>ISCC through Compil32</td><td><span class="t tok">DONE</span></td></tr>
+<tr><td>Inno 9</td><td>Setup.exe runtime AV</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>Inno 10</td><td>ISCmplr DLL-init AV</td><td><span class="t terr">TODO</span></td></tr>
+<tr><td>fpc264irc</td><td>FIONREAD (1 line) + UDP send/recv + BuildDNSQuery</td><td><span class="t terr">TODO</span></td></tr>
 </table>
 <h2>Root</h2><table><tr><th>File</th><th>Title</th><th>Lines</th></tr>
 <tr><td><a href="../CHANGELOG.md">CHANGELOG.md</a></td><td>Changelog</td><td>84</td></tr>

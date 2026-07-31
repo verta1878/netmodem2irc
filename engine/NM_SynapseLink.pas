@@ -86,7 +86,7 @@ unit NM_SynapseLink;
 interface
 
 uses
-  SysUtils, NetTransport
+  SysUtils, NetTransport, NM_Debug
   {$IFDEF HAS_SYNAPSE}, blcksock, synsock{$ENDIF};
 
 const
@@ -368,6 +368,8 @@ begin
     {$IFDEF NM_SOCKET_DEBUG}
     Inc(FDbgConnects);
     {$ENDIF}
+    { R1.7: log connection to NM_Debug (always, not just NM_SOCKET_DEBUG) }
+    DebugLog('Synapse', 'Connect: ' + AHost + ':' + IntToStr(APort) + ' OK');
     Result := lrOk;
   end
   else
@@ -376,6 +378,7 @@ begin
     {$IFDEF NM_SOCKET_DEBUG}
     Inc(FDbgErrors);
     {$ENDIF}
+    DebugLog('Synapse', 'Connect FAILED: ' + AHost + ':' + IntToStr(APort));
     Result := lrError;
   end;
   {$ELSE}
@@ -385,6 +388,7 @@ end;
 
 procedure TSynapseLink.Close;
 begin
+  DebugLog('Synapse', 'Close: disconnecting');
   {$IFDEF HAS_SYNAPSE}
   if Assigned(FSock) then FSock.CloseSocket;
   {$ENDIF}

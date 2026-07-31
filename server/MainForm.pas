@@ -44,21 +44,30 @@ type
     miFile: TMenuItem;
     miSetup: TMenuItem;
     miExit: TMenuItem;
+    miDebug: TMenuItem;          { R1.5: toggle debug panel }
     NodeList: TListView;         // was TListView: the node/connection list
     StatusBar: TStatusBar;
     RefreshTimer: TTimer;        // was TTimer: status refresh
     TrayIcon: TTrayIcon;         // was TTrayIcon: runs in the system tray
+    DebugSplitter: TSplitter;    { R1.5: resizable split between node list + debug }
+    DebugMemo: TMemo;            { R1.5: debug output panel }
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure RefreshTimerTimer(Sender: TObject);
     procedure miSetupClick(Sender: TObject);
     procedure miExitClick(Sender: TObject);
+    procedure miDebugClick(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
   private
     FDriver: TNetModemDriver;
     FBridge: TServerBridge;
+    FDebugVisible: Boolean;
     procedure RefreshNodes;
+    { R1.5: callback from NM_Debug — receives every debug line }
+    procedure OnDebugLine(const Subsystem, Msg, FormattedLine: string);
+    { R1.6: color-code a subsystem tag }
+    procedure AppendDebugLine(const Subsystem, Msg: string);
     {$IFDEF WINDOWS}
     // Intercept the CM_* messages the driver posts to this window.
     procedure WndProc(var Msg: TLMessage); override;
@@ -77,6 +86,39 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   DebugInitFile(ExtractFilePath(Application.ExeName) + 'netmodem_debug.log');
   DebugLog('NMServer', 'FormCreate: enter');
+
+  { R1.5: Create the debug panel — docked to bottom, hidden by default.
+    The TMemo shows live debug output from every subsystem.
+    Toggle with View > Debug Panel (or the miDebug menu item). }
+  DebugMemo := TMemo.Create(Self);
+  DebugMemo.Parent := Self;
+  DebugMemo.Align := alBottom;
+  DebugMemo.Height := 180;
+  DebugMemo.ReadOnly := True;
+  DebugMemo.ScrollBars := ssVertical;
+  DebugMemo.Font.Name := 'Consolas';
+  DebugMemo.Font.Size := 9;
+  DebugMemo.WordWrap := False;
+  DebugMemo.Visible := False;    { hidden by default — toggle with miDebug }
+
+  DebugSplitter := TSplitter.Create(Self);
+  DebugSplitter.Parent := Self;
+  DebugSplitter.Align := alBottom;
+  DebugSplitter.Height := 4;
+  DebugSplitter.Visible := False;
+
+  FDebugVisible := False;
+
+  { R1.5: Wire the NM_Debug line handler so all debug output
+    flows to the panel in real time. }
+  DebugSetLineHandler(@OnDebugLine);
+
+  { R1.5: Add Debug toggle to the menu }
+  miDebug := TMenuItem.Create(MainMenu);
+  miDebug.Caption := '&Debug Panel';
+  miDebug.OnClick := @miDebugClick;
+  miFile.Add(miDebug);
+
   FDriver := TNetModemDriver.Create;
   DebugLog('NMServer', 'FormCreate: driver created, IsOpen=' + BoolToStr(FDriver.IsOpen, True));
   FBridge := TServerBridge.Create;
@@ -177,6 +219,57 @@ end;
 procedure TfrmMain.miExitClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfrmMain.miDebugClick(Sender: TObject);
+{ R1.5: Toggle the debug panel visibility. }
+begin
+  FDebugVisible := not FDebugVisible;
+  DebugMemo.Visible := FDebugVisible;
+  DebugSplitter.Visible := FDebugVisible;
+  if FDebugVisible then
+  begin
+    miDebug.Caption := 'Hide &Debug Panel';
+    DebugLog('NMServer', 'Debug panel opened');
+  end
+  else
+    miDebug.Caption := 'Show &Debug Panel';
+end;
+
+procedure TfrmMain.OnDebugLine(const Subsystem, Msg, FormattedLine: string);
+{ R1.5: Callback from NM_Debug — every DebugLog call arrives here.
+  Appends to the TMemo with subsystem tag. Auto-scrolls. }
+begin
+  AppendDebugLine(Subsystem, Msg);
+end;
+
+procedure TfrmMain.AppendDebugLine(const Subsystem, Msg: string);
+{ R1.6: Color-coded subsystem tags in the debug panel.
+  Since TMemo doesn't support rich text, we use bracket-tagged
+  prefixes that are visually distinct:
+    [NMServer]   — main app events
+    [Transport]  — Telnet/socket data flow
+    [UART]       — serial emulation
+    [FOSSIL]     — FOSSIL driver calls
+    [Bridge]     — node management
+    [Synapse]    — socket link layer
+    [Debug]      — debug infrastructure
+  A future RichMemo upgrade can color these; for now the tags
+  make grep/filter easy. }
+var
+  Line: string;
+begin
+  Line := FormatDateTime('hh:nn:ss.zzz', Now) +
+          ' [' + Subsystem + '] ' + Msg;
+  { Cap at 5000 lines to prevent memory growth }
+  if DebugMemo.Lines.Count > 5000 then
+  begin
+    DebugMemo.Lines.Delete(0);
+    DebugMemo.Lines.Delete(0);
+  end;
+  DebugMemo.Lines.Add(Line);
+  { Auto-scroll to bottom }
+  DebugMemo.SelStart := Length(DebugMemo.Text);
 end;
 
 procedure TfrmMain.TrayIconDblClick(Sender: TObject);
