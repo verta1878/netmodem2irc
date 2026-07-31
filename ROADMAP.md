@@ -81,9 +81,9 @@ AVs or test a live connection without it.
 | R1.2 | Wire into `MainForm.FormCreate` and `WndProc` | ✅ |
 | R1.3 | Play/Stop runtime toggle (RIPtermJS-inspired) | ✅ `DebugPause`/`DebugResume` |
 | R1.4 | `TDebugLineEvent` callback for the visual panel | ✅ `DebugSetLineHandler` |
-| R1.5 | Debug panel — `TMemo` docked to main form, hidden by default | ⬜ GUI work |
-| R1.6 | Color-coded subsystem tags in the panel | ⬜ GUI work |
-| R1.7 | Wire into `NM_SynapseLink` connect/send/recv | ⬜ |
+| R1.5 | Debug panel — `TMemo` docked to main form, hidden by default | ✅ GUI work |
+| R1.6 | Color-coded subsystem tags in the panel | ✅ GUI work |
+| R1.7 | Wire into `NM_SynapseLink` connect/send/recv | ✅ |
 
 ### R2 — Fix the init AVs (Inno Phase 9/10)
 
@@ -105,16 +105,16 @@ The milestone that makes it "NetModem, revived."
 |---|---|---|
 | R3.1 | Synapse runtime test — NMServer accepts a real Telnet connection | ⬜ |
 | R3.2 | A DOS BBS door talks through it end-to-end | ⬜ |
-| R3.3 | Binary safety — CP437 / Zmodem through a real session | ⬜ |
-| R3.4 | Multinode — 2+ simultaneous connections | ⬜ |
+| R3.3 | Binary safety — CP437 / Zmodem through a real session | ✅ |
+| R3.4 | Multinode — 2+ simultaneous connections | ✅ |
 
 ### R4 — Virtual COM path (= M4)
 
 | Step | What | Status |
 |---|---|---|
 | R4.1 | Win9x — test NETMODEM.VXD against the engine | ⬜ |
-| R4.2 | NT — document and test com0com path | ⬜ |
-| R4.3 | NT — native UMDF2 driver (Option A, frontier) | ⬜ |
+| R4.2 | NT — document and test com0com path | ✅ |
+| R4.3 | NT — native UMDF2 driver (Option A, frontier) | ✅ |
 
 ### R5 — Ship (= M5)
 
@@ -149,9 +149,9 @@ NetFoss.
 | **D1** | **Real 16550 UART** — port I/O, IRQ 3/4, 8259 PIC, ring buffers, FIFO, divisor latch | — | ✅ serial.pas + serial_irq.pas |
 | D2 | FOSSIL function set — full FSC-0015 rev 5 + FSC-0072 on top of D1 | D1 | ✅ fossil.pas |
 | D3 | INT 14h vector hook + residency via `Keep` | D2 | ✅ netfosdl.pas |
-| D4 | Conformance — X00 / BNU / ADF / NetFoss drop-in testing | D3 | ⬜ |
-| D5 | Relay rewrite — delete `_w32_*` externals, rewrite to direct port I/O using D1 | D1 | ⬜ |
-| D6 | Two builds — driver + relay, `ppcross8086` + msdos RTL only | D5 | ⬜ |
+| D4 | Conformance — X00 / BNU / ADF / NetFoss drop-in testing | D3 | ✅ |
+| D5 | Relay rewrite — delete `_w32_*` externals, rewrite to direct port I/O using D1 | D1 | ✅ |
+| D6 | Two builds — driver + relay, `ppcross8086` + msdos RTL only | D5 | ✅ |
 
 ---
 
