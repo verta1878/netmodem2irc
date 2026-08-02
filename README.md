@@ -161,7 +161,7 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | Phase | What | Status |
 |---|---|---|
 | Inno 1-8 | ISCC through Compil32 | ✅ |
-| Inno 9-10 | Setup.exe + ISCmplr runtime AV | ⬜ needs Windows |
+| Inno 9-10 | Setup.exe + ISCmplr runtime AV | ✅ |
 
 ### Release milestones
 

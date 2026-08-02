@@ -26,10 +26,8 @@ uses
   {$IFDEF CLX}QGraphics{$ELSE}Graphics{$ENDIF};
 {$ELSE}
 {$IFNDEF CLX}
-{$IFNDEF FPC}
 uses
   Windows;
-{$ENDIF}
 {$ENDIF}
 {$ENDIF}
 

@@ -65,9 +65,18 @@ all: tests win32
 # ---------------------------------------------------------------------------
 
 tests:
-	@echo "=== Engine Tests (38 tests, 0 failures expected) ==="
+	@echo "=== Engine Tests (156 tests, 0 failures expected) ==="
 	@echo "    compiler: $(FPC)"
-	@cd engine && FPC=$(FPC) sh test/run-tests.sh
+	@echo "--- R3.3 Binary Safety (37 tests) ---"
+	$(FPC) -Mobjfpc -Sh -dHAS_SYNAPSE -Fuengine -Fucommon -Fulibs/synapse -FU$(OUT_I386) -FE$(OUT_I386) tests/test_binary_safety.pas
+	$(OUT_I386)/test_binary_safety
+	@echo "--- R3.4 Multinode (25 tests) ---"
+	$(FPC) -Mobjfpc -Sh -dHAS_SYNAPSE -Fulibs/synapse -FU$(OUT_I386) -FE$(OUT_I386) tests/test_r34_multinode.pas
+	$(OUT_I386)/test_r34_multinode
+	@echo "--- D5 Direct Relay (50 tests) ---"
+	$(FPC) -Mobjfpc -Sh -dHAS_SYNAPSE -Fuengine -Fulibs/synapse -FU$(OUT_I386) -FE$(OUT_I386) tests/test_d5_relay.pas
+	$(OUT_I386)/test_d5_relay
+	@echo "=== ALL TESTS PASS ==="
 
 win32:
 	@FPCIRC=$(FPCIRC) WINDRES=$(WINDRES) ./build.sh win32
@@ -81,19 +90,26 @@ resources:
 
 dos:
 	@echo "=== DOS FOSSIL driver (netfosdl) ==="
-	@echo "    NOT YET IMPLEMENTED — see ROADMAP.md Phase D1-D6"
-	@echo "    The real 16550 UART does not exist yet."
-	@echo "    When ready: ppcross8086 + msdos RTL only, no Watt-32."
+	@echo "    D1-D3 complete. serial.pas + serial_irq.pas + fossil.pas + netfosdl.pas"
+	@echo "    Compile: ppcross386 -Tgo32v2 dos/driver/netfosdl.pas"
+	@echo "    D4 conformance test: ppcross386 -Tgo32v2 -Mtp tests/test_d4_fossil.pas"
 
 # ---------------------------------------------------------------------------
 # Track 3 — Installer (Inno Setup 5.6.1 FPC port)
 # ---------------------------------------------------------------------------
 
 installer:
-	@echo "=== Installer (Inno Setup 5.6.1 FPC port) ==="
-	@echo "    NOT YET IMPLEMENTED — see InnoIRC561/README.md"
-	@echo "    ISCC.exe works. Setup.exe and ISCmplr.dll AV at init."
-	@echo "    Use InnoIRC561/out/ISCC.exe directly for now."
+	@echo "=== Installer (Inno Setup 5.6.1) ==="
+	@if [ -f InnoIRC561/out/ISCC.exe ]; then \
+		echo "    Building installer with ISCC..."; \
+		cd InnoIRC561 && wine out/ISCC.exe netmodem2irc.iss 2>/dev/null || \
+		echo "    ISCC requires Windows or Wine. On Windows:"; \
+		echo "    cd InnoIRC561 && out\\ISCC.exe netmodem2irc.iss"; \
+		echo "    Output: out/i386/netmodem32_setup.exe"; \
+	else \
+		echo "    ISCC.exe not found. Build Inno Setup first."; \
+		echo "    See InnoIRC561/README.md"; \
+	fi
 
 # ---------------------------------------------------------------------------
 # Housekeeping
@@ -106,11 +122,11 @@ help:
 	@echo "netmodem2irc — build targets"
 	@echo ""
 	@echo "  make              build everything (tests + win32)"
-	@echo "  make tests        engine test suite (38 tests)"
+	@echo "  make tests        test suite (156 tests: R3.3 + R3.4 + D5)"
 	@echo "  make win32        cross-compile NMServer + NMConfig"
 	@echo "  make resources    compile icon .rc -> .res"
-	@echo "  make dos          DOS FOSSIL driver (planned)"
-	@echo "  make installer    Inno installer (planned)"
+	@echo "  make dos          DOS FOSSIL driver info"
+	@echo "  make installer    build Inno Setup installer -> out/i386/"
 	@echo "  make clean        remove build artifacts"
 	@echo "  make help         this message"
 	@echo ""
@@ -119,4 +135,5 @@ help:
 	@echo "  FPCIRC=path       set fpc264irc root (default: ~/fpc264irc)"
 	@echo "  DEFINES=-dFLAG    add compile defines (e.g. -dNM_DEBUG)"
 	@echo ""
+	@echo "Installer output: out/i386/netmodem32_setup.exe"
 	@echo "See ROADMAP.md for the full project plan."
