@@ -135,8 +135,8 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | M1 | Engine integrated — 38 tests, 0 failures | ✅ |
 | M2 | Builds on Windows — dual compiler verified | ✅ |
 | M3 | Live connection — 6 tests pass | ✅ |
-| M4 | Virtual COM path (VxD 9x / com0com NT / UMDF2) | ⬜ |
-| M5 | Tagged installable release | ⬜ |
+| M4 | Virtual COM path (VxD 9x / com0com NT / UMDF2) | ⬜ needs hardware |
+| M5 | Tagged installable release | ⬜ after M4 |
 
 | Binary | Size | Compiler | Status |
 |---|---|---|---|
@@ -168,13 +168,13 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | Phase | What | Status |
 |---|---|---|
 | R1.1-R1.7 | Debug infrastructure (NM_Debug + panel + SynapseLink) | ✅ |
-| R2.1-R2.5 | Setup.exe + ISCmplr AV fix | ⬜ needs Windows |
+| R2.1-R2.5 | Setup.exe + ISCmplr AV fix | ✅ DEP fix + Wine deadlock fix |
 | R3.3 | Binary safety — 37 tests pass | ✅ |
 | R3.4 | Multinode — 25 tests pass (3 simultaneous nodes) | ✅ |
 | R4.1 | Win9x VxD test | ⬜ needs Win98 VM |
 | R4.2 | NT com0com path — documented | ✅ |
 | R4.3 | NT UMDF2 driver — specified | ✅ |
-| R5.1 | Inno installer packaging | ⬜ needs Windows |
+| R5.1 | Inno installer packaging | ✅ wine ISCC.exe builds installer |
 
 ## Test Results
 

@@ -34,7 +34,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, ComCtrls, ExtCtrls, Menus, StdCtrls, LMessages,
   {$IFDEF WINDOWS}Windows,{$ENDIF}
-  NMVxD, NM_ServerBridge, NM_Node, NM_Debug;
+  NMVxD, NM_ServerBridge, NM_Node, NM_Debug, NM_DebugView;
 
 type
 
@@ -45,12 +45,16 @@ type
     miSetup: TMenuItem;
     miExit: TMenuItem;
     miDebug: TMenuItem;          { R1.5: toggle debug panel }
+    miLEDs: TMenuItem;           { toggle LED panel }
     NodeList: TListView;         // was TListView: the node/connection list
     StatusBar: TStatusBar;
     RefreshTimer: TTimer;        // was TTimer: status refresh
     TrayIcon: TTrayIcon;         // was TTrayIcon: runs in the system tray
     DebugSplitter: TSplitter;    { R1.5: resizable split between node list + debug }
     DebugMemo: TMemo;            { R1.5: debug output panel }
+    LEDPanel: TPanel;            { USR Courier LED panel }
+    LEDLabel: TLabel;            { LED state display }
+    LEDTimer: TTimer;            { LED refresh timer (200ms) }
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -58,16 +62,22 @@ type
     procedure miSetupClick(Sender: TObject);
     procedure miExitClick(Sender: TObject);
     procedure miDebugClick(Sender: TObject);
+    procedure miLEDsClick(Sender: TObject);
+    procedure LEDTimerTimer(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
   private
     FDriver: TNetModemDriver;
     FBridge: TServerBridge;
     FDebugVisible: Boolean;
+    FLEDVisible: Boolean;
+    FDebugViewer: TDebugViewer;  { protocol analyzer with LED state }
     procedure RefreshNodes;
     { R1.5: callback from NM_Debug — receives every debug line }
     procedure OnDebugLine(const Subsystem, Msg, FormattedLine: string);
     { R1.6: color-code a subsystem tag }
     procedure AppendDebugLine(const Subsystem, Msg: string);
+    { LED panel refresh }
+    procedure RefreshLEDs;
     {$IFDEF WINDOWS}
     // Intercept the CM_* messages the driver posts to this window.
     procedure WndProc(var Msg: TLMessage); override;
@@ -119,6 +129,42 @@ begin
   miDebug.OnClick := @miDebugClick;
   miFile.Add(miDebug);
 
+  { LED Panel — USR Courier modem front panel, docked to top }
+  LEDPanel := TPanel.Create(Self);
+  LEDPanel.Parent := Self;
+  LEDPanel.Align := alTop;
+  LEDPanel.Height := 60;
+  LEDPanel.Color := $1A1A1A;       { dark background like a modem case }
+  LEDPanel.BevelOuter := bvLowered;
+  LEDPanel.Visible := False;       { hidden by default }
+
+  LEDLabel := TLabel.Create(LEDPanel);
+  LEDLabel.Parent := LEDPanel;
+  LEDLabel.Align := alClient;
+  LEDLabel.Alignment := taCenter;
+  { LEDLabel.Layout := tlCenter; } { not available in nogui }
+  LEDLabel.Font.Name := 'Consolas';
+  LEDLabel.Font.Size := 10;
+  LEDLabel.Font.Color := $C8C8C8;  { light gray text }
+  LEDLabel.Caption := 'US Robotics  NetModem/32  Virtual Modem';
+
+  LEDTimer := TTimer.Create(Self);
+  LEDTimer.Interval := 200;        { refresh LEDs every 200ms }
+  LEDTimer.OnTimer := @LEDTimerTimer;
+  LEDTimer.Enabled := False;
+
+  FLEDVisible := False;
+
+  { Add LED toggle to the menu }
+  miLEDs := TMenuItem.Create(MainMenu);
+  miLEDs.Caption := '&Modem LEDs';
+  miLEDs.OnClick := @miLEDsClick;
+  miFile.Add(miLEDs);
+
+  { Create the debug viewer (protocol analyzer) for node 0 }
+  FDebugViewer := TDebugViewer.Create(0);
+  FDebugViewer.Attach;
+
   FDriver := TNetModemDriver.Create;
   DebugLog('NMServer', 'FormCreate: driver created, IsOpen=' + BoolToStr(FDriver.IsOpen, True));
   FBridge := TServerBridge.Create;
@@ -140,6 +186,8 @@ end;
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   DebugLog('NMServer', 'FormDestroy: shutting down');
+  FDebugViewer.Free;
+  DebugLog('NMServer', 'FormDestroy: debug viewer freed');
   FBridge.Free;
   DebugLog('NMServer', 'FormDestroy: bridge freed');
   FDriver.Free;
@@ -219,6 +267,46 @@ end;
 procedure TfrmMain.miExitClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfrmMain.miLEDsClick(Sender: TObject);
+{ Toggle the USR Courier LED panel visibility. }
+begin
+  FLEDVisible := not FLEDVisible;
+  LEDPanel.Visible := FLEDVisible;
+  LEDTimer.Enabled := FLEDVisible;
+  if FLEDVisible then
+  begin
+    miLEDs.Caption := 'Hide &Modem LEDs';
+    RefreshLEDs;
+    DebugLog('NMServer', 'LED panel opened');
+  end
+  else
+    miLEDs.Caption := 'Show &Modem LEDs';
+end;
+
+procedure TfrmMain.LEDTimerTimer(Sender: TObject);
+{ Called every 200ms to refresh LED state. }
+begin
+  RefreshLEDs;
+end;
+
+procedure TfrmMain.RefreshLEDs;
+{ Update the LED panel with current modem state.
+  Reads from the DebugViewer which tracks UART state. }
+var
+  S: String;
+begin
+  if not FLEDVisible then Exit;
+  if FDebugViewer = nil then Exit;
+
+  { LED line: [*]=on [ ]=off [~]=activity }
+  S := FDebugViewer.FormatModemLEDs;
+
+  { Also add throughput if we have a session }
+  S := S + #13#10 + FDebugViewer.FormatModemHuman;
+
+  LEDLabel.Caption := S;
 end;
 
 procedure TfrmMain.miDebugClick(Sender: TObject);

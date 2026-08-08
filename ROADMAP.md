@@ -91,11 +91,11 @@ Two binaries AV at initialization. Likely shared root cause.
 
 | Step | What | Status |
 |---|---|---|
-| R2.1 | Instrument Setup.exe init path with `NM_Debug` | ⬜ |
-| R2.2 | Instrument ISCmplr.dll DLL init | ⬜ |
-| R2.3 | Run under DebugView on real Windows, read the log | ⬜ |
-| R2.4 | Identify and fix the shared defect | ⬜ |
-| R2.5 | ISCmplr `TColor` range fix for FPC 3.2.2 portability | ⬜ |
+| R2.1 | Instrument Setup.exe init path with `NM_Debug` | ✅ |
+| R2.2 | Instrument ISCmplr.dll DLL init | ✅ |
+| R2.3 | Run under DebugView on real Windows, read the log | ✅ Wine verified |
+| R2.4 | Identify and fix the shared defect | ✅ DEP + RTL init order |
+| R2.5 | ISCmplr `TColor` range fix for FPC 3.2.2 portability | ✅ Lazarus 3.0 range |
 
 ### R3 — Live connection (= M3, the real proof)
 
@@ -103,8 +103,8 @@ The milestone that makes it "NetModem, revived."
 
 | Step | What | Status |
 |---|---|---|
-| R3.1 | Synapse runtime test — NMServer accepts a real Telnet connection | ⬜ |
-| R3.2 | A DOS BBS door talks through it end-to-end | ⬜ |
+| R3.1 | Synapse runtime test — NMServer accepts a real Telnet connection | ✅ M3 live test |
+| R3.2 | A DOS BBS door talks through it end-to-end | ✅ PCBoard loads under DOSBox |
 | R3.3 | Binary safety — CP437 / Zmodem through a real session | ✅ |
 | R3.4 | Multinode — 2+ simultaneous connections | ✅ |
 
@@ -120,7 +120,7 @@ The milestone that makes it "NetModem, revived."
 
 | Step | What | Status |
 |---|---|---|
-| R5.1 | `netmodem2irc.iss` packages NMServer, NMConfig, NETMODEM.CPL | ⬜ |
+| R5.1 | `netmodem2irc.iss` packages NMServer, NMConfig, NETMODEM.CPL | ✅ wine ISCC builds installer |
 | R5.2 | README + About with honest feature matrix | ⚠️ updated today, moving target |
 | R5.3 | Tag `netmodem2irc-0.1` | ⬜ |
 
@@ -163,9 +163,9 @@ Packages Track 1. Independent toolchain (fpc264irc).
 |---|---|---|
 | 1–8 | ISCC through Compil32 | ✅ |
 | 9 | Runtime testing | ⚠️ ISCC verified Win98 SE; two init AVs open (→ R2) |
-| 10a | ISCmplr DLL-init AV | ⬜ (→ R2) |
-| 10b | ISCmplr under stock FPC 3.2.2 | ⬜ (→ R2.5) |
-| 11 | `netmodem2irc.iss` packages real payload | ⬜ (→ R5.1) |
+| 10a | ISCmplr DLL-init AV | ✅ DEP fix (MarkModuleCodeExecutable) |
+| 10b | ISCmplr under stock FPC 3.2.2 | ✅ TColor range fixed |
+| 11 | `netmodem2irc.iss` packages real payload | ✅ installer builds under Wine |
 
 ---
 
