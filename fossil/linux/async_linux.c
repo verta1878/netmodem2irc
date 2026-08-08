@@ -323,4 +323,4 @@ void ASYNC_TURNONFIFO(void) { }
 void ASYNC_TURNONXMIT(void) { }
 
 /* 23. ASYNC_SETPORT: no-op */
-void ASYNC_SETPORT(int port) { (void)port; }
+void ASYNC_SETPORT(long baud, int databits) { (void)baud; (void)databits; }

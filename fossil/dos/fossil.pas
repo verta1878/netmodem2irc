@@ -123,10 +123,22 @@ var
   FossilPort: TSerialHandle;
   FossilActive: Boolean;
 
+{ Release CPU time slice on DOS — INT 2Fh/AX=1680h }
+procedure DosIdle;
+
 { Main dispatch — called from the INT 14h ISR with the register frame. }
 procedure FossilDispatch(var R: TFossilRegs);
 
 implementation
+
+procedure DosIdle; assembler;
+{ INT 2Fh/AX=1680h: DPMI/Windows/OS2 idle call.
+  Returns AL=00 if supported, AL=80 if not.
+  Safe on bare DOS — just returns unsupported. }
+asm
+  mov ax, $1680
+  int $2F
+end;
 
 uses
   Dos;
@@ -205,7 +217,7 @@ begin
           calls Fn $02 without checking status first will hang forever.
           That is the BBS's problem per the spec, not ours. }
         while not SerDataAvailable(FossilPort) do
-          { spin — we are the FOSSIL driver, there is no one to yield to };
+          DosIdle;  { yield CPU — INT 2Fh/1680h }
         SerRead(FossilPort, b, 1);
         R.AL := b;
       end;

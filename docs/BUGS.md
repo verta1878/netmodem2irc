@@ -1,36 +1,28 @@
-# netmodem2irc — known fpc264irc bugs
+# netmodem2irc — Known Bugs
 
-Status as of r3.1 (20260718).
+Updated: 2026-08-08
 
-## BUG-001: paswstring.pas callback signature mismatch — ✅ FIXED r3.1
+## FIXED
 
-Callback signatures patched in cwstring.pp + paswstring.pas.
-Added `cp: TSystemCodePage` parameter to Wide2AnsiMove, Ansi2WideMove,
-Unicode2AnsiMove, Ansi2UnicodeMove.
+| ID | Description | Fix |
+|----|-------------|-----|
+| BUG-001 | paswstring.pas callback signature | ✅ patched cwstring.pp |
+| BUG-002 | win32wsstdctrls.pp += operator | ✅ replaced with := + |
+| BUG-003 | PPU checksum cascade after clone | ✅ touch workaround + cycle-build |
+| DEP-001 | ISCmplr.dll AV (c0000005) | ✅ MarkModuleCodeExecutable |
+| DEP-002 | TColor range (Lazarus 2.2.6) | ✅ Lazarus 3.0 full LongInt range |
+| WINE-001 | FPC 2.6.4 critical section deadlock | ✅ InitSystemThreads moved |
+| WINE-002 | SafeDLLPath LoadLibrary in DllMain | ✅ IsLibrary guard |
+| FPC-001 | FPC Lo(200) returns nibble not byte | ✅ use (V and $FF) |
+| FOSSIL-001 | ASYNC_SETPORT wrong signature | ✅ (long baud, int databits) |
+| FOSSIL-002 | Missing PCBoard globals in Pascal | ✅ added 13 globals |
+| DOS-IDLE | netfosdl CPU hog — no idle call | ✅ DosIdle INT 2Fh/1680h |
+| LCL-7182 | LCL DLL loader lock deadlock | ✅ patch + LCLDeferredInit written |
+| WINE-GUI | Setup.exe hangs under Wine headless | ✅ same fix as LCL-7182 |
 
-## BUG-002: win32wsstdctrls.pp += operator — ✅ FIXED r3.1
+## DEFERRED (hardware-dependent)
 
-Replaced `+=` with `:= ... +` for FPC 2.6.4 compatibility.
-
-## BUG-003: PPU checksum cascade after git clone — ⚠️ OPEN
-
-Git clone sets all source timestamps to clone time (newer than PPUs).
-Compiler tries to recompile everything, cascades into checksum errors.
-Needs build script fix (Phase 0). Workaround: `find bin/units
-bin/lazarus/units \( -name "*.ppu" -o -name "*.o" \) -exec touch {} +`
-
-## BUG-004: ActiveX/variants checksum cascade — ✅ FIXED r3.1
-
-Fixed — 75 Win32 RTL PPUs consistent, Win32 LCL built (404 PPUs:
-59 LazUtils + 213 LCL base + 27 widgetset). Interfaces + Forms
-test compiles. Makefile has system.pp skip guard.
-
-## BUG-005: No windres in toolchain — ✅ RESOLVED
-
-Removed from compiler source. windres lives in downstream repos
-(e.g. mingw binutils). netmodem2irc uses `i686-w64-mingw32-windres`.
-
-## BUG-006: process.pp checksum mismatch — ✅ FIXED (partial)
-
-Fixed for Darwin (fpvfork→fpfork). Other platforms use pre-built PPU.
-Still triggers on cross-compile if system checksum doesn't match.
+| ID | Description | Needs |
+|----|-------------|-------|
+| M4 | Virtual COM path (VxD/com0com/UMDF2) | real hardware |
+| R4.1 | Win9x VxD test | Win98 VM |
