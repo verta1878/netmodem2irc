@@ -351,6 +351,8 @@ end;
 function UartNetToGuest(var Uart: TUart16550; B: Byte): Boolean;
 begin
   Result := RingPut(Uart.RX, B);
+  if not Result then
+    Uart.LSR := Uart.LSR or LSR_OE;  { IMP-1: set overrun on overflow }
   UartRecomputeLSR(Uart);
 end;
 

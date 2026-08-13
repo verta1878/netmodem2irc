@@ -61,7 +61,7 @@ type
   private
     FBackend    : TFossilBackend;
     FSocket     : TFossilSocket;     { socket backend (from m_fossil_socket) }
-    FComHandle  : LongInt;           { OS/2 COM port handle (DosOpen) }
+    FComHandle  : LongInt;           { OS/2 HFILE (DosOpen, always 32-bit) }
     FComPort    : Integer;           { COM port number (1-16) }
     FBaudRate   : LongInt;           { current baud rate }
     FActive     : Boolean;
@@ -83,7 +83,7 @@ type
 
     { Socket mode init (netmodem2irc → BBS) }
     function  InitSocket(Port: Word): Boolean;
-    function  InitSocketFD(FD: LongInt): Boolean;
+    function  InitSocketFD(FD: PtrInt): Boolean;
     function  InitSocketConnect(Port: Word): Boolean;
 
     { Serial mode init (real COM port) }

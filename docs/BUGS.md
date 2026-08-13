@@ -42,5 +42,5 @@ Updated: 2026-08-12
 
 | ID | Description | Needs |
 |----|-------------|-------|
-| M4 | Virtual COM path (VxD/com0com/UMDF2) | real hardware |
-| R4.1 | Win9x VxD test | Win98 VM |
+| M4 | Virtual COM path (com0com) | NM_Com0ComLink.pas written, needs com0com hardware to test |
+| R4.1 | Win9x VxD test | test_vxd_r41.pas passes (mock), needs Win98 VM for real VxD |

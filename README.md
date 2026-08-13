@@ -9,119 +9,10 @@ for modern Windows, with a portable, tested Pascal modem-emulation engine.
 
 ## Repository
 
-```
-netmodem2irc/
-│
-├── engine/                        ← the core (24 Pascal units)
-│   ├── NM_UART16550.pas              16550 UART emulation (registers, RX/TX rings)
-│   ├── NM_DebugView.pas              protocol analyzer — LED panel, event log (1,455 lines)
-│   ├── NM_DirectRelay.pas            TCP↔UART bypass, no FOSSIL overhead (299 lines)
-│   ├── NM_Debug.pas                  three-channel debug (OutputDebugString, file, callback)
-│   ├── NM_ServerBridge.pas           server bridge (listen, accept, pump, 99 nodes)
-│   ├── NM_Node.pas                   node/connection manager
-│   ├── NM_SynapseLink.pas            socket link with debug logging
-│   ├── NM_SeamProtocol.pas           SEAM length-prefixed binary framing
-│   ├── NM_SeamSender.pas             SEAM frame sender
-│   ├── NM_ServerLink.pas             server link interface
-│   ├── NetTransport.pas              Telnet BINARY negotiation, IAC doubling
-│   ├── NM_Fossil.pas                 FOSSIL function emulation
-│   ├── NM_FossilDriver.pas           FOSSIL driver interface
-│   ├── NM_ATCommand.pas              AT modem command parser
-│   ├── NM_Config.pas                 configuration records
-│   ├── NM_ConfigApply.pas            apply config to running engine
-│   ├── NM_DefaultConfig.pas          factory defaults
-│   ├── NM_GlobalConfig.pas           global config singleton
-│   ├── NM_Int14ISR.pas               INT 14h ISR placeholder
-│   ├── NM_TSR.pas                    TSR (terminate-stay-resident) support
-│   ├── NM_TSRResident.pas            TSR resident code
-│   ├── NM_NamedPipeLink.pas          named pipe transport (for UMDF2 driver)
-│   ├── NM_Listserv.pas               mailing list server (future)
-│   └── NM_AutoNews.pas               auto-news feature (future)
-│
-├── server/                        ← the GUI application
-│   ├── NMServer.lpr                  Lazarus project — main program
-│   ├── NetModemServer.lpr            alternate entry point (Windows-only)
-│   ├── MainForm.pas                  main window + debug panel (R1.5)
-│   └── SplashForm.pas                splash screen
-│
-├── common/                        ← shared between engine + server
-│   ├── NMVxD.pas                     VxD interface (cross-platform)
-│   └── NetModemVxD.pas               VxD interface (Windows-only)
-│
-├── tests/                         ← 156 tests, 0 failures
-│   ├── test_binary_safety.pas        R3.3: 37 tests — CP437, Zmodem, IAC, nulls, 64KB bulk
-│   ├── test_m3_server.pas            M3: headless echo server (TCP accept + echo)
-│   ├── test_m3_client.pas            M3: 6 tests — ASCII, CP437, high bytes, Zmodem, 4KB
-│   ├── test_r34_multinode.pas        R3.4: 25 tests — 3 nodes, no cross-talk, disconnect
-│   ├── test_d4_fossil.pas            D4: 37 tests — every INT 14h function (DOS-only)
-│   └── test_d5_relay.pas             D5: 50 tests — direct UART relay, DCD, RING, bulk
-│
-├── dos/driver/                    ← DOS FOSSIL driver (TSR)
-│   ├── serial.pas                    real 16550 UART — Port[] I/O (sysop/0, 203 lines)
-│   ├── serial_irq.pas                ISR + 4KB ring buffer, 8259 PIC (kiddo, 195 lines)
-│   ├── fossil.pas                    FOSSIL dispatch FSC-0015/0072 (398 lines)
-│   └── netfosdl.pas                  INT 14h hook, Keep (TSR), X00 params (323 lines)
-│
-├── driver/src/                    ← Dedrick Allen's original VxD source (16 files)
-│   ├── NETMODEM.ASM                  172K — the original Windows 95/98 VxD
-│   ├── NETMODEM.INC, .DEF, .RC       driver build files
-│   ├── VMM.INC, VCOMM.INC, etc.     Windows DDK includes
-│   ├── RESOURCE.H                    resource definitions
-│   └── README.md                     provenance notes
-│
-├── libs/synapse/                  ← Ararat Synapse socket library (16 files)
-│   ├── blcksock.pas                  TBlockSocket — core TCP/UDP
-│   ├── synautil.pas, synaser.pas     utilities, serial
-│   ├── synacode.pas, synaip.pas      encoding, IP helpers
-│   └── synafpc.pas, synsock.pas      FPC bindings
-│
-├── out/                           ← compiled binaries
-│   ├── i386/
-│   │   ├── NMServer.exe              2.0M Win32 PE32 (FPC 3.2.2)
-│   │   ├── NMConfig.exe              configuration tool
-│   │   └── NETMODEM.CPL              control panel applet (Dedrick Allen original)
-│   └── win32/                        same binaries, alternate path
-│
-├── InnoIRC561/                    ← Inno Setup 5.6.1 (FPC port)
-│   ├── out/
-│   │   ├── ISCC.exe                  command-line compiler
-│   │   ├── Compil32.exe              GUI compiler
-│   │   ├── Setup.exe                 installer stub
-│   │   └── ISCmplr.dll + 10 DLLs    installer runtime
-│   ├── src/issrc-is-5_6_1/          upstream Inno Setup source
-│   ├── lzma/                         LZMA compression objects
-│   └── netmodem2irc.iss              installer script
-│
-├── config/                        ← NMConfig source
-├── cpl/                           ← control panel applet source
-├── history/                       ← Dedrick Allen's original files (7 files)
-├── attic/                         ← superseded docs (6 files)
-│
-├── docs/                          ← 64 documents
-│   ├── index.htm                     color-coded doc index with phase status
-│   ├── DEBUGGER_GUIDE.md             plain English debugger reference
-│   ├── R42_com0com_NT_path.md        NT virtual COM port setup guide
-│   ├── R43_UMDF2_virtual_COM.md      UMDF2 driver specification
-│   ├── serial_irq_plan.md            ISR + ring buffer plan (implemented)
-│   ├── DRIVER_INTERFACE.md           FOSSIL/VxD interface specification
-│   └── ... 58 more (architecture, audits, protocols, build guides)
-│
-├── README.md                      ← this file
-├── ROADMAP.md                     3 tracks, 24 phases, coding standards
-├── Makefile                       make / make tests / make win32 / make dos
-├── build.sh                       build script
-├── LICENSE                        GPLv3
-├── AUTHORS                        team credits
-├── CREDITS.md                     full credits with specs + upstream
-├── CHANGELOG.md                   version history
-├── LICENSES.md                    third-party license inventory
-├── THIRD_PARTY.md                 third-party component list
-└── .gitattributes                 line ending rules (CRLF for .pas/.asm)
+See **Directory Map** below for the full annotated tree.
 
-879 files total. 24 engine units. 6 test suites (156 tests).
-4 DOS driver files. 16 Synapse files. 16 VxD source files.
-64 docs. 12 Inno Setup binaries. 5 compiled binaries.
-```
+Key directories: `engine/` (core), `server/` (GUI), `fossil/` (4 platforms),
+`driver/pascal-port/` (VxD port), `tests/`, `docs/`, `InnoIRC561/` (installer).
 
 ## Status
 
@@ -135,8 +26,8 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | M1 | Engine integrated — 38 tests, 0 failures | ✅ |
 | M2 | Builds on Windows — dual compiler verified | ✅ |
 | M3 | Live connection — 6 tests pass | ✅ |
-| M4 | Virtual COM path (VxD 9x / com0com NT / UMDF2) | ⬜ needs hardware |
-| M5 | Tagged installable release | ⬜ after M4 |
+| M4 | Virtual COM path (com0com NT + UMDF2 named pipe) | ✅ code written, needs hardware to test |
+| M5 | Tagged installable release | ⬜ after final testing |
 
 | Binary | Size | Compiler | Status |
 |---|---|---|---|
@@ -171,7 +62,7 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | R2.1-R2.5 | Setup.exe + ISCmplr AV fix | ✅ DEP fix + Wine deadlock fix |
 | R3.3 | Binary safety — 37 tests pass | ✅ |
 | R3.4 | Multinode — 25 tests pass (3 simultaneous nodes) | ✅ |
-| R4.1 | Win9x VxD test | ⬜ needs Win98 VM |
+| R4.1 | Win9x VxD test | ✅ mock passes 39/39, needs Win98 VM for real |
 | R4.2 | NT com0com path — documented | ✅ |
 | R4.3 | NT UMDF2 driver — specified | ✅ |
 | R5.1 | Inno installer packaging | ✅ wine ISCC.exe builds installer |
@@ -343,7 +234,7 @@ netmodem2irc/
 │   ├── NM_ATCommand.pas        AT modem command parser (ATDT, ATH, ATA, ATZ)
 │   ├── NM_Fossil.pas           FOSSIL function emulation (INT 14h)
 │   ├── NM_FossilDriver.pas     FOSSIL driver interface
-│   ├── NM_Int14ISR.pas         INT 14h ISR far pointer placeholder
+│   ├── NM_Int14ISR.pas         INT 14h ISR hook (211 lines)
 │   ├── NM_Node.pas             Node/connection manager (99 nodes max)
 │   ├── NM_SeamProtocol.pas     SEAM length-prefixed binary framing
 │   ├── NM_SeamSender.pas       SEAM frame sender
@@ -389,6 +280,22 @@ netmodem2irc/
 │   ├── NMVxD.pas               VxD interface (cross-platform)
 │   └── NetModemVxD.pas         VxD interface (Windows-only)
 │
+├── fossil/                      ── FOSSIL DRIVERS (4 PLATFORMS) ──
+│   ├── common/                  Shared code
+│   │   ├── m_fossil_socket.pas  Socket FOSSIL backend (sysop/0, 189 lines)
+│   │   └── serial_ext.pas      6 extended serial functions (wrench)
+│   ├── dos/                     netfosdl — DOS TSR (INT 14h)
+│   │   ├── fossil.pas           FOSSIL dispatch FSC-0015
+│   │   ├── serial.pas           16550 UART Port[] I/O (sysop/0)
+│   │   ├── serial_irq.pas      ISR + 4KB ring buffer (kiddo)
+│   │   └── netfosdl.pas         DOS TSR loader
+│   ├── linux/                   netfosll — Linux ASYNC layer
+│   │   └── async_linux.c        23 ASYNC functions (wrench, 326 lines)
+│   ├── os2/                     netfosol — OS/2 (DosDevIOCtl + socket)
+│   │   └── netfosol.pas         428 lines (wrench)
+│   └── windows/                 netfoswl — Windows (Win32 COM + socket)
+│       └── netfoswl.pas         392 lines (wrench)
+│
 ├── dos/                        ── DOS TARGET ──
 │   ├── driver/                 FOSSIL driver (D1-D3)
 │   │   ├── serial.pas          Real 16550 UART — Port[] I/O (sysop/0, 203 lines)
@@ -401,18 +308,12 @@ netmodem2irc/
 │   ├── fpc-sockets-request.md  Socket API request for fpc264irc
 │   └── retired/                Superseded DOS code
 │
-├── driver/                     ── ORIGINAL VxD SOURCE ──
-│   └── src/                    Dedrick Allen's NetModem VxD (16 files)
-│       ├── NETMODEM.ASM        172K x86 assembly — the VxD
-│       ├── NETMODEM.DEF        Module definition
-│       ├── NETMODEM.INC        NetModem include
-│       ├── NETMODEM.RC         Resource script
-│       ├── RESOURCE.H          Resource header
-│       ├── REGDEF.INC          Register definitions
-│       ├── SHELL.INC           Shell interface
-│       ├── VCOMM.INC           VCOMM interface
-│       ├── VCOMMW32.INC        VCOMM Win32 interface
-│       ├── VMM.INC             Virtual Machine Manager
+├── driver/                     ── VxD PASCAL PORT ──
+│   ├── pascal-port/             VxD → Pascal port (wrench)
+│   │   ├── NM_VxD_Types.pas    Packed records matching ASM structs (205 lines)
+│   │   ├── VXD_PORT_PLAN.md    6-phase port plan
+│   │   └── vxd_port_test.pas   7-phase test harness (39 tests)
+│   └── src-retired-README.md   Points to attic/driver-vxd-original/
 │       ├── VPICD.INC           Virtual PIC
 │       ├── VWIN32.INC          VWin32 interface
 │       ├── COPYING             Original license
@@ -429,7 +330,7 @@ netmodem2irc/
 │       ├── synafpc.pas         FPC compatibility
 │       ├── synaip.pas          IP address utilities
 │       ├── synsock.pas         Socket definitions
-│       ├── smtpsend.pas        Zero-byte placeholder (future mailing list)
+│       ├── smtpsend.pas        SMTP client (Synapse)
 │       ├── *.inc               Platform includes (win32, linux, posix, etc.)
 │       ├── SYNAPSE_README.md   Upstream documentation
 │       └── README.md           Directory documentation
@@ -492,12 +393,14 @@ netmodem2irc/
 │   ├── netmdb15.zip            NetModem DOS 1.5 (Dedrick's DOS version)
 │   └── netmdb15/               Extracted DOS version (NETFOSSL.EXE, NETMODEM.EXE)
 │
-├── attic/                      ── SUPERSEDED / ARCHIVE ──
+├── attic/                       Retired code (historical)
+│   ├── driver-vxd-original/     NETMODEM.ASM (5,712 lines, Dedrick Allen)
+│   ├── docs/                    50 retired planning docs
 │   ├── README.md               What's here and why
 │   ├── WIN32COM.PAS            Old Win32 COM port code
 │   ├── docs/                   Old docs (6 files, superseded by docs/)
 │   ├── netmodem2irc_CREDITS.md Old credits
-│   └── watt32/                 Watt-32 TCP stack stubs (for DOS)
+│   └── watt32/                 Watt-32 TCP stubs (retired)
 │
 └── .github/
     └── description             GitHub repo description
@@ -513,7 +416,7 @@ netmodem2irc/
 | common/ | 2 | Shared VxD interface |
 | dos/driver/ | 5 | FOSSIL driver (serial + IRQ + dispatch) |
 | dos/ | 4 + retired | DOS target code |
-| driver/src/ | 16 | Original VxD assembly source |
+| driver/pascal-port/ | 3 | VxD → Pascal port (types, plan, test) |
 | libs/synapse/ | 18 | Ararat Synapse socket library |
 | tests/ | 6 | Integration test suites (156 tests) |
 | out/ | 10 | Compiled binaries |

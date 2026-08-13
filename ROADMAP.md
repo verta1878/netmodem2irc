@@ -112,7 +112,7 @@ The milestone that makes it "NetModem, revived."
 
 | Step | What | Status |
 |---|---|---|
-| R4.1 | Win9x — test NETMODEM.VXD against the engine | ⬜ |
+| R4.1 | Win9x — test NETMODEM.VXD against the engine | ✅ mock test passes (39/39), needs Win98 VM for real VxD |
 | R4.2 | NT — document and test com0com path | ✅ |
 | R4.3 | NT — native UMDF2 driver (Option A, frontier) | ✅ |
 

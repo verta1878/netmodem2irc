@@ -47,6 +47,7 @@ unit NM_Fossil;
 interface
 
 uses
+  SysUtils,
   NM_UART16550;
 
 const
@@ -148,7 +149,7 @@ begin
   Info.OFree   := RingFree(U.TX);
   Info.SWidth  := 80;
   Info.SHeight := 25;
-  Info.Baud    := 0;
+  Info.Baud    := 12;  { 115200 / 100 = 1152; FOSSIL byte = 1152 div 100 = 12 }
 end;
 
 procedure FossilDispatch(var U: TUart16550; var R: TFossilRegs);
@@ -161,8 +162,10 @@ begin
   case R.AH of
     FN_INIT:
       begin
-        { Fn 04h: initialize FOSSIL. Return the signature doors check. }
-        UartReset(U);
+        { Fn 04h: initialize FOSSIL. Return the signature doors check.
+          Only clear buffers on first init — re-init preserves data. }
+        if not U.FifoOn then UartReset(U);  { first init only }
+        U.FifoOn := True;  { mark as initialized }
         R.AH := Hi(FOSSIL_SIGNATURE);   // AX = 1954h
         R.AL := Lo(FOSSIL_SIGNATURE);
         R.BX := FOSSIL_INFO_BX;         // 0521h
@@ -190,15 +193,18 @@ begin
 
     FN_RX_WAIT:
       begin
-        { Fn 02h: receive a char into AL. (Blocking is the caller's job on NT;
-          here we return the next byte if present, else AL=0.) }
+        { Fn 02h: receive a char into AL. Spec says BLOCK until available.
+          Spin-wait with Sleep(1) to yield CPU. Timeout if not connected. }
+        while (U.RX.Count = 0) and ((U.MSR and MSR_DCD) <> 0) do
+          Sleep(1);
         if RingGet(U.RX, b) then
         begin
           R.AL := b;
-          UartRecomputeLSR(U);
+          R.AH := FSTAT_TX_ROOM;
         end
         else
           R.AL := 0;
+        UartRecomputeLSR(U);
       end;
 
     FN_PEEK:
@@ -327,6 +333,25 @@ begin
         UartRecomputeLSR(U);
         R.AH := Hi(n);   // AX = bytes actually written
         R.AL := Lo(n);
+      end;
+
+    FN_ANSI_WRITE:
+      begin
+        { Fn 13h: write string with ANSI processing. Uses Buf/CX like Fn 19h.
+          If Buf is nil, write single char from AL (fallback). }
+        if (R.Buf <> nil) and (R.CX > 0) then
+        begin
+          n := 0;
+          while n < R.CX do
+          begin
+            RingPut(U.TX, (R.Buf + n)^);
+            Inc(n);
+          end;
+          R.AH := Hi(n);
+          R.AL := Lo(n);
+        end
+        else
+          RingPut(U.TX, R.AL);
       end;
 
     { ---- X00 SuperSet Extensions (Dedrick Allen) ---- }

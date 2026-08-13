@@ -56,7 +56,7 @@ type
 
     { Socket mode init }
     function  InitSocket(Port: Word): Boolean;
-    function  InitSocketFD(FD: LongInt): Boolean;
+    function  InitSocketFD(FD: PtrInt): Boolean;
     function  InitSocketConnect(Port: Word): Boolean;
 
     { Serial mode init }

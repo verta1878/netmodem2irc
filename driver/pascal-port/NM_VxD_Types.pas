@@ -94,7 +94,7 @@ type
     StrSiz  : Word;       { structure size (19) }
     MajVer  : Byte;       { 5 }
     MinVer  : Byte;       { 0 }
-    Ident   : LongInt;    { pointer to ID string }
+    Ident   : LongInt;    { 32-bit pointer to ID string (VxD is 32-bit only) }
     IBufr   : Word;       { input buffer size }
     IFree   : Word;       { input buffer free }
     OBufr   : Word;       { output buffer size }
@@ -130,10 +130,10 @@ type
 
   { IOStruct — the main data exchange (IOCTL 0Eh) }
   TVxDIO = packed record
-    RXPointer  : LongInt;   { pointer to RX buffer (Ring-3) }
+    RXPointer  : LongInt;   { 32-bit pointer to RX buffer (VxD is 32-bit) }
     IORXLength : LongInt;   { RX buffer length }
     Received   : Word;      { bytes actually received }
-    HXPointer  : LongInt;   { pointer to TX buffer (Ring-3) }
+    HXPointer  : LongInt;   { 32-bit pointer to TX buffer (VxD is 32-bit) }
     IOHXLength : LongInt;   { TX buffer length }
     HXFree     : Word;      { TX buffer free space }
   end;
@@ -157,7 +157,7 @@ type
     Ringing      : Byte;
     Attempting   : Byte;
     Answered     : Byte;
-    ATBuffer     : LongInt;    { pointer }
+    ATBuffer     : LongInt;    { 32-bit pointer (VxD is 32-bit only) }
     TXBuffer     : LongInt;
     RXBuffer     : LongInt;
     ATIn         : LongInt;
