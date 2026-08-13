@@ -42,7 +42,7 @@ unit NM_Listserv;
 interface
 
 uses
-  SysUtils;
+  SysUtils, blcksock;
 
 type
   TListservInfo = record
@@ -64,6 +64,13 @@ type
     function IsValid: Boolean;
     procedure LoadFromFile(const AFileName: string);
     procedure SaveToFile(const AFileName: string);
+    { Register this BBS with a central directory server.
+      Sends a simple text record to RegistryHost:RegistryPort.
+      Returns True if the server acknowledged. }
+    function RegisterBBS(const AHost: string; APort: Word): Boolean;
+    { Export registration info as a one-line text record for manual
+      submission (paste into a BBS list, email to a list maintainer). }
+    function ExportRecord: string;
     property Enabled: Boolean read FEnabled write FEnabled;
     property Info: TListservInfo read FInfo write FInfo;
   end;
@@ -74,8 +81,13 @@ constructor TNMListserv.Create;
 begin
   inherited Create;
   FEnabled := False;
-  FillChar(FInfo, SizeOf(FInfo), 0);
+  FInfo.BBSName := '';
+  FInfo.Software := '';
+  FInfo.Speed := '';
+  FInfo.Hostname := '';
+  FInfo.IPAddress := '';
   FInfo.InternetPort := 23;
+  FInfo.Comment := '';
 end;
 
 function TNMListserv.IsValid: Boolean;
@@ -93,41 +105,86 @@ var
 begin
   if not FileExists(AFileName) then Exit;
   AssignFile(F, AFileName);
+  {$I-}
   Reset(F);
-  while not EOF(F) do
-  begin
-    ReadLn(F, S);
-    S := Trim(S);
-    if (S = '') or (S[1] = ';') or (S[1] = '#') then Continue;
-    EqPos := Pos('=', S);
-    if EqPos = 0 then Continue;
-    Key := Trim(Copy(S, 1, EqPos - 1));
-    Val := Trim(Copy(S, EqPos + 1, Length(S)));
-    if Key = 'BBSName'       then FInfo.BBSName := Val
-    else if Key = 'Software' then FInfo.Software := Val
-    else if Key = 'Speed'    then FInfo.Speed := Val
-    else if Key = 'Hostname' then FInfo.Hostname := Val
-    else if Key = 'IPAddress' then FInfo.IPAddress := Val
-    else if Key = 'InternetPort' then FInfo.InternetPort := StrToIntDef(Val, 23)
-    else if Key = 'Comment'  then FInfo.Comment := Val;
+  {$I+}
+  if IOResult <> 0 then Exit;
+  try
+    while not EOF(F) do
+    begin
+      ReadLn(F, S);
+      S := Trim(S);
+      if (S = '') or (S[1] = ';') or (S[1] = '#') then Continue;
+      EqPos := Pos('=', S);
+      if EqPos = 0 then Continue;
+      Key := Trim(Copy(S, 1, EqPos - 1));
+      Val := Trim(Copy(S, EqPos + 1, Length(S)));
+      if Key = 'BBSName'       then FInfo.BBSName := Val
+      else if Key = 'Software' then FInfo.Software := Val
+      else if Key = 'Speed'    then FInfo.Speed := Val
+      else if Key = 'Hostname' then FInfo.Hostname := Val
+      else if Key = 'IPAddress' then FInfo.IPAddress := Val
+      else if Key = 'InternetPort' then FInfo.InternetPort := StrToIntDef(Val, 23)
+      else if Key = 'Comment'  then FInfo.Comment := Val;
+    end;
+  finally
+    CloseFile(F);
   end;
-  CloseFile(F);
 end;
 
 procedure TNMListserv.SaveToFile(const AFileName: string);
 var F: TextFile;
 begin
   AssignFile(F, AFileName);
+  {$I-}
   Rewrite(F);
-  WriteLn(F, '; NetModem/32 BBS Listserv Information');
-  WriteLn(F, 'BBSName=', FInfo.BBSName);
-  WriteLn(F, 'Software=', FInfo.Software);
-  WriteLn(F, 'Speed=', FInfo.Speed);
-  WriteLn(F, 'Hostname=', FInfo.Hostname);
-  WriteLn(F, 'IPAddress=', FInfo.IPAddress);
-  WriteLn(F, 'InternetPort=', FInfo.InternetPort);
-  WriteLn(F, 'Comment=', FInfo.Comment);
-  CloseFile(F);
+  {$I+}
+  if IOResult <> 0 then Exit;
+  try
+    WriteLn(F, '; NetModem/32 BBS Listserv Information');
+    WriteLn(F, 'BBSName=', FInfo.BBSName);
+    WriteLn(F, 'Software=', FInfo.Software);
+    WriteLn(F, 'Speed=', FInfo.Speed);
+    WriteLn(F, 'Hostname=', FInfo.Hostname);
+    WriteLn(F, 'IPAddress=', FInfo.IPAddress);
+    WriteLn(F, 'InternetPort=', FInfo.InternetPort);
+    WriteLn(F, 'Comment=', FInfo.Comment);
+  finally
+    CloseFile(F);
+  end;
+end;
+
+function TNMListserv.RegisterBBS(const AHost: string; APort: Word): Boolean;
+var
+  Sock: TTCPBlockSocket;
+  Rec, Reply: string;
+begin
+  Result := False;
+  if not IsValid then Exit;
+  Rec := ExportRecord;
+  Sock := TTCPBlockSocket.Create;
+  try
+    Sock.Connect(AHost, IntToStr(APort));
+    if Sock.LastError <> 0 then Exit;
+    Sock.SendString('REGISTER ' + Rec + #13#10);
+    if Sock.LastError <> 0 then Exit;
+    Reply := Sock.RecvString(5000);  { 5 second timeout }
+    Result := (Pos('OK', UpperCase(Reply)) > 0);
+  finally
+    Sock.CloseSocket;
+    Sock.Free;
+  end;
+end;
+
+function TNMListserv.ExportRecord: string;
+begin
+  Result := FInfo.BBSName + '|' +
+            FInfo.Software + '|' +
+            FInfo.Speed + '|' +
+            FInfo.Hostname + '|' +
+            FInfo.IPAddress + '|' +
+            IntToStr(FInfo.InternetPort) + '|' +
+            FInfo.Comment;
 end;
 
 end.

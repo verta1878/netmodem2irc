@@ -35,7 +35,7 @@ unit NM_AutoNews;
 interface
 
 uses
-  SysUtils;
+  SysUtils, NM_Node;
 
 type
   TNMAutoNews = class
@@ -51,6 +51,9 @@ type
     function LoadNewsText: string;
     property Enabled: Boolean read FEnabled write FEnabled;
     property IntervalMin: Integer read FIntervalMin write FIntervalMin;
+    { Deliver news to all connected nodes via manager.BroadcastStr.
+      Call from the server's main timer tick. Returns True if sent. }
+    function DeliverIfDue(AManager: TObject): Boolean;
     property NewsFile: string read FNewsFile write FNewsFile;
   end;
 
@@ -85,13 +88,36 @@ begin
   Result := '';
   if not FileExists(FNewsFile) then Exit;
   AssignFile(F, FNewsFile);
+  {$I-}
   Reset(F);
-  while not EOF(F) do
-  begin
-    ReadLn(F, S);
-    Result := Result + S + #13#10;
+  {$I+}
+  if IOResult <> 0 then Exit;
+  try
+    while not EOF(F) do
+    begin
+      ReadLn(F, S);
+      Result := Result + S + #13#10;
+    end;
+  finally
+    CloseFile(F);
   end;
-  CloseFile(F);
+end;
+
+function TNMAutoNews.DeliverIfDue(AManager: TObject): Boolean;
+var
+  News: string;
+begin
+  Result := False;
+  if not ShouldSend then Exit;
+  News := LoadNewsText;
+  if News = '' then Exit;
+  { AManager is TNodeManager — forward-declared to avoid circular ref }
+  TNodeManager(AManager).BroadcastStr(#13#10 +
+    '=== NetModem/32 Auto-News ===' + #13#10 +
+    News +
+    '=============================' + #13#10);
+  MarkSent;
+  Result := True;
 end;
 
 end.

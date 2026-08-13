@@ -100,6 +100,7 @@ const
   RC_RING      = 2;
   RC_NOCARRIER = 3;
   RC_ERROR     = 4;
+  RC_NOANSWER  = 5;
   RC_NODIALTONE= 6;
   RC_BUSY      = 7;
 
@@ -221,7 +222,17 @@ begin
       if FTrans.Dial(host, port) then
       begin
         FMode := mmOnline;
-        EmitResult('CONNECT 300/ARQ/TELNET', RC_CONNECT);
+        { VxD emits speed-dependent CONNECT string.
+          On Telnet all connections are full-speed, so report
+          the configured baud rate. Match VxD szCONNECT_* exactly. }
+        case 9600 of { Telnet = full speed, report 9600 }
+           300: EmitResult('CONNECT 300/ARQ/TELNET', RC_CONNECT);
+          1200: EmitResult('CONNECT 1200/ARQ/TELNET', RC_CONNECT);
+          2400: EmitResult('CONNECT 2400/ARQ/TELNET', RC_CONNECT);
+          9600: EmitResult('CONNECT 9600/ARQ/TELNET', RC_CONNECT);
+        else
+          EmitResult('CONNECT 9600/ARQ/TELNET', RC_CONNECT);
+        end;
       end
       else
         EmitResult('NO CARRIER', RC_NOCARRIER);

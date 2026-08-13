@@ -320,8 +320,13 @@ begin
          Uart.DLL := Value
        else
        begin
-         { THR — push byte to TX ring for the server to send }
-         RingPut(Uart.TX, Value);
+         { THR — push byte to TX ring for the server to send.
+           If MCR loopback (bit 4) is set, route to RX instead
+           (VxD IOHandler00: THR→RX direct in loopback mode). }
+         if (Uart.MCR and MCR_LOOP) <> 0 then
+           RingPut(Uart.RX, Value)
+         else
+           RingPut(Uart.TX, Value);
          UartRecomputeLSR(Uart);
        end;
     1: if DLAB then

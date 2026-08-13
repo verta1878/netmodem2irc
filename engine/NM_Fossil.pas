@@ -84,6 +84,9 @@ const
   FN_READ_BLOCK      = $18;
   FN_WRITE_BLOCK     = $19;
   FN_BREAK           = $1A;
+  { X00 SuperSet extensions (Dedrick Allen / NetModem/32) }
+  FN_X00_READ        = $20;   // extended non-blocking read
+  FN_X00_INJECT      = $21;   // write byte into RX buffer
   FN_GET_INFO        = $1B;
 
   { status bits returned by Fn 03h in AH (line status, 16550-like) }
@@ -326,16 +329,44 @@ begin
         R.AL := Lo(n);
       end;
 
+    { ---- X00 SuperSet Extensions (Dedrick Allen) ---- }
+
+    FN_X00_READ:  { $20 — Extended non-blocking read from RX buffer }
+      begin
+        if UartGuestToNet(U, b) then
+        begin
+          R.AH := 0;
+          R.AL := b;
+        end
+        else
+        begin
+          R.AH := $80;  { no data flag }
+          R.AL := 0;
+        end;
+      end;
+
+    FN_X00_INJECT:  { $21 — Write byte INTO RX buffer (keyboard inject) }
+      begin
+        { VxD checks CK_Checking for Ctrl-C/Ctrl-K intercept.
+          We skip that — user-mode doesn't need it. }
+        UartNetToGuest(U, R.AL);
+      end;
+
   else
     begin
-      { FOSSIL functions run 00h..1Bh (standard) plus the X00 SuperSet 1Ch..21h.
-        Functions in-range that we don't specifically act on (e.g. screen/cursor
-        console functions) are still OURS — recognize them as no-ops so callers
-        don't fault. But functions OUTSIDE the FOSSIL range are NOT ours: leave
-        Handled=false so a real INT 14h driver chains to the previous handler
-        instead of falsely claiming them. }
+      { Recognize X00 range plus Dedrick Allen's extended signature
+        checks (7Eh/7Fh) as ours. Everything else chains. }
       if R.AH <= $21 then
         R.Handled := True
+      else if (R.AH = $7E) or (R.AH = $7F) then
+      begin
+        { P-5: Extended FOSSIL signature — Dedrick Allen extension.
+          Returns AX=1954h, BH=0, BL=input AL. }
+        R.BX := Word(R.AL);       { BL = input AL, BH = 0 }
+        R.AH := Hi(FOSSIL_SIGNATURE);
+        R.AL := Lo(FOSSIL_SIGNATURE);
+        R.Handled := True;
+      end
       else
         R.Handled := False;
     end;

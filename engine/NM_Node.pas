@@ -80,6 +80,8 @@ type
     procedure Disconnect;
     { CM_SEND_REMOTE_BREAK }
     procedure SendBreak;
+    { Send a string directly to the caller (bypasses AT/modem layer) }
+    procedure SendStr(const S: string);
 
     { --- guest side (what the virtual COM / FOSSIL shim calls) --- }
     { A byte the guest wrote (THR or FOSSIL TX). In command mode it goes to the
@@ -128,6 +130,8 @@ type
     { Pump every active node once (the server's main tick). }
     procedure PumpAll;
     procedure MarkActive(AIndex: Integer);   { switch: note a node as live }
+    { Send a string to all connected (online) nodes }
+    procedure BroadcastStr(const S: string);
     property ActiveCount: Integer read FActiveCount;   { live-node count (switch) }
     property Count: Integer read FCount;
   end;
@@ -322,6 +326,21 @@ begin
     else
       RemoveActive(n);   { drop dead/offline node; do NOT advance i (compacted) }
   end;
+end;
+
+procedure TNetModemNode.SendStr(const S: string);
+var Sent: Integer;
+begin
+  if (FState = nsOnline) and (FTrans <> nil) and (Length(S) > 0) then
+    FLink.Send(S[1], Length(S), Sent);
+end;
+
+procedure TNodeManager.BroadcastStr(const S: string);
+var i: Integer;
+begin
+  for i := 0 to FActiveCount - 1 do
+    if (FActive[i] <> nil) and (FActive[i].State = nsOnline) then
+      FActive[i].SendStr(S);
 end;
 
 end.

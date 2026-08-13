@@ -1,6 +1,6 @@
 # netmodem2irc — Known Bugs
 
-Updated: 2026-08-08
+Updated: 2026-08-12
 
 ## FIXED
 
@@ -17,8 +17,26 @@ Updated: 2026-08-08
 | FOSSIL-001 | ASYNC_SETPORT wrong signature | ✅ (long baud, int databits) |
 | FOSSIL-002 | Missing PCBoard globals in Pascal | ✅ added 13 globals |
 | DOS-IDLE | netfosdl CPU hog — no idle call | ✅ DosIdle INT 2Fh/1680h |
-| LCL-7182 | LCL DLL loader lock deadlock | ✅ patch + LCLDeferredInit written |
+| LCL-7182 | LCL DLL loader lock deadlock | ✅ patch + LCLDeferredInit |
 | WINE-GUI | Setup.exe hangs under Wine headless | ✅ same fix as LCL-7182 |
+| L-1 | FillChar on AnsiString record | ✅ individual assignment |
+| L-2 | NM_Listserv LoadFromFile no try | ✅ {$I-} + try/finally |
+| L-3 | NM_Listserv SaveToFile no try | ✅ {$I-} + try/finally |
+| A-1 | NM_AutoNews LoadNewsText no try | ✅ {$I-} + try/finally |
+| G-1 | NM_GlobalConfig LoadFromFile no try | ✅ {$I-} + try/finally |
+| G-2 | NM_GlobalConfig SaveToFile no try | ✅ {$I-} + try/finally |
+| P-1 | MCR loopback not wired | ✅ THR→RX when MCR bit 4 set |
+| P-2 | XON/XOFF not intercepted in TX | ✅ SetSoftFlow + Pump filter |
+| P-3 | X00 Fn20h extended RX — no-op | ✅ UartGuestToNet read |
+| P-4 | X00 Fn21h RX inject — no-op | ✅ UartNetToGuest write |
+| P-5 | INT14 7Eh/7Fh signature — missing | ✅ returns 1954h + BL=AL |
+
+## ARCHITECTURE NOTES (not bugs)
+
+| ID | Description | Status |
+|----|-------------|--------|
+| P-6 | Ring buffer thread safety | OK single-threaded; add locks for MT |
+| P-7 | TX full yield | ISocketLink handles backpressure |
 
 ## DEFERRED (hardware-dependent)
 

@@ -278,8 +278,12 @@ var
 begin
   if not FileExists(AFileName) then Exit;
   AssignFile(F, AFileName);
+  {$I-}
   Reset(F);
-  while not EOF(F) do
+  {$I+}
+  if IOResult <> 0 then Exit;
+  try
+    while not EOF(F) do
   begin
     ReadLn(F, S);
     S := Trim(S);
@@ -312,7 +316,9 @@ begin
     else if Key = 'RingCount'      then FRingCount          := StrToIntDef(Val, 1)
     else if Key = 'NetModemDir'    then FNetModemDir        := Val;
   end;
-  CloseFile(F);
+  finally
+    CloseFile(F);
+  end;
 end;
 
 procedure TNMGlobalConfig.SaveToFile(const AFileName: string);
@@ -327,7 +333,11 @@ var F: TextFile;
 
 begin
   AssignFile(F, AFileName);
+  {$I-}
   Rewrite(F);
+  {$I+}
+  if IOResult <> 0 then Exit;
+  try
   WriteLn(F, '; NetModem/32 global configuration');
   WB('StartAsService', FStartAsService);
   WB('SuppressSplash', FSuppressSplash);
@@ -351,7 +361,9 @@ begin
   WI('InternalCacheSize', FInternalCacheSize);
   WI('RingCount', FRingCount);
   WS('NetModemDir', FNetModemDir);
-  CloseFile(F);
+  finally
+    CloseFile(F);
+  end;
 end;
 
 end.

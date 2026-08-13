@@ -97,6 +97,8 @@ type
     FState: TTelnetState;
     FBinarySent: Boolean;      // we asked for BINARY
     FBinaryOK  : Boolean;      // remote agreed
+    FSoftFlowEnabled: Boolean; // AT&I=1 or 2: XON/XOFF interception
+    FRemotePaused: Boolean;    // XOFF received — remote TX paused
     procedure SendRaw(const Buf; Len: Integer);
     procedure SendIAC(Cmd, Opt: Byte);
     procedure FeedByteToGuest(B: Byte);   // after Telnet filtering -> RX ring
@@ -114,6 +116,7 @@ type
     procedure NegotiateBinary;
     { Send a Telnet BREAK (IAC BRK) to the remote. }
     procedure SendBreak;
+    procedure SetSoftFlow(Enabled: Boolean);
     property BinaryMode: Boolean read FBinaryOK;
   end;
 
@@ -127,6 +130,8 @@ begin
   FState := tsData;
   FBinarySent := False;
   FBinaryOK := False;
+  FSoftFlowEnabled := False;
+  FRemotePaused := False;
 end;
 
 procedure TNetTransport.SendRaw(const Buf; Len: Integer);
@@ -165,6 +170,8 @@ begin
   if FLink <> nil then FLink.Close;
   UartSetCarrier(FUart^, False);
   FBinaryOK := False;
+  FSoftFlowEnabled := False;
+  FRemotePaused := False;
   FState := tsData;
 end;
 
@@ -200,6 +207,15 @@ begin
     only avoided overflow incidentally (one slot of slack); this makes it explicit. }
   while (n <= High(outbuf) - 1) and UartGuestToNet(FUart^, b) do
   begin
+    { P-2: XON/XOFF interception — match VxD IOHandler00.
+      If software flow control is enabled (AT&I=1 or 2),
+      intercept XON/XOFF bytes: they control flow, not data.
+      XON ($11) resumes remote TX, XOFF ($13) pauses it. }
+    if FSoftFlowEnabled and ((b = $11) or (b = $13)) then
+    begin
+      FRemotePaused := (b = $13);  { XOFF pauses, XON resumes }
+      Continue;  { don't send to remote }
+    end;
     outbuf[n] := b; Inc(n);
     if b = TELNET_IAC then
     begin
@@ -288,6 +304,12 @@ var seq: array[0..1] of Byte;
 begin
   seq[0] := TELNET_IAC; seq[1] := TELNET_BRK;
   SendRaw(seq, 2);
+end;
+
+procedure TNetTransport.SetSoftFlow(Enabled: Boolean);
+begin
+  FSoftFlowEnabled := Enabled;
+  if not Enabled then FRemotePaused := False;
 end;
 
 end.
