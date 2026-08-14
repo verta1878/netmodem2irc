@@ -188,7 +188,7 @@ caller (telnet)
 | sysop/0 | Compiler (fpc264irc), terminal, serial UART |
 | kiddo | Serial IRQ ring buffer, protocols, RIPscrip engine |
 | wrench | Engine, debugger, network architecture |
-| evga | Display, RIPView, Mystic monitor |
+| evga | Cyclades CD1400 driver (DOS + Windows), SIO/SIO2K OS/2 drivers, Display, Mystic |
 | hexadecimal | PCBoard 15.4 (pcbrevival) |
 | g00r00 | Mystic BBS (GPLv3 upstream) |
 | Dedrick Allen | Original NetModem/32 (1997-2001) |
@@ -293,8 +293,16 @@ netmodem2irc/
 │   │   └── async_linux.c        23 ASYNC functions (wrench, 326 lines)
 │   ├── os2/                     netfosol — OS/2 (DosDevIOCtl + socket)
 │   │   └── netfosol.pas         428 lines (wrench)
-│   └── windows/                 netfoswl — Windows (Win32 COM + socket)
-│       └── netfoswl.pas         392 lines (wrench)
+│   ├── windows/                 netfoswl — Windows (Win32 COM + socket)
+│   │   └── netfoswl.pas         392 lines (wrench)
+│   └── cyclades/                Cyclades CD1400 — 32-port multiport (evga)
+│       ├── cd1400_regs.pas      CD1400 register definitions (281 lines)
+│       ├── cy_fossil_bridge.pas 32-port bridge to engine (248 lines)
+│       ├── src/                 Windows WDM kernel driver (9 files)
+│       ├── inc/                 C headers (6 files)
+│       ├── test/                Test suite (4 files)
+│       ├── tools/               Installer
+│       └── doc/                 Audit, build guide, troubleshooting
 │
 ├── dos/                        ── DOS TARGET ──
 │   ├── driver/                 FOSSIL driver (D1-D3)
