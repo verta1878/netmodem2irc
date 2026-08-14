@@ -160,3 +160,47 @@ Reference: `docs/FOSSIL_FSC0015_Reference.txt`
 | wrench | serial_ext.pas, async_linux.c, D4 test suite |
 | evga | SIO2K OS/2 driver rebuild (13,371 lines, GPLv3) |
 | hexadecimal | LINUX_SERIAL_PLAN.md (23 ASYNC function mapping) |
+
+
+## Cyclades CD1400 — cyfossil (evga)
+
+Cyclom-Y multiport serial cards — up to 32 ports per card (8 chips × 4 channels).
+CD1400 UART with memory-mapped registers, 12-byte FIFO, 230400 baud max.
+
+### Files
+```
+fossil/cyclades/
+├── cd1400_regs.pas       CD1400 register definitions (281 lines, wrench)
+├── cy_fossil_bridge.pas  Bridge to NM_UART16550 engine (248 lines, wrench)
+├── src/                  Windows WDM kernel driver (evga, 9 files, 6,281 lines)
+├── inc/                  C headers (6 files, 1,717 lines)
+├── test/                 Test suite (4 files, 1,573 lines)
+├── tools/                Installer (2 files, 945 lines)
+├── doc/                  Build guide, audit, troubleshooting
+└── inf/                  INF files for Windows driver install
+```
+
+### DOS FOSSIL (cyfossil.asm)
+Not in this repo — evga's domain. Source is in evga's cyclades repo.
+All 12 bugs fixed (hexadecimal + sysop/0 audit).
+Integration plan: docs/CYCLADES_INTEGRATION_PLAN.md
+
+### Multi-Port Setup
+```
+8 modems → Cyclom-Y card (CD1400) → cyfossil.asm → PCBoard 8 nodes
+```
+
+### Status
+- cd1400_regs.pas: ✅ 173 constants, all verified
+- cy_fossil_bridge.pas: ✅ 32-port manager, compiles clean
+- test_cyclades.pas: ✅ 54 tests, ALL PASSED
+- Windows kernel driver: ✅ audited clean (hexadecimal)
+- DOS FOSSIL: ✅ 12 bugs fixed (evga)
+
+### Credits
+| Who | What |
+|-----|------|
+| evga | CD1400 driver (DOS + Windows), bug fixes |
+| hexadecimal | FSC-0015 audit, 10 bug patches |
+| sysop/0 | pcbfoss cross-ref audit, CY-11 + CY-12 |
+| wrench | Pascal port, bridge unit, test suite |

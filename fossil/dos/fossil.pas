@@ -122,6 +122,9 @@ var
   { The COM port handle from serial.pas. Set by FossilInit. }
   FossilPort: TSerialHandle;
   FossilActive: Boolean;
+  { Pushback buffer for non-destructive Fn0C peek }
+  FPeekByte: Byte;
+  FPeekValid: Boolean;
 
 { Release CPU time slice on DOS — INT 2Fh/AX=1680h }
 procedure DosIdle;
@@ -188,7 +191,7 @@ begin
                      StopBits, []);
         { Return status in AX, same as Fn $03 }
         R.AH := FSTAT_TX_ROOM or FSTAT_TX_EMPTY;
-        if SerDataAvailable(FossilPort) then
+        if FPeekValid or SerDataAvailable(FossilPort) then
           R.AH := R.AH or FSTAT_RX_READY;
         R.AL := 0;
         if SerGetDCD(FossilPort) then R.AL := R.AL or $80;
@@ -213,32 +216,39 @@ begin
     FN_RX_WAIT:
       begin
         { Fn $02: receive a byte into AL. Blocking — spin until data.
-          HAZARD: if the remote is gone and DCD dropped, a BBS that
-          calls Fn $02 without checking status first will hang forever.
-          That is the BBS's problem per the spec, not ours. }
-        while not SerDataAvailable(FossilPort) do
-          DosIdle;  { yield CPU — INT 2Fh/1680h }
-        SerRead(FossilPort, b, 1);
-        R.AL := b;
+          Check pushback buffer first (from Fn0C peek). }
+        if FPeekValid then
+        begin
+          R.AL := FPeekByte;
+          FPeekValid := False;
+        end
+        else
+        begin
+          while not SerDataAvailable(FossilPort) do
+            DosIdle;  { yield CPU — INT 2Fh/1680h }
+          SerRead(FossilPort, b, 1);
+          R.AL := b;
+        end;
       end;
 
     FN_PEEK:
       begin
         { Fn $0C: peek at next byte without removing it.
           If no data, return $FFFF in AX.
-          HAZARD: with polled serial, peek means read-and-push-back.
-          With the ring buffer (serial_irq_plan.md), peek reads
-          RxRing[Tail] without advancing Tail. Until IRQ is added,
-          we check LSR and return $FFFF if empty. }
-        if SerDataAvailable(FossilPort) then
+          Uses a one-byte pushback buffer: if we already peeked,
+          return the saved byte. Otherwise read from serial and save. }
+        if FPeekValid then
         begin
-          { Without the ring buffer, we cannot peek without consuming.
-            Read the byte and hold it in a one-byte pushback buffer. }
+          R.AL := FPeekByte;
+          R.AH := 0;
+        end
+        else if SerDataAvailable(FossilPort) then
+        begin
           SerRead(FossilPort, b, 1);
           R.AL := b;
           R.AH := 0;
-          { TODO: pushback buffer so the byte isn't lost. Needs the
-            ring buffer from serial_irq_plan.md to do properly. }
+          FPeekByte := b;
+          FPeekValid := True;
         end
         else
         begin
@@ -254,7 +264,7 @@ begin
           whether data is available and whether carrier is present.
           It must be FAST — no UART writes, just reads. }
         R.AH := FSTAT_TX_ROOM or FSTAT_TX_EMPTY;
-        if SerDataAvailable(FossilPort) then
+        if FPeekValid or SerDataAvailable(FossilPort) then
           R.AH := R.AH or FSTAT_RX_READY;
         R.AL := 0;
         if SerGetDCD(FossilPort) then R.AL := R.AL or $80;
@@ -273,6 +283,8 @@ begin
         begin
           FossilPort := SerOpen('COM' + Chr(Ord('1') + (R.DX and $03)));
           FossilActive := FossilPort >= 0;
+          FPeekValid := False;
+          FPeekByte := 0;
         end;
         R.AH := Hi(FOSSIL_SIGNATURE);
         R.AL := Lo(FOSSIL_SIGNATURE);
@@ -373,7 +385,7 @@ begin
         Info.MinVer  := 0;
         Info.Ident   := IDENT_STR;
         Info.IBufr   := RX_BUF_SIZE;
-        Info.IFree   := RX_BUF_SIZE;   { TODO: real count when ring buffer added }
+        Info.IFree   := RX_BUF_SIZE - Ord(FPeekValid);  { free = total minus any peeked byte }
         Info.OBufr   := TX_BUF_SIZE;
         Info.OFree   := TX_BUF_SIZE;
         Info.SWidth  := 80;

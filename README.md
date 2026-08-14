@@ -27,7 +27,7 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | M2 | Builds on Windows — dual compiler verified | ✅ |
 | M3 | Live connection — 6 tests pass | ✅ |
 | M4 | Virtual COM path (com0com NT + UMDF2 named pipe) | ✅ code written, needs hardware to test |
-| M5 | Tagged installable release | ⬜ after final testing |
+| M5 | Tagged installable release (= R5.3) | ⬜ tag netmodem2irc |
 
 | Binary | Size | Compiler | Status |
 |---|---|---|---|
@@ -330,7 +330,6 @@ netmodem2irc/
 │       ├── synafpc.pas         FPC compatibility
 │       ├── synaip.pas          IP address utilities
 │       ├── synsock.pas         Socket definitions
-│       ├── smtpsend.pas        SMTP client (Synapse)
 │       ├── *.inc               Platform includes (win32, linux, posix, etc.)
 │       ├── SYNAPSE_README.md   Upstream documentation
 │       └── README.md           Directory documentation
