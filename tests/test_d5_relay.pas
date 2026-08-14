@@ -68,7 +68,7 @@ begin
   Check('Server accepted', ServerSock.LastError = 0);
 
   { Attach socket to relay }
-  Relay.AttachSocket(ServerSock);
+  {$IFDEF HAS_SYNAPSE}Relay.AttachSocket(ServerSock);{$ENDIF}
   Check('Relay attached, connected', Relay.Connected);
 
   { === Test 1: FeedByte directly into UART RX ring === }

@@ -183,7 +183,7 @@ begin
         if RingFree(U.TX) > 0 then
         begin
           UartWriteReg(U, UART_THR, R.AL);
-          { sent OK }
+          R.AH := FSTAT_TX_ROOM;
         end
         else if R.AH = FN_TX_NOWAIT then
         begin
@@ -286,8 +286,12 @@ begin
 
     FN_SET_BAUD:
       begin
-        { Fn 00h: set baud/line params in AL. Cosmetic over TCP — store it. }
+        { Fn 00h: set baud/line params in AL. Cosmetic over TCP — store it.
+          Returns AX = port status (same as Fn 03h per FSC-0015). }
         U.DLL := R.AL;
+        R.AH := FSTAT_TX_ROOM or FSTAT_TX_EMPTY;
+        if U.RX.Count > 0 then R.AH := R.AH or FSTAT_RX_READY;
+        R.AL := U.MSR;
       end;
 
     FN_FLOW_CONTROL:
@@ -358,7 +362,7 @@ begin
 
     FN_X00_READ:  { $20 — Extended non-blocking read from RX buffer }
       begin
-        if UartGuestToNet(U, b) then
+        if RingGet(U.RX, b) then
         begin
           R.AH := 0;
           R.AL := b;

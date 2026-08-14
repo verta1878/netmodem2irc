@@ -421,16 +421,22 @@ netmodem2irc/
 | server/ | 8 + resources | NMServer GUI (Lazarus/LCL) |
 | config/ | 4 + resources | NMConfig GUI |
 | common/ | 2 | Shared VxD interface |
+| fossil/common/ | 2 | Shared FOSSIL socket backend |
+| fossil/dos/ | 5 | DOS FOSSIL driver (TSR INT 14h) |
+| fossil/linux/ | 2 | Linux ASYNC layer (async_linux.c) |
+| fossil/os2/ | 2 | OS/2 FOSSIL driver (DosDevIOCtl + socket) |
+| fossil/windows/ | 2 | Windows FOSSIL driver (Win32 COM + socket) |
+| fossil/cyclades/ | 35 | Cyclades CD1400 driver + bridge + tests (evga) |
 | dos/driver/ | 5 | FOSSIL driver (serial + IRQ + dispatch) |
 | dos/ | 4 + retired | DOS target code |
 | driver/pascal-port/ | 3 | VxD → Pascal port (types, plan, test) |
 | libs/synapse/ | 18 | Ararat Synapse socket library |
-| tests/ | 6 | Integration test suites (156 tests) |
-| out/ | 10 | Compiled binaries |
+| tests/ | 8 | Integration test suites (156 + 39 + 54 = 249 tests) |
+| out/ | — | Removed (binaries → GitHub Releases) |
 | cpl/ | 2 + forms + resources | Control panel applet |
 | docs/ | 63 | Architecture, audits, guides, specs |
 | InnoIRC561/ | ~720 | Inno Setup FPC port (mostly vendored source) |
 | history/ | 15 | Original Dedrick Allen artifacts |
-| attic/ | 10 | Superseded code and docs |
+| attic/ | ~70 | Retired VxD source, 50 planning docs, old code |
 | root | 13 | README, ROADMAP, LICENSE, Makefile, etc. |
-| **Total** | **878** | |
+| **Total** | **~920** | |
