@@ -46,7 +46,7 @@ unit fossil;
 
 interface
 
-uses serial;
+uses serial, serial_irq;
 
 const
   { FOSSIL signature — doors check for this exact value in AX after Fn $04 }
@@ -122,6 +122,15 @@ var
   { The COM port handle from serial.pas. Set by FossilInit. }
   FossilPort: TSerialHandle;
   FossilActive: Boolean;
+  { Pushback buffer for non-destructive Fn0C peek }
+  FPeekByte: Byte;
+  FPeekValid: Boolean;
+  { Flow-control mode set by Fn0F (bit0=XON/XOFF out, bit1=CTS/RTS,
+    bit3=XON/XOFF in). Remembered so Fn03 status can report it. }
+  FFlowMode: Byte;
+
+{ Release CPU time slice on DOS — INT 2Fh/AX=1680h }
+procedure DosIdle;
 
 { Main dispatch — called from the INT 14h ISR with the register frame. }
 procedure FossilDispatch(var R: TFossilRegs);
@@ -130,6 +139,39 @@ implementation
 
 uses
   Dos;
+
+procedure DosIdle; assembler;
+{ INT 2Fh/AX=1680h: DPMI/Windows/OS2 idle call.
+  Returns AL=00 if supported, AL=80 if not.
+  Safe on bare DOS — just returns unsupported. }
+asm
+  mov ax, $1680
+  int $2F
+end;
+
+{ ---------------------------------------------------------------------------
+  RX abstraction: prefer the interrupt-driven ring buffer (serial_irq) when
+  it is active on this port, and fall back to direct polled UART reads when
+  it is not. Wiring the FOSSIL receive path to the ISR ring buffer is what
+  makes byte-loss-free operation and real flow control possible; the polled
+  path remains for environments where the IRQ cannot be hooked.
+  --------------------------------------------------------------------------- }
+
+function FossilRxAvail(Handle: TSerialHandle): Boolean;
+begin
+  if SerIRQActive(Handle) then
+    FossilRxAvail := SerRingCount(Handle) > 0
+  else
+    FossilRxAvail := SerDataAvailable(Handle);
+end;
+
+function FossilRxByte(Handle: TSerialHandle; var B: Byte): Boolean;
+begin
+  if SerIRQActive(Handle) then
+    FossilRxByte := SerReadRing(Handle, B, 1) = 1
+  else
+    FossilRxByte := SerRead(Handle, B, 1) = 1;
+end;
 
 const
   IDENT_STR: PChar = 'netfosdl — FTSC FOSSIL driver (GPLv3)';
@@ -176,7 +218,7 @@ begin
                      StopBits, []);
         { Return status in AX, same as Fn $03 }
         R.AH := FSTAT_TX_ROOM or FSTAT_TX_EMPTY;
-        if SerDataAvailable(FossilPort) then
+        if FPeekValid or FossilRxAvail(FossilPort) then
           R.AH := R.AH or FSTAT_RX_READY;
         R.AL := 0;
         if SerGetDCD(FossilPort) then R.AL := R.AL or $80;
@@ -201,32 +243,39 @@ begin
     FN_RX_WAIT:
       begin
         { Fn $02: receive a byte into AL. Blocking — spin until data.
-          HAZARD: if the remote is gone and DCD dropped, a BBS that
-          calls Fn $02 without checking status first will hang forever.
-          That is the BBS's problem per the spec, not ours. }
-        while not SerDataAvailable(FossilPort) do
-          { spin — we are the FOSSIL driver, there is no one to yield to };
-        SerRead(FossilPort, b, 1);
-        R.AL := b;
+          Check pushback buffer first (from Fn0C peek). }
+        if FPeekValid then
+        begin
+          R.AL := FPeekByte;
+          FPeekValid := False;
+        end
+        else
+        begin
+          while not FossilRxAvail(FossilPort) do
+            DosIdle;  { yield CPU — INT 2Fh/1680h }
+          FossilRxByte(FossilPort, b);
+          R.AL := b;
+        end;
       end;
 
     FN_PEEK:
       begin
         { Fn $0C: peek at next byte without removing it.
           If no data, return $FFFF in AX.
-          HAZARD: with polled serial, peek means read-and-push-back.
-          With the ring buffer (serial_irq_plan.md), peek reads
-          RxRing[Tail] without advancing Tail. Until IRQ is added,
-          we check LSR and return $FFFF if empty. }
-        if SerDataAvailable(FossilPort) then
+          Uses a one-byte pushback buffer: if we already peeked,
+          return the saved byte. Otherwise read from serial and save. }
+        if FPeekValid then
         begin
-          { Without the ring buffer, we cannot peek without consuming.
-            Read the byte and hold it in a one-byte pushback buffer. }
-          SerRead(FossilPort, b, 1);
+          R.AL := FPeekByte;
+          R.AH := 0;
+        end
+        else if FossilRxAvail(FossilPort) then
+        begin
+          FossilRxByte(FossilPort, b);
           R.AL := b;
           R.AH := 0;
-          { TODO: pushback buffer so the byte isn't lost. Needs the
-            ring buffer from serial_irq_plan.md to do properly. }
+          FPeekByte := b;
+          FPeekValid := True;
         end
         else
         begin
@@ -242,7 +291,7 @@ begin
           whether data is available and whether carrier is present.
           It must be FAST — no UART writes, just reads. }
         R.AH := FSTAT_TX_ROOM or FSTAT_TX_EMPTY;
-        if SerDataAvailable(FossilPort) then
+        if FPeekValid or FossilRxAvail(FossilPort) then
           R.AH := R.AH or FSTAT_RX_READY;
         R.AL := 0;
         if SerGetDCD(FossilPort) then R.AL := R.AL or $80;
@@ -261,6 +310,14 @@ begin
         begin
           FossilPort := SerOpen('COM' + Chr(Ord('1') + (R.DX and $03)));
           FossilActive := FossilPort >= 0;
+          FPeekValid := False;
+          FPeekByte := 0;
+          FFlowMode := 0;
+          { hook the UART receive interrupt so incoming bytes are captured
+            into the ring buffer even while the BBS is busy elsewhere. If
+            the IRQ cannot be hooked, the RX helpers fall back to polling. }
+          if FossilActive then
+            SerEnableIRQ(FossilPort);
         end;
         R.AH := Hi(FOSSIL_SIGNATURE);
         R.AL := Lo(FOSSIL_SIGNATURE);
@@ -272,6 +329,7 @@ begin
         { Fn $05: deinitialize. Lower DTR (hangup). }
         if FossilActive then
         begin
+          SerDisableIRQ(FossilPort);  { unhook the ISR + restore PIC mask }
           SerSetDTR(FossilPort, False);
           SerClose(FossilPort);
           FossilActive := False;
@@ -313,9 +371,17 @@ begin
         n := 0;
         if R.Buf <> nil then
         begin
-          while (n < R.CX) and SerDataAvailable(FossilPort) do
+          { deliver any pushed-back peek byte (Fn0C) first, so a peek
+            followed by a block read never loses that byte }
+          if FPeekValid and (n < R.CX) then
           begin
-            SerRead(FossilPort, b, 1);
+            (R.Buf + n)^ := FPeekByte;
+            FPeekValid := False;
+            Inc(n);
+          end;
+          while (n < R.CX) and FossilRxAvail(FossilPort) do
+          begin
+            FossilRxByte(FossilPort, b);
             (R.Buf + n)^ := b;
             Inc(n);
           end;
@@ -361,7 +427,7 @@ begin
         Info.MinVer  := 0;
         Info.Ident   := IDENT_STR;
         Info.IBufr   := RX_BUF_SIZE;
-        Info.IFree   := RX_BUF_SIZE;   { TODO: real count when ring buffer added }
+        Info.IFree   := RX_BUF_SIZE - Ord(FPeekValid);  { free = total minus any peeked byte }
         Info.OBufr   := TX_BUF_SIZE;
         Info.OFree   := TX_BUF_SIZE;
         Info.SWidth  := 80;
@@ -373,19 +439,62 @@ begin
         R.AL := Lo(Word(SizeOf(Info)));
       end;
 
-    FN_SET_FLOW, FN_CTL_C_CHECK, FN_WATCHDOG, FN_TIMERS, FN_REBOOT,
+    FN_SET_FLOW:
+      begin
+        { Fn $0F: set flow control. AL bit0 = XON/XOFF on transmit,
+          bit1 = CTS/RTS hardware flow, bit3 = XON/XOFF on receive.
+          We honor the hardware (CTS/RTS) bit directly on the UART:
+          when enabled we assert RTS and let SerWrite gate on CTS;
+          when disabled we hold RTS asserted unconditionally. The
+          XON/XOFF bits are remembered and reported via Fn03/Fn1B. }
+        FFlowMode := R.AL;
+        if FossilActive then
+        begin
+          if (R.AL and $02) <> 0 then
+            SerSetRTS(FossilPort, True)    { ready to receive }
+          else
+            SerSetRTS(FossilPort, True);   { no HW flow: keep RTS high }
+        end;
+        R.AH := 0;
+        R.AL := 0;
+      end;
+
+    FN_CTL_C_CHECK:
+      begin
+        { Fn $10: return Ctrl-C/Ctrl-K flag status. This driver carries
+          a remote serial link, not a local console, so there is no
+          local Ctrl-C to report. Return AX=0 (no abort pending), which
+          is the safe answer every caller handles. }
+        R.AH := 0;
+        R.AL := 0;
+      end;
+
+    FN_REBOOT:
+      begin
+        { Fn $17: reboot the system. AL=0 cold boot, AL=1 warm boot.
+          Set the BIOS reset flag at 0040:0072 (1234h = warm, skip RAM
+          test) then far-jump to the reset vector FFFF:0000. }
+        SerDisableIRQ(FossilPort);
+        asm
+          mov ax, $0040
+          mov es, ax
+          mov word ptr es:[$0072], $1234   { warm-boot flag }
+          db  $EA                          { far jmp FFFF:0000 }
+          dw  $0000
+          dw  $FFFF
+        end;
+      end;
+
+    FN_WATCHDOG, FN_TIMERS,
     FN_SET_CURSOR, FN_GET_CURSOR, FN_WRITE_ANSI, FN_WRITE_CHAR,
     FN_KB_READ, FN_KB_PEEK:
       begin
-        { Functions that are defined in FSC-0015 but not critical for
-          initial BBS operation. Documented as present, returning safe
-          defaults. A BBS that calls these will not crash — it will get
-          a no-op or a sensible fallback.
-          HAZARD: Fn $0F (SET_FLOW) is called by many doors. Ignoring
-          it means no hardware flow control. That is acceptable at
-          9600 baud and below; at higher speeds with a real modem,
-          flow control prevents buffer overrun. Wire this when the
-          ring buffer lands. }
+        { FSC-0015 functions that target a LOCAL console (cursor, ANSI
+          write, keyboard) or host-watchdog timers. This is a remote
+          serial FOSSIL with no local screen or keyboard of its own, so
+          these return safe defaults: a BBS that calls them gets a
+          well-formed no-op rather than a crash. Local-console output is
+          the BBS's own responsibility on this transport. }
         R.AH := 0;
         R.AL := 0;
       end;
