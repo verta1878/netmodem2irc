@@ -1,4 +1,4 @@
-# To verify:  md5sum -c MD5SUMS.txt   (all lines must say OK). Generated 2026-08-29.
+# To verify:  md5sum -c MD5SUMS.txt   (all lines must say OK). Generated 2026-09-04.
 5f1335c2d436052f2158fbc5043aa4d9  ./.gitattributes
 b4006e927c9dffdcf10b92241a4a6c52  ./.github/description
 3e7f0c7235e19e7b69360833d96835b0  ./AUTHORS
@@ -980,6 +980,28 @@ d0b7f1579a278ba2dfca2c3e928bc0ed  ./history/netmdb15/NETMODEM.DOC
 cb9895ebed4d399d8694766af47377cf  ./history/netmdb15/NETMODEM.EXE
 b8b3f3697c8a2943ffe2809bf8621efb  ./history/netmdb15/PCMICRO.COM
 2a1687affad9bb7ed6cd58991e5bc5f2  ./history/netmdb15/WHATSNEW.TXT
+ae30abb80ba511a6aa4848e7b4b4a4ed  ./installer/DOS/FOSFULL.EXE
+f12c3582ef4675a69c035335145426eb  ./installer/DOS/FOSTEST.EXE
+d0815bba782f287e871ead2fe8fb7021  ./installer/DOS/FOSTEST2.EXE
+aa954cec0abe8d9ea9ea6054ba2955cd  ./installer/DOS/NETFOSDL.EXE
+e7fe2a0141386db26dd0aadf0a397c81  ./installer/DRIVER_INSTALL.md
+41ba2d9b653ce256d0f8f9f770c409f7  ./installer/Docs/DEBUGGER_GUIDE.md
+b373cb99854b135153472c7bacf7ae65  ./installer/Docs/FOSSIL_FSC0015_Reference.txt
+97251ca74b29966d4d080157bc9e386b  ./installer/Docs/INSTALL.md
+349067887a0e09cddd05b8205fd97276  ./installer/Docs/INSTALL_PCBoard.md
+33eb2d1b845eba15121771e2d6004071  ./installer/Docs/INSTALL_Renegade.md
+5e8b8328a75f9732d6d772c37ecdc846  ./installer/Docs/LICENSE.TXT
+8476bca6b4e84874513bd027d2cf4ddd  ./installer/Docs/LICENSES.md
+956192d6cbf3edb8223f1fa100c710cb  ./installer/Docs/README.md
+4a96b690ebd22200e8a29ecaa41025bf  ./installer/Output/netfosdl-setup.exe
+7336b4f66652b2655be45e82a2c246e0  ./installer/Output/netmodem32_setup.exe
+ef19501a9cdd64e32318bb787453d0c4  ./installer/Win32/NETMODEM.CPL
+0236a6367992d7ad0ee3584a6cbdcf9e  ./installer/Win32/NMConfig.exe
+0e5ca75cafe83b2dc0bbf0165133968d  ./installer/Win32/NMServer.exe
+a4e4fbfded49b423f59c74900e360bef  ./installer/Win9x/FOSSIL.VXD
+49cc0a16d4ca94eeeb7301e89231c501  ./installer/mainicon.ico
+6f4a8ab1f9fc5b5e8ed7d488dc6cfba5  ./installer/netfosdl.iss
+123886c7efbbe8e6949ba509db995f95  ./installer/netmodem32.iss
 5d62fcec148998380fa5a74b5c702651  ./libs/synapse/README.md
 34c9ce5b453b5f95c8b32d866452b195  ./libs/synapse/SYNAPSE_README.md
 d871b7a29093f69e5ea66b0b0f83065a  ./libs/synapse/blcksock.pas

@@ -1,4 +1,4 @@
-# To verify:  sha256sum -c SHA256SUMS.txt   (all lines must say OK). Generated 2026-08-29.
+# To verify:  sha256sum -c SHA256SUMS.txt   (all lines must say OK). Generated 2026-09-04.
 8cac009de4ea45d23ec656aff2eb0d04ef9187609fa81714eaefa7144e02cf62  ./.gitattributes
 b556e739b2d31b5aa20906b37b530591bb2c2954999acf6e8524fe9bd73a4429  ./.github/description
 99a135f034a6be24840a9c3ca151e73b796730657c1d5621b8e13735ed73dac7  ./AUTHORS
@@ -980,6 +980,28 @@ cd51b6a2a99e3ca8dc24b9fd051ea58946a4ba3802cc60b27326d6cfadde45ae  ./history/netm
 b91b0e08dae756ac50269f57420a32309e27d3140d287434d1b9e900e7889e6b  ./history/netmdb15/NETMODEM.EXE
 33f446398f0dc7a8aad607a986e842d9db21044594e2caa93cf9094d7acc3993  ./history/netmdb15/PCMICRO.COM
 fec46dd2b54dcc70b2b8feae37c86ee36524794896163cdf734ee6a554215fa0  ./history/netmdb15/WHATSNEW.TXT
+bcee72f495d05defa5fe17dc6eb1a21c74614269125d97bb9c66b7ad8ebeb35a  ./installer/DOS/FOSFULL.EXE
+78ff6cd9d0ad52d0318a5c97d1179a626a8c2ec9a03e6351819eac3df7563950  ./installer/DOS/FOSTEST.EXE
+ad193705580f750f4408f882eaafd34a147ffbbf76b108546bea6896ea4f8986  ./installer/DOS/FOSTEST2.EXE
+ee74e7b1d287aee58361d9d39bb46b335235f4b43dda9fc3734bab22b70b1d46  ./installer/DOS/NETFOSDL.EXE
+d6fca2cacb356104d9dbed307aa2588385205efc8224977ce0ee2ce772911319  ./installer/DRIVER_INSTALL.md
+f33cadf6d82b4cb0ccaa870e02803c5bfee90377decfb7f8e7e6a17a988778da  ./installer/Docs/DEBUGGER_GUIDE.md
+251a53af9c094ff9e6c60825ef1017e9f3f88aa1f7e603ba69f50df6ee68bec7  ./installer/Docs/FOSSIL_FSC0015_Reference.txt
+8a8c5787c3739827b903935a03278015b594133fac1ddaa00c1e0abb6583540f  ./installer/Docs/INSTALL.md
+92796eafc79c7f1c4d9debdafc83dd27ef3410a99659918c7cc234fda7a07214  ./installer/Docs/INSTALL_PCBoard.md
+6df5e12ef2bc447cc88f3c03232bd8359ed610a02830461e153bdab20c388ffc  ./installer/Docs/INSTALL_Renegade.md
+252ced5e5f0967239e8875fe72bd08e61fa60f1065f62f33315ba8195818c940  ./installer/Docs/LICENSE.TXT
+10398fe217059ab7451b5eba903db315f0294c833dd72aaec6fd9362483d2749  ./installer/Docs/LICENSES.md
+08d69651676b35e97e311711368721947cec779d553bb7b8e240bddbd34a8d21  ./installer/Docs/README.md
+077d704d45bc54ab72a85d9e644e8cf07d509b1f9ad22729f470fbfe536f726d  ./installer/Output/netfosdl-setup.exe
+295299e6b962a955e398167f2dd028559a14a70a8ab5b2ffb44fbf46bb15ed10  ./installer/Output/netmodem32_setup.exe
+b87f061bde122fb145d78cdebb0c2f7db52bf700d5697817d595ec4f023a7fe6  ./installer/Win32/NETMODEM.CPL
+cca54a272d22005c56ae20ceed54c24d133888bf16601c5005f7a44378d65546  ./installer/Win32/NMConfig.exe
+e353159c47361cec6e4d6ef26688b53e773476b96a555bfc7d215f22f9ec951a  ./installer/Win32/NMServer.exe
+c92cd26b116385d914785402f1e4bf8baa1cf3611e43b6631b17808136a69946  ./installer/Win9x/FOSSIL.VXD
+5fec1c4bbcf19b2b8afe7d164e1cead1d1d7aea9b0594a6cb5fe95c0eb2a75db  ./installer/mainicon.ico
+8e61c5c44aa01c3a88d943aed071794945ae7bef3f4f19f2843798c3c7113688  ./installer/netfosdl.iss
+6452db6b2ac84d93c1e663df38aed6df27eaca9769c94d49f25258c15fd2f0fb  ./installer/netmodem32.iss
 63a96ab13e7273a03fa12f670b2b84304f5d189afcc0ed734e847ebddf37a6af  ./libs/synapse/README.md
 90a0e257428c1c754b591c71698b5f38d9a042bfb104c4e9d7084df662810aff  ./libs/synapse/SYNAPSE_README.md
 ee1d595c6544f34345ce2646b3e7e9a4e7820a8c7e8df8a6ec157bd4abb28870  ./libs/synapse/blcksock.pas
