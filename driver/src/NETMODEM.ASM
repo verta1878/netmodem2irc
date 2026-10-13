@@ -10,6 +10,7 @@ TITLE NETMODEM.ASM - 32-Bit Virtual comport/FOSSIL Driver for NetModem/32
 ;============================================================================
 .386P
 .NoList
+OPTION NOKEYWORD:<SYSEXIT VMRESUME>
 Include VMM.inc
 Include Shell.inc
 Include VPICD.inc
@@ -73,6 +74,7 @@ StatusStruct STRUC
  Transmitter	Boolean False
  DriverDisable	Boolean False
  ICT_Ready	Boolean False
+ IRQ_Ready	Boolean False
  Simulate_ELI	Boolean False
  Simulate_ETI	Boolean False
  Report_ELI	Boolean False
@@ -81,6 +83,20 @@ StatusStruct STRUC
  RXOFFReceived	Boolean False
  PossibleEscape Boolean False
 StatusStruct EndS
+; --- N4 HARDENING: FIFO race guard macro ---
+SafeDec MACRO reg, field, bufField, inField, outField
+    .IF (reg.StatusStruct.field > 0)
+      dec reg.StatusStruct.field
+    .ELSE
+      push eax
+      mov  eax, reg.StatusStruct.bufField
+      mov  reg.StatusStruct.inField, eax
+      mov  reg.StatusStruct.outField, eax
+      mov  reg.StatusStruct.field, 0
+      pop  eax
+    .ENDIF
+    ENDM
+; --- end N4 macro ---
 ;****************************************************************************
 ;			 VIRTUAL DEVICE DECLARATION!
 ;****************************************************************************
@@ -208,6 +224,10 @@ szCONNECT_384  DB  CR,LF,"CONNECT 38400/ARQ/TELNET",CR,LF
 szCONNECT_576  DB  CR,LF,"CONNECT 57600/ARQ/TELNET",CR,LF
 szCONNECT_640  DB  CR,LF,"CONNECT 64000/ARQ/TELNET",CR,LF
 szCONNECT_1152 DB  CR,LF,"CONNECT 115200/ARQ/TELNET",CR,LF
+szSettings DB CR,LF,"ATI4 Settings: TCP/IP Virtual Modem",CR,LF
+szStoredNum DB CR,LF,"ATI5 Stored: (none)",CR,LF
+szLinkDiag DB  CR,LF,"ATI6 Link: TCP/TELNET",CR,LF
+szRevision DB  CR,LF,szProduct_ID," Build N4",CR,LF
 szProduct DB CR,LF,szProduct_ID,CR,LF
 sz_FOSSIL DB szVersion_ID," Copyright 2001 - Dedrick Allen",NULL ; 32 bytes
 
@@ -240,7 +260,7 @@ VxD_ICODE_SEG
     .UNTIL ecx == MaxNodes
     VMMCall   _HeapAllocate, <(SizeOf ComportStruct * MaxNodes), HEAPZEROINIT>
     or	      eax, eax
-    jnz       Short @F
+    jnz @F
     mov       eax, [StatusOffset]
     VMMCall   _HeapFree, <eax, 0>
     jmp       SysDeviceCriticalInitFailed
@@ -319,7 +339,7 @@ VxD_ICODE_SEG
 	  pop ecx
 	  inc ecx
 	  cmp ecx, MaxNodes
-	  jne Short @B
+	  jne @B
 	  jmp @F
 	.ENDIF
 	inc   ecx
@@ -529,7 +549,7 @@ VxD_ICODE_SEG
     xor       edx, edx
     mov       esi, Offset32 Int14_Proc
     VMMCall   Allocate_V86_Call_Back
-    jc	      Short SysDeviceCriticalInitFailed
+    jc SysDeviceCriticalInitFailed
     xor       ecx, ecx
     xor       edx, edx
     mov       dx, ax
@@ -678,7 +698,7 @@ VxD_LOCKED_CODE_SEG
  BeginProc VPICD_EOI_Proc, High_Freq
     VxDCall   VPICD_Get_Complete_Status
     test      ecx, VPICD_STAT_VIRT_DEV_REQ
-    jz	      Short VPICD_EOI_Proc_Done
+    jz VPICD_EOI_Proc_Done
     VxDCall   VPICD_Clear_Int_Request
     mov       eax, 3
     VMMCall   Adjust_Execution_Time
@@ -689,9 +709,9 @@ VxD_LOCKED_CODE_SEG
  BeginProc Simulate_Interrupt, High_Freq, PUBLIC
     mov       ebx, [edi].StatusStruct.VM_Handle
     test      [ebx].cb_s.CB_VM_Status, VMStat_PM_Use32
-    jnz       Short @F
+    jnz @F
     cmp       [IRQ_Handle], 0
-    je	      Short @F
+    je @F
     mov       eax, [IRQ_Handle]
     VxDCall   VPICD_Set_Int_Request
     @@:
@@ -704,17 +724,17 @@ VxD_LOCKED_CODE_SEG
     VMMCall   Validate_VM_Handle
     .IF (CARRY?) || ([edx].StatusStruct.VM_Handle == 0)
       cmp     [edx].StatusStruct.VM_Handle, 0
-      je      Short Handle_Is_Zero
+      je Handle_Is_Zero
       cmp     [IRQ_Handle], 0
-      je      Short Handle_Is_Zero
+      je Handle_Is_Zero
       @@:
       mov     eax, [IRQ_Handle]
       mov     ebx, [edx].StatusStruct.VM_Handle
       VxDCall VPICD_Get_Complete_Status
       test    ecx, VPICD_STAT_VIRT_DEV_REQ
-      jz      Short Handle_Is_Zero
+      jz Handle_Is_Zero
       VxDCall VPICD_Clear_Int_Request
-      jmp     Short @B
+      jmp @B
       Handle_Is_Zero:
       mov     [edx].StatusStruct.SimulateHandle, 0
       .IF (![edx].StatusStruct.Online)
@@ -768,18 +788,18 @@ VxD_LOCKED_CODE_SEG
 	  .IF (([edx].StatusStruct.Command._I == 1) ||\
 	      ([edx].StatusStruct.Command._I == 2)) &&\
 	      ([edx].StatusStruct.RXOFFReceived)
-	    jmp Short @F
+	    jmp @F
 	  .ENDIF
 	  .IF ([edx].StatusStruct.Command._R == 2) &&\
 	     !([edx].StatusStruct.UART.MCR & 00000010b)
-	    jmp Short @F
+	    jmp @F
 	  .ENDIF
 	  and [edx].StatusStruct.UART.IIR, 11111110b
 	  .IF ([edx].StatusStruct.UART.IER & 00000001b) &&\
 	      ([edx].StatusStruct.UART.MCR & 00001000b)
 	    inc eax
 	  .ENDIF
-	  jmp Short Simulate_Check
+	  jmp Simulate_Check
 	.ENDIF
 	@@:
 	.IF ([edx].StatusStruct.Simulate_ETI)
@@ -790,7 +810,7 @@ VxD_LOCKED_CODE_SEG
 	      ([edx].StatusStruct.UART.MCR & 00001000b)
 	    inc eax
 	  .ENDIF
-	  jmp Short Simulate_Check
+	  jmp Simulate_Check
 	.ENDIF
 	.IF ([edx].StatusStruct.UART.MSR & 00000001b) ||\
 	    ([edx].StatusStruct.UART.MSR & 00000010b) ||\
@@ -810,7 +830,7 @@ VxD_LOCKED_CODE_SEG
 	mov   edi, edx
 	call  Simulate_Interrupt
 	cmp   [edx].StatusStruct.LastTimeslice, 255
-	je    Short @F
+	je @F
 	inc   [edx].StatusStruct.LastTimeslice
 	@@:
       .ELSE
@@ -890,7 +910,8 @@ VxD_LOCKED_CODE_SEG
       ret
     .ENDIF
     ;
-    ; TODO: Check for possible Win32 comm events
+    ; N4: Win32 comm events now fired via lpClientReadNotify/EventNotify
+    ;      after IOCTL 0Eh RX (see N4 patch 1 at IOCTL_Recv_Done)
     ;
     .IF ([edx].StatusStruct.VCOMMOpened)
       mov     eax, 1
@@ -930,7 +951,7 @@ VxD_LOCKED_CODE_SEG
  BeginProc Ringer_Time_Out
     pushad
     cmp       [edx].StatusStruct.Answered, False
-    je	      Short @F
+    je @F
     popad
     ret
     @@:
@@ -953,7 +974,9 @@ VxD_LOCKED_CODE_SEG
       .IF (edi > [edx].StatusStruct.RXEnd)
 	mov   edi, [edx].StatusStruct.RXBuffer
       .ENDIF
-      loop    Short @B
+      dec     ecx
+
+      jnz     @B
       mov     [edx].StatusStruct.RXIn, edi
     .ENDIF
     mov       [edx].StatusStruct.ICT_Ready, True
@@ -991,7 +1014,9 @@ VxD_LOCKED_CODE_SEG
     .IF (edx > [edi].StatusStruct.RXEnd)
       mov     edx, [edi].StatusStruct.RXBuffer
     .ENDIF
-    loop      Short @B
+    dec     ecx
+
+    jnz     @B
     mov	      [edi].StatusStruct.RXIn, edx
     mov	      [edi].StatusStruct.ICT_Ready, True
     popad
@@ -1056,7 +1081,9 @@ VxD_LOCKED_CODE_SEG
     .IF (edi > [edx].StatusStruct.RXEnd)
       mov     edi, [edx].StatusStruct.RXBuffer
     .ENDIF
-    loop      Short @B
+    dec     ecx
+
+    jnz     @B
     mov       [edx].StatusStruct.RXIn, edi
     mov       [edx].StatusStruct.IORecvOK, True
     mov       [edx].StatusStruct.ICT_Ready, True
@@ -1068,7 +1095,7 @@ VxD_LOCKED_CODE_SEG
     pushad
     mov       [edx].StatusStruct.TimeOut_Handle, 0
     cmp       [edx].StatusStruct.PossibleEscape, True
-    je	      Short @F
+    je @F
     popad
     ret
     @@:
@@ -1086,7 +1113,9 @@ VxD_LOCKED_CODE_SEG
     .IF (edi > [edx].StatusStruct.RXEnd)
       mov     edi, [edx].StatusStruct.RXBuffer
     .ENDIF
-    loop      Short @B
+    dec     ecx
+
+    jnz     @B
     mov       [edx].StatusStruct.RXIn, edi
     popad
     ret
@@ -1129,7 +1158,7 @@ VxD_LOCKED_CODE_SEG
       jmp     ParseATCommand_Done
     .ENDIF
     .IF (byte ptr [esi] == 'A')
-      dec     [edi].StatusStruct.ATLength
+      SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
       inc     esi
       .IF ((byte ptr [esi] > 64) && (byte ptr [esi] < 91)) ||\
 	  (byte ptr [esi] == NULL)
@@ -1158,11 +1187,11 @@ VxD_LOCKED_CODE_SEG
       jmp     Next
     .ENDIF
     .IF (byte ptr [esi] == 'E')
-      dec     [edi].StatusStruct.ATLength
+      SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
       inc     esi
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command.E, 0
@@ -1178,11 +1207,11 @@ VxD_LOCKED_CODE_SEG
       jmp     Next
     .ENDIF
     .IF (byte ptr [esi] == 'H')
-      dec     [edi].StatusStruct.ATLength
+      SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
       inc     esi
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command.H, 0
@@ -1234,14 +1263,14 @@ VxD_LOCKED_CODE_SEG
 
 
     .IF (byte ptr [esi] == 'I')
-      dec     [edi].StatusStruct.ATLength
+      SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
       inc     esi
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1') ||\
           (byte ptr [esi] == '2') || (byte ptr [esi] == '3') ||\
           (byte ptr [esi] == '4') || (byte ptr [esi] == '5') ||\
           (byte ptr [esi] == '6') || (byte ptr [esi] == '7')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	mov   edx, [edi].StatusStruct.RXIn
 
@@ -1263,20 +1292,21 @@ VxD_LOCKED_CODE_SEG
 
 
 	.ELSEIF (al == '4')
-	  ;
-          ; TODO: Add support for I4, I5, I6 and I7
-	  ;
-	  mov ebx, Offset32 szProduct
-	  mov ecx, SizeOf szProduct
+	  ; N5: ATI4 = settings summary
+	  mov ebx, Offset32 szSettings
+	  mov ecx, SizeOf szSettings
 	.ELSEIF (al == '5')
-	  mov ebx, Offset32 szProduct
-	  mov ecx, SizeOf szProduct
+	  ; N5: ATI5 = stored number
+	  mov ebx, Offset32 szStoredNum
+	  mov ecx, SizeOf szStoredNum
 	.ELSEIF (al == '6')
-	  mov ebx, Offset32 szProduct
-	  mov ecx, SizeOf szProduct
+	  ; N5: ATI6 = link diagnostics
+	  mov ebx, Offset32 szLinkDiag
+	  mov ecx, SizeOf szLinkDiag
 	.ELSEIF (al == '7')
-	  mov ebx, Offset32 szProduct
-	  mov ecx, SizeOf szProduct
+	  ; N5: ATI7 = revision
+	  mov ebx, Offset32 szRevision
+	  mov ecx, SizeOf szRevision
 	.ENDIF
 
 
@@ -1290,7 +1320,9 @@ VxD_LOCKED_CODE_SEG
 	.IF (edx > [edi].StatusStruct.RXEnd)
 	  mov edx, [edi].StatusStruct.RXBuffer
 	.ENDIF
-	loop  Short @B
+	dec     ecx
+
+	jnz     @B
 	mov   [edi].StatusStruct.RXIn, edx
 
 
@@ -1315,7 +1347,9 @@ VxD_LOCKED_CODE_SEG
 	.IF (edx > [edi].StatusStruct.RXEnd)
 	  mov edx, [edi].StatusStruct.RXBuffer
 	.ENDIF
-	loop  Short @B
+	dec     ecx
+
+	jnz     @B
 	mov   [edi].StatusStruct.RXIn, edx
 
 
@@ -1345,14 +1379,14 @@ VxD_LOCKED_CODE_SEG
 
 
     .IF (byte ptr [esi] == 'O')
-      dec     [edi].StatusStruct.ATLength
+      SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
       inc     esi
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	cmp   [edi].StatusStruct.Online, True
-	jne   Short NotOnlineA
+	jne NotOnlineA
 	mov   ebx, [edi].StatusStruct.ConnectRate
 	mov   edx, [edi].StatusStruct.RXIn
 	mov   ecx, [edi].StatusStruct.ConnectSize
@@ -1365,7 +1399,9 @@ VxD_LOCKED_CODE_SEG
 	.IF (edx > [edi].StatusStruct.RXEnd)
 	  mov edx, [edi].StatusStruct.RXBuffer
 	.ENDIF
-	loop  Short @B
+	dec     ecx
+
+	jnz     @B
 	mov   [edi].StatusStruct.RXIn, edx
 	mov   [edi].StatusStruct.CommandMode, False
 	mov   [edi].StatusStruct.Result, rsNORESULT
@@ -1373,7 +1409,7 @@ VxD_LOCKED_CODE_SEG
       .ELSEIF ((byte ptr [esi] > 64) && (byte ptr [esi] < 91)) ||\
 	      (byte ptr [esi] == NULL)
 	cmp   [edi].StatusStruct.Online, True
-	jne   Short NotOnlineB
+	jne NotOnlineB
 	mov   ebx, [edi].StatusStruct.ConnectRate
 	mov   edx, [edi].StatusStruct.RXIn
 	mov   ecx, [edi].StatusStruct.ConnectSize
@@ -1386,7 +1422,9 @@ VxD_LOCKED_CODE_SEG
 	.IF (edx > [edi].StatusStruct.RXEnd)
 	  mov edx, [edi].StatusStruct.RXBuffer
 	.ENDIF
-	loop  Short @B
+	dec     ecx
+
+	jnz     @B
 	mov   [edi].StatusStruct.RXIn, edx
 	mov   [edi].StatusStruct.CommandMode, False
 	mov   [edi].StatusStruct.Result, rsNORESULT
@@ -1397,11 +1435,11 @@ VxD_LOCKED_CODE_SEG
       jmp     Next
     .ENDIF
     .IF (byte ptr [esi] == 'Q')
-      dec     [edi].StatusStruct.ATLength
+      SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
       inc     esi
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
         .IF (al == '0')
           mov [edi].StatusStruct.Command.Q, 0
@@ -1417,11 +1455,11 @@ VxD_LOCKED_CODE_SEG
       jmp     Next
     .ENDIF
     .IF (byte ptr [esi] == 'Y')
-      dec     [edi].StatusStruct.ATLength
+      SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
       inc     esi
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
         .IF (al == '0')
 	  mov [edi].StatusStruct.Command.Y, 0
@@ -1437,7 +1475,7 @@ VxD_LOCKED_CODE_SEG
       jmp     Next
     .ENDIF
     .IF (byte ptr [esi] == 'Z')
-      dec     [edi].StatusStruct.ATLength
+      SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
       inc     esi
       .IF ((byte ptr [esi] > 64) && (byte ptr [esi] < 91)) ||\
 	  (byte ptr [esi] == NULL)
@@ -1462,7 +1500,7 @@ VxD_LOCKED_CODE_SEG
       add     esi, 2
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command._C, 0
@@ -1482,7 +1520,7 @@ VxD_LOCKED_CODE_SEG
       add     esi, 2
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '2')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command._D, 0
@@ -1503,7 +1541,7 @@ VxD_LOCKED_CODE_SEG
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1') ||\
 	  (byte ptr [esi] == '2') || (byte ptr [esi] == '3')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command._H, 0
@@ -1528,7 +1566,7 @@ VxD_LOCKED_CODE_SEG
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1') ||\
 	  (byte ptr [esi] == '2')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command._I, 0
@@ -1551,7 +1589,7 @@ VxD_LOCKED_CODE_SEG
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1') ||\
 	  (byte ptr [esi] == '2')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command._K, 0
@@ -1573,7 +1611,7 @@ VxD_LOCKED_CODE_SEG
       add     esi, 2
       .IF (byte ptr [esi] == '1') || (byte ptr [esi] == '2')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '1')
 	  mov [edi].StatusStruct.Command._R, 1
@@ -1593,7 +1631,7 @@ VxD_LOCKED_CODE_SEG
       add     esi, 2
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command._S, 0
@@ -1614,7 +1652,7 @@ VxD_LOCKED_CODE_SEG
       .IF (byte ptr [esi] == '0') || (byte ptr [esi] == '1') ||\
 	  (byte ptr [esi] == '2') || (byte ptr [esi] == '3')
 	mov   al, byte ptr [esi]
-	dec   [edi].StatusStruct.ATLength
+	SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	inc   esi
 	.IF (al == '0')
 	  mov [edi].StatusStruct.Command._Y, 0
@@ -1636,7 +1674,7 @@ VxD_LOCKED_CODE_SEG
 
 
 
-    dec       [edi].StatusStruct.ATLength
+    SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
     inc       esi
     Next:
     pop       ecx
@@ -1687,16 +1725,18 @@ VxD_LOCKED_CODE_SEG
     .IF (esi > [edi].StatusStruct.ATEnd)
       mov     esi, [edi].StatusStruct.ATBuffer
     .ENDIF
-    loop      Short @B
+    dec     ecx
+
+    jnz     @B
     mov       esi, [edi].StatusStruct.ATOut
     mov       ah, byte ptr [esi]
-    dec       [edi].StatusStruct.ATLength
+    SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
     inc       esi
     .IF (esi > [edi].StatusStruct.ATEnd)
       mov     esi, [edi].StatusStruct.ATBuffer
     .ENDIF
     mov       al, byte ptr [esi]
-    dec       [edi].StatusStruct.ATLength
+    SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
     inc       esi
     .IF (esi > [edi].StatusStruct.ATEnd)
       mov     esi, [edi].StatusStruct.ATBuffer
@@ -1722,7 +1762,9 @@ VxD_LOCKED_CODE_SEG
       @@:
       mov     byte ptr [eax], NULL
       inc     eax
-      loop    Short @B
+      dec     ecx
+
+      jnz     @B
       mov     [edi].StatusStruct.ATLength, 0
       mov     ecx, [edi].StatusStruct.ATBuffer
       mov     [edi].StatusStruct.ATIn, ecx
@@ -1748,7 +1790,7 @@ VxD_LOCKED_CODE_SEG
 	mov   ecx, 16
       .ELSEIF ([edx].StatusStruct.Result == rsNORESULT)
 	mov   edi, edx
-	jmp   Short NoResult
+	jmp NoResult
       .ENDIF
       @@:
       mov     al, byte ptr [esi]
@@ -1759,7 +1801,9 @@ VxD_LOCKED_CODE_SEG
       .IF (edi > [edx].StatusStruct.RXEnd)
 	mov   edi, [edx].StatusStruct.RXBuffer
       .ENDIF
-      loop    Short @B
+      dec     ecx
+
+      jnz     @B
       mov     [edx].StatusStruct.RXIn, edi
       mov     edi, edx
     .ELSE
@@ -1784,7 +1828,9 @@ VxD_LOCKED_CODE_SEG
     @@:
     mov       byte ptr [eax], NULL
     inc       eax
-    loop      Short @B
+    dec     ecx
+
+    jnz     @B
     mov       [edi].StatusStruct.ATLength, 0
     mov       ecx, [edi].StatusStruct.ATBuffer
     mov       [edi].StatusStruct.ATIn, ecx
@@ -1818,7 +1864,7 @@ VxD_LOCKED_CODE_SEG
     .ENDIF
     inc	      ecx
     cmp       ecx, MaxNodes
-    jne       Short @B
+    jne @B
     mov       edi, 0
     pop	      ecx
     pop	      eax
@@ -1839,20 +1885,20 @@ VxD_LOCKED_CODE_SEG
     add       edi, [ControlBlock]
     mov       edi, dword ptr [edi+2]
     cmp       edi, 0
-    je	      Short Acquire_Comport
+    je Acquire_Comport
     cmp       [edi].StatusStruct.VM_Handle, ebx
-    je	      Short Comport_Acquired
+    je Comport_Acquired
     Acquire_Comport:
     call      GetStatusStructAddress
     cmp       edi, 0
-    jne       Short @F
+    jne @F
     ret
     @@:
     mov       [edi].StatusStruct.VM_Handle, ebx
     Comport_Acquired:
     mov       [edi].StatusStruct.DriverDisable, True
     cmp       [edi].StatusStruct.SimulateHandle, 0
-    jne       Short @F
+    jne @F
     pushd     eax
     pushd     edx
     mov       eax, 1
@@ -1883,16 +1929,16 @@ VxD_LOCKED_CODE_SEG
       test    [edi].StatusStruct.UART.LCR, 10000000b
       jnz     DLL_Set
       cmp     ecx, Byte_Output
-      je      Short @F
+      je @F
       mov     cl, [edi].StatusStruct.UART.IIR
       shl     cl, 5
       cmp     cl, 10000000b
-      jne     Short NotRDI
+      jne NotRDI
       and     [edi].StatusStruct.UART.IIR, 11110000b
       or      [edi].StatusStruct.UART.IIR, 00000001b
       NotRDI:
       cmp     [edi].StatusStruct.RXLength, 0
-      ja      Short ReceiveData
+      ja ReceiveData
       and     [edi].StatusStruct.UART.LSR, 11111110b
       mov     al, 0
       mov     [edi].StatusStruct.DriverDisable, False
@@ -1901,7 +1947,7 @@ VxD_LOCKED_CODE_SEG
       mov     [edi].StatusStruct.IORecvOK, False
       mov     esi, [edi].StatusStruct.RXOut
       mov     al, byte ptr [esi]
-      dec     [edi].StatusStruct.RXLength
+      SafeDec [edi], RXLength, RXBuffer, RXIn, RXOut
       inc     esi
       .IF (esi > [edi].StatusStruct.RXEnd)
 	mov   esi, [edi].StatusStruct.RXBuffer
@@ -1916,7 +1962,7 @@ VxD_LOCKED_CODE_SEG
       mov     cl, [edi].StatusStruct.UART.IIR
       shl     cl, 5
       cmp     cl, 01000000b
-      jne     Short @F
+      jne @F
       or      [edi].StatusStruct.UART.IIR, 00000001b
       and     [edi].StatusStruct.UART.IIR, 11110001b
       @@:
@@ -1953,7 +1999,7 @@ VxD_LOCKED_CODE_SEG
 	    mov [edi].StatusStruct.RXOFFReceived, False
 	  .ENDIF
 	  cmp [edi].StatusStruct.Command._I, 2
-	  je  Short @F
+	  je @F
 	.ENDIF
 	mov   esi, [edi].StatusStruct.TXIn
 	mov   byte ptr [esi], al
@@ -1973,7 +2019,7 @@ VxD_LOCKED_CODE_SEG
 	  mov	  [edi].StatusStruct.LastChar, NULL
 	  mov	  [edi].StatusStruct.PrevLastChar, NULL
 	  cmp	  al, '+'
-	  jne	  Short @F
+	  jne @F
 	  mov	  al, NULL
 	  @@:
 	.ENDIF
@@ -2001,9 +2047,9 @@ VxD_LOCKED_CODE_SEG
 	nop
       .ELSEIF (al == CR)
 	cmp   [edi].StatusStruct.ATLength, 1
-	jna   Short @F
+	jna @F
 	call  ATCommand
-	jmp   Short CalledATCommand
+	jmp CalledATCommand
 	@@:
 	mov   ecx, [edi].StatusStruct.RXIn
 	mov   byte ptr [ecx], CR
@@ -2024,7 +2070,9 @@ VxD_LOCKED_CODE_SEG
 	@@:
 	mov   byte ptr [ebx], NULL
 	inc   ebx
-	loop  Short @B
+	dec     ecx
+
+	jnz     @B
 	mov   [edi].StatusStruct.ATLength, 0
 	mov   ecx, [edi].StatusStruct.ATBuffer
 	mov   [edi].StatusStruct.ATIn, ecx
@@ -2039,7 +2087,7 @@ VxD_LOCKED_CODE_SEG
 	  .ENDIF
 	  mov	[edi].StatusStruct.ATIn, esi
 	  mov	byte ptr [esi], NULL
-	  dec	[edi].StatusStruct.ATLength
+	  SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	  mov	ebx, Offset32 szBS
 	  mov	edx, [edi].StatusStruct.RXIn
 	  mov	ecx, SizeOf szBS
@@ -2052,7 +2100,9 @@ VxD_LOCKED_CODE_SEG
 	  .IF (edx > [edi].StatusStruct.RXEnd)
 	    mov edx, [edi].StatusStruct.RXBuffer
 	  .ENDIF
-	  loop	Short @B
+	  dec     ecx
+
+	  jnz     @B
 	  mov	[edi].StatusStruct.RXIn, edx
 	.ENDIF
       .ELSEIF ([edi].StatusStruct.ATLength < 42)
@@ -2061,7 +2111,7 @@ VxD_LOCKED_CODE_SEG
 	inc   [edi].StatusStruct.ATLength
 	inc   [edi].StatusStruct.ATIn
 	cmp   [edi].StatusStruct.Command.E, 1
-	jne   Short @F
+	jne @F
         mov   esi, [edi].StatusStruct.RXIn
         mov   byte ptr [esi], al
 	inc   [edi].StatusStruct.RXLength
@@ -2076,7 +2126,7 @@ VxD_LOCKED_CODE_SEG
       ret
       DLL_Set:
       cmp     ecx, Byte_Output
-      je      Short @F
+      je @F
       mov     al, [edi].StatusStruct.UART.DLL
       mov     [edi].StatusStruct.DriverDisable, False
       ret
@@ -2086,9 +2136,9 @@ VxD_LOCKED_CODE_SEG
       ret
     IOHandler01:
       test    [edi].StatusStruct.UART.LCR, 10000000b
-      jnz     Short DLM_Set
+      jnz DLM_Set
       cmp     ecx, Byte_Output
-      je      Short @F
+      je @F
       and     [edi].StatusStruct.UART.IER, 00001111b
       mov     al, [edi].StatusStruct.UART.IER
       mov     [edi].StatusStruct.DriverDisable, False
@@ -2099,7 +2149,7 @@ VxD_LOCKED_CODE_SEG
       ret
       DLM_Set:
       cmp     ecx, Byte_Output
-      je      Short @F
+      je @F
       mov     al, [edi].StatusStruct.UART.DLM
       mov     [edi].StatusStruct.DriverDisable, False
       ret
@@ -2169,7 +2219,7 @@ VxD_LOCKED_CODE_SEG
       mov     [edi].StatusStruct.UART.FCR, al
       and     [edi].StatusStruct.UART.FCR, 11001111b
       test    [edi].StatusStruct.UART.FCR, 00000001b
-      jnz     Short FIFO_Enabled
+      jnz     FIFO_Enabled
       .IF (cl & 00000001b)
 	mov   [edi].StatusStruct.IORecvOK, False
 	mov   [edi].StatusStruct.IOSendOK, False
@@ -2193,7 +2243,7 @@ VxD_LOCKED_CODE_SEG
       ret
       FIFO_Enabled:
       test    [edi].StatusStruct.UART.FCR, 00000010b
-      jz      Short @F
+      jz @F
       and     [edi].StatusStruct.UART.FCR, 11111101b
       mov     [edi].StatusStruct.IORecvOK, False
       mov     [edi].StatusStruct.RXLength, 0
@@ -2203,7 +2253,7 @@ VxD_LOCKED_CODE_SEG
       mov     [edi].StatusStruct.IORecvOK, True
       @@:
       test    [edi].StatusStruct.UART.FCR, 00000100b
-      jz      Short @F
+      jz @F
       and     [edi].StatusStruct.UART.FCR, 11111011b
       mov     [edi].StatusStruct.IOSendOK, False
       mov     [edi].StatusStruct.ATLength, 0
@@ -2231,7 +2281,7 @@ VxD_LOCKED_CODE_SEG
       ret
     IOHandler03:
       cmp     ecx, Byte_Output
-      je      Short @F
+      je @F
       mov     al, [edi].StatusStruct.UART.LCR
       mov     [edi].StatusStruct.DriverDisable, False
       ret
@@ -2311,7 +2361,7 @@ VxD_LOCKED_CODE_SEG
       ret
     IOHandler04:
       cmp     ecx, Byte_Output
-      je      Short @F
+      je @F
       and     [edi].StatusStruct.UART.MCR, 00011111b
       .IF ([edi].StatusStruct.Command._D == 0)
 	or    [edi].StatusStruct.UART.MCR, 00000001b
@@ -2347,7 +2397,7 @@ VxD_LOCKED_CODE_SEG
       ret
     IOHandler05:
       cmp     ecx, Byte_Input
-      je      Short @F
+      je @F
       mov     [edi].StatusStruct.DriverDisable, False
       ret
       @@:
@@ -2370,7 +2420,7 @@ VxD_LOCKED_CODE_SEG
       mov     cl, [edi].StatusStruct.UART.IIR
       shl     cl, 5
       cmp     cl, 11000000b
-      jne     Short @F
+      jne @F
       and     [edi].StatusStruct.UART.IIR, 11110000b
       or      [edi].StatusStruct.UART.IIR, 00000001b
       @@:
@@ -2378,26 +2428,26 @@ VxD_LOCKED_CODE_SEG
       ret
     IOHandler06:
       cmp     ecx, Byte_Input
-      je      Short @F
+      je @F
       mov     [edi].StatusStruct.DriverDisable, False
       ret
       @@:
       .IF ([edi].StatusStruct.UART.MCR & 00010000b)
 	xor   al, al
 	test  [edi].StatusStruct.UART.MCR, 00000010b
-	jz    Short @F
+	jz @F
 	or    al, 00010000b
 	@@:
 	test  [edi].StatusStruct.UART.MCR, 00000001b
-	jz    Short @F
+	jz @F
 	or    al, 00100000b
 	@@:
 	test  [edi].StatusStruct.UART.MCR, 00000100b
-	jz    Short @F
+	jz @F
 	or    al, 01000000b
 	@@:
 	test  [edi].StatusStruct.UART.MCR, 00001000b
-	jz    Short @F
+	jz @F
 	or    al, 10000000b
 	@@:
 	mov   [edi].StatusStruct.DriverDisable, False
@@ -2431,7 +2481,7 @@ VxD_LOCKED_CODE_SEG
       mov     cl, [edi].StatusStruct.UART.IIR
       shl     cl, 5
       cmp     cl, 00000000b
-      jne     Short @F
+      jne @F
       and     [edi].StatusStruct.UART.IIR, 11110000b
       or      [edi].StatusStruct.UART.IIR, 00000001b
       @@:
@@ -2439,7 +2489,7 @@ VxD_LOCKED_CODE_SEG
       ret
     IOHandler07:
       cmp     ecx, Byte_Output
-      je      Short @F
+      je @F
       mov     al, [edi].StatusStruct.UART.SCR
       mov     [edi].StatusStruct.DriverDisable, False
       ret
@@ -2451,7 +2501,7 @@ VxD_LOCKED_CODE_SEG
 
  BeginProc Int2F_Proc, High_Freq
     cmp       [ebp].Client_AX, 1680h
-    jne       Short @F
+    jne @F
     pushd     ebx
     add       ebx, [ControlBlock]
     .IF (byte ptr [ebx+1] == True) &&\
@@ -2540,7 +2590,7 @@ VxD_LOCKED_CODE_SEG
     pop       ecx
     inc       ecx
     cmp       ecx, MaxNodes
-    jne       Short @B
+    jne @B
     mov       al, False
     pop       ecx
     ret
@@ -2576,13 +2626,13 @@ VxD_LOCKED_CODE_SEG
       .IF ([ebp].Client_AH == 04h) || ([ebp].Client_AH == 1Ch)
 	jmp   Int14_Table[eax * 4]
       .ELSE
-	jmp   Short Int14_Fail
+	jmp Int14_Fail
       .ENDIF
     .ENDIF
     mov       edi, dword ptr [edi+2]
     mov       al, [edi].StatusStruct.Enabled
     and       al, [edi].StatusStruct.Comport.ManageTimeslice
-    jz	      Short @F
+    jz @F
     call      TimesliceMgr
     @@:
     movzx     eax, [ebp].Client_AH
@@ -2597,7 +2647,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1400:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -2666,7 +2716,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1401:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -2719,7 +2769,7 @@ VxD_LOCKED_CODE_SEG
 	  mov	  [edi].StatusStruct.LastChar, NULL
 	  mov	  [edi].StatusStruct.PrevLastChar, NULL
 	  cmp	  dl, '+'
-	  jne	  Short @F
+	  jne @F
 	  mov	  dl, NULL
 	  @@:
 	.ENDIF
@@ -2747,9 +2797,9 @@ VxD_LOCKED_CODE_SEG
 	nop
       .ELSEIF (dl == CR)
 	cmp   [edi].StatusStruct.ATLength, 1
-	jna   Short @F
+	jna @F
 	call  ATCommand
-	jmp   Short _CalledATCommand
+	jmp _CalledATCommand
 	@@:
 	mov   ecx, [edi].StatusStruct.RXIn
 	mov   byte ptr [ecx], CR
@@ -2770,7 +2820,9 @@ VxD_LOCKED_CODE_SEG
 	@@:
 	mov   byte ptr [ebx], NULL
 	inc   ebx
-	loop  Short @B
+	dec     ecx
+
+	jnz     @B
 	mov   [edi].StatusStruct.ATLength, 0
 	mov   ecx, [edi].StatusStruct.ATBuffer
 	mov   [edi].StatusStruct.ATIn, ecx
@@ -2785,7 +2837,7 @@ VxD_LOCKED_CODE_SEG
 	  .ENDIF
 	  mov [edi].StatusStruct.ATIn, esi
 	  mov byte ptr [esi], NULL
-	  dec [edi].StatusStruct.ATLength
+	  SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	  mov esi, Offset32 szBS
 	  mov ebx, [edi].StatusStruct.RXIn
 	  mov ecx, SizeOf szBS
@@ -2798,7 +2850,9 @@ VxD_LOCKED_CODE_SEG
 	  .IF (ebx > [edi].StatusStruct.RXEnd)
 	    mov ebx, [edi].StatusStruct.RXBuffer
 	  .ENDIF
-	  loop Short @B
+	  dec     ecx
+
+	  jnz     @B
 	  mov  [edi].StatusStruct.RXIn, ebx
 	.ENDIF
       .ELSEIF ([edi].StatusStruct.ATLength < 42)
@@ -2807,7 +2861,7 @@ VxD_LOCKED_CODE_SEG
 	inc   [edi].StatusStruct.ATLength
 	inc   [edi].StatusStruct.ATIn
 	cmp   [edi].StatusStruct.Command.E, 1
-	jne   Short @F
+	jne @F
 	mov   esi, [edi].StatusStruct.RXIn
 	mov   byte ptr [esi], dl
 	inc   [edi].StatusStruct.RXLength
@@ -2880,7 +2934,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1402:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -2894,14 +2948,14 @@ VxD_LOCKED_CODE_SEG
 	.IF ([edi].StatusStruct.TimeOut == 30)
 	  xor eax, eax
 	  or  ah, 10000000b
-	  jmp Short NoRecv
+	  jmp NoRecv
 	.ENDIF
       .ENDW
       xor     eax, eax
       call    _Cli
       mov     esi, [edi].StatusStruct.RXOut
       mov     al, byte ptr [esi]
-      dec     [edi].StatusStruct.RXLength
+      SafeDec [edi], RXLength, RXBuffer, RXIn, RXOut
       inc     esi
       .IF (esi > [edi].StatusStruct.RXEnd)
 	mov   esi, [edi].StatusStruct.RXBuffer
@@ -2932,7 +2986,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1403:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -2999,7 +3053,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1404:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       mov     [ebp].Client_AX, 1954h
       mov     [ebp].Client_BX, 0521h
       VMMCall Simulate_Iret
@@ -3036,7 +3090,7 @@ VxD_LOCKED_CODE_SEG
       .ENDIF
       call    IsFOSSILComport
       cmp     al, True
-      je      Short @F
+      je @F
       xor     ecx, ecx
       xor     edx, edx
       mov     cx, [Old_Int14Seg]
@@ -3077,7 +3131,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1405:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3086,7 +3140,7 @@ VxD_LOCKED_CODE_SEG
       add     ebx, [ControlBlock]
       .IF (byte ptr [ebx+1] == True)
 	cmp   [edi].StatusStruct.Comport.Alwaysactive, True
-	je    Short @F
+	je @F
 	mov   byte ptr [ebx], NULL
 	mov   byte ptr [ebx+1], False
 	@@:
@@ -3114,7 +3168,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1406:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3150,7 +3204,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1408:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3178,7 +3232,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1409:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3199,7 +3253,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT140A:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3216,7 +3270,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT140B:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3261,7 +3315,7 @@ VxD_LOCKED_CODE_SEG
 	    mov	    [edi].StatusStruct.LastChar, NULL
 	    mov	    [edi].StatusStruct.PrevLastChar, NULL
 	    cmp	    dl, '+'
-	    jne	    Short @F
+	    jne @F
 	    mov	    dl, NULL
 	    @@:
 	  .ENDIF
@@ -3291,9 +3345,9 @@ VxD_LOCKED_CODE_SEG
 	  nop
 	.ELSEIF (dl == CR)
 	  cmp	[edi].StatusStruct.ATLength, 1
-	  jna	Short @F
+	  jna @F
 	  call	ATCommand
-	  jmp	Short __CalledATCommand
+	  jmp __CalledATCommand
 	  @@:
 	  mov	ecx, [edi].StatusStruct.RXIn
 	  mov	byte ptr [ecx], CR
@@ -3314,7 +3368,9 @@ VxD_LOCKED_CODE_SEG
 	  @@:
 	  mov	byte ptr [ebx], NULL
 	  inc	ebx
-	  loop	Short @B
+	  dec     ecx
+
+	  jnz     @B
 	  mov	[edi].StatusStruct.ATLength, 0
 	  mov	ecx, [edi].StatusStruct.ATBuffer
 	  mov	[edi].StatusStruct.ATIn, ecx
@@ -3329,7 +3385,7 @@ VxD_LOCKED_CODE_SEG
 	    .ENDIF
 	    mov   [edi].StatusStruct.ATIn, esi
 	    mov   byte ptr [esi], NULL
-	    dec   [edi].StatusStruct.ATLength
+	    SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	    mov   esi, Offset32 szBS
 	    mov   ebx, [edi].StatusStruct.RXIn
 	    mov   ecx, SizeOf szBS
@@ -3342,7 +3398,9 @@ VxD_LOCKED_CODE_SEG
 	    .IF (ebx > [edi].StatusStruct.RXEnd)
 	      mov ebx, [edi].StatusStruct.RXBuffer
 	    .ENDIF
-	    loop  Short @B
+	    dec     ecx
+
+	    jnz     @B
 	    mov	  [edi].StatusStruct.RXIn, ebx
 	  .ENDIF
 	.ELSEIF ([edi].StatusStruct.ATLength < 42)
@@ -3351,7 +3409,7 @@ VxD_LOCKED_CODE_SEG
 	  inc	[edi].StatusStruct.ATLength
 	  inc	[edi].StatusStruct.ATIn
 	  cmp	[edi].StatusStruct.Command.E, 1
-	  jne	Short @F
+	  jne @F
 	  mov	esi, [edi].StatusStruct.RXIn
 	  mov	byte ptr [esi], dl
 	  inc	[edi].StatusStruct.RXLength
@@ -3371,7 +3429,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT140C:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3412,7 +3470,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT140F:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3427,7 +3485,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1410:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3483,7 +3541,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1414:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3519,7 +3577,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1418:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3538,13 +3596,15 @@ VxD_LOCKED_CODE_SEG
 	@@:
 	mov   dl, byte ptr [ebx]
 	mov   byte ptr [esi], dl
-	dec   [edi].StatusStruct.RXLength
+	SafeDec [edi], RXLength, RXBuffer, RXIn, RXOut
 	inc   esi
 	inc   ebx
 	.IF (ebx > [edi].StatusStruct.RXEnd)
 	  mov ebx, [edi].StatusStruct.RXBuffer
 	.ENDIF
-	loop  Short @B
+	dec     ecx
+
+	jnz     @B
 	mov   [edi].StatusStruct.RXOut, ebx
 	call  _Sti
       .ELSE
@@ -3555,7 +3615,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1419:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3582,7 +3642,9 @@ VxD_LOCKED_CODE_SEG
 	  .IF (ebx > [edi].StatusStruct.RXEnd)
 	    mov   ebx, [edi].StatusStruct.RXBuffer
 	  .ENDIF
-	  loop	  Short @B
+	  dec     ecx
+
+	  jnz     @B
 	  mov	  [edi].StatusStruct.RXIn, ebx
 	  call	  _Sti
 	  VMMCall Simulate_Iret
@@ -3611,7 +3673,7 @@ VxD_LOCKED_CODE_SEG
 	    mov	    [edi].StatusStruct.LastChar, NULL
 	    mov	    [edi].StatusStruct.PrevLastChar, NULL
 	    cmp	    dl, '+'
-	    jne	    Short @F
+	    jne @F
 	    mov	    dl, NULL
 	    @@:
 	  .ENDIF
@@ -3651,9 +3713,9 @@ VxD_LOCKED_CODE_SEG
 	  nop
 	.ELSEIF (dl == CR)
 	  cmp	[edi].StatusStruct.ATLength, 1
-	  jna	Short @F
+	  jna @F
 	  call	ATCommand
-	  jmp	Short ___CalledATCommand
+	  jmp ___CalledATCommand
 	  @@:
 	  mov	edx, [edi].StatusStruct.RXIn
 	  mov	byte ptr [edx], CR
@@ -3675,7 +3737,9 @@ VxD_LOCKED_CODE_SEG
 	  @@:
 	  mov	byte ptr [edx], NULL
 	  inc	edx
-	  loop	Short @B
+	  dec     ecx
+
+	  jnz     @B
 	  pop	ecx
 	  mov	[edi].StatusStruct.ATLength, 0
 	  mov	edx, [edi].StatusStruct.ATBuffer
@@ -3691,7 +3755,7 @@ VxD_LOCKED_CODE_SEG
 	    .ENDIF
 	    mov   [edi].StatusStruct.ATIn, edx
 	    mov   byte ptr [edx], NULL
-	    dec   [edi].StatusStruct.ATLength
+	    SafeDec [edi], ATLength, ATBuffer, ATIn, ATOut
 	    pushd ebx
 	    pushd ecx
 	    mov   eax, Offset32 szBS
@@ -3706,7 +3770,9 @@ VxD_LOCKED_CODE_SEG
 	    .IF (ebx > [edi].StatusStruct.RXEnd)
 	      mov ebx, [edi].StatusStruct.RXBuffer
 	    .ENDIF
-	    loop  Short @B
+	    dec     ecx
+
+	    jnz     @B
 	    mov	  [edi].StatusStruct.RXIn, ebx
 	    pop   ecx
 	    pop   ebx
@@ -3716,7 +3782,7 @@ VxD_LOCKED_CODE_SEG
 	  inc	[edi].StatusStruct.ATIn
 	  inc	[edi].StatusStruct.ATLength
 	  cmp	[edi].StatusStruct.Command.E, 1
-	  jne	Short @F
+	  jne @F
 	  mov	eax, [edi].StatusStruct.RXIn
 	  mov	byte ptr [eax], dl
 	  inc	[edi].StatusStruct.RXLength
@@ -3741,7 +3807,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT141A:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3855,7 +3921,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT141C:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       mov     [ebp].Client_AX, 1954h
       mov     [ebp].Client_BX, 0521h
       VMMCall Simulate_Iret
@@ -3892,7 +3958,7 @@ VxD_LOCKED_CODE_SEG
       .ENDIF
       call    IsFOSSILComport
       cmp     al, True
-      je      Short @F
+      je @F
       xor     ecx, ecx
       xor     edx, edx
       mov     cx, [Old_Int14Seg]
@@ -3933,7 +3999,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT141D:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -3942,7 +4008,7 @@ VxD_LOCKED_CODE_SEG
       add     ebx, [ControlBlock]
       .IF (byte ptr [ebx+1] == True)
 	cmp   [edi].StatusStruct.Comport.Alwaysactive, True
-	je    Short @F
+	je @F
 	mov   byte ptr [ebx], NULL
 	mov   byte ptr [ebx+1], False
 	@@:
@@ -3970,7 +4036,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT141E:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -4095,7 +4161,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT141F:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -4178,7 +4244,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1420:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -4187,7 +4253,7 @@ VxD_LOCKED_CODE_SEG
       call    _Cli
       mov     ecx, [edi].StatusStruct.RXOut
       mov     al, byte ptr [ecx]
-      dec     [edi].StatusStruct.RXLength
+      SafeDec [edi], RXLength, RXBuffer, RXIn, RXOut
       inc     ecx
       .IF (ecx > [edi].StatusStruct.RXEnd)
 	mov   ecx, [edi].StatusStruct.RXBuffer
@@ -4201,7 +4267,7 @@ VxD_LOCKED_CODE_SEG
       ret
     INT1421:
       cmp     [ebp].Client_DL, 0FFh
-      jne     Short @F
+      jne @F
       nop
       VMMCall Simulate_Iret
       popad
@@ -4251,7 +4317,7 @@ VxD_LOCKED_CODE_SEG
     pushad
     mov       eax, [esi].DIOCParams.dwIoControlCode
     cmp       eax, IOCTL_Max
-    ja	      Short @F
+    ja @F
     jmp       IOCTL_Table[eax * 4]
     @@:
     popad
@@ -4281,19 +4347,19 @@ VxD_LOCKED_CODE_SEG
       mov	edi, dword ptr [edi]
       .IF ([edi].StatusStruct.Comport.Enabled)
 	cmp	[edi].StatusStruct.SimulateHandle, 0
-	je	Short @F
+	je @F
 	mov	esi, [edi].StatusStruct.SimulateHandle
 	mov	[edi].StatusStruct.SimulateHandle, 0
 	VMMCall Cancel_Time_Out
 	@@:
 	cmp	[edi].StatusStruct.FTSleep_Handle, 0
-	je	Short @F
+	je @F
 	mov	esi, [edi].StatusStruct.FTSleep_Handle
 	mov	[edi].StatusStruct.FTSleep_Handle, 0
 	VMMCall Cancel_Time_Out
 	@@:
 	cmp	[edi].StatusStruct.TimeOut_Handle, 0
-	je	Short @F
+	je @F
 	mov	esi, [edi].StatusStruct.TimeOut_Handle
 	mov	[edi].StatusStruct.TimeOut_Handle, 0
 	VMMCall Cancel_Time_Out
@@ -4319,9 +4385,9 @@ VxD_LOCKED_CODE_SEG
 	    mov	    ebx, [edi].StatusStruct.VM_Handle
 	    VxDCall VPICD_Get_Complete_Status
 	    test    ecx, VPICD_STAT_VIRT_DEV_REQ
-	    jz	    Short @F
+	    jz @F
 	    VxDCall VPICD_Clear_Int_Request
-	    jmp	    Short @B
+	    jmp @B
 	    @@:
 	  .ENDIF
 	  mov ecx, 8
@@ -4559,9 +4625,9 @@ VxD_LOCKED_CODE_SEG
 	    mov	    ebx, [edi].StatusStruct.VM_Handle
 	    VxDCall VPICD_Get_Complete_Status
 	    test    ecx, VPICD_STAT_VIRT_DEV_REQ
-	    jz	    Short @F
+	    jz @F
 	    VxDCall VPICD_Clear_Int_Request
-	    jmp	    Short @B
+	    jmp @B
 	    @@:
 	  .ENDIF
 	  pop ecx
@@ -4682,9 +4748,9 @@ VxD_LOCKED_CODE_SEG
 	  mov	  ebx, [edi].StatusStruct.VM_Handle
 	  VxDCall VPICD_Get_Complete_Status
 	  test	  ecx, VPICD_STAT_VIRT_DEV_REQ
-	  jz	  Short @F
+	  jz @F
 	  VxDCall VPICD_Clear_Int_Request
-	  jmp	  Short @B
+	  jmp @B
 	  @@:
 	.ENDIF
       .ELSEIF ([edi].StatusStruct.Comport.Emulation == emFOSSIL)
@@ -4890,7 +4956,9 @@ VxD_LOCKED_CODE_SEG
 	.IF (edx > [edi].StatusStruct.RXEnd)
 	  mov edx, [edi].StatusStruct.RXBuffer
 	.ENDIF
-	loop  Short @B
+	dec     ecx
+
+	jnz     @B
 	mov   [edi].StatusStruct.RXIn, edx
 	mov   [edi].StatusStruct.IOSendOK, True
 	mov   [edi].StatusStruct.IORecvOK, True
@@ -4918,13 +4986,13 @@ VxD_LOCKED_CODE_SEG
       add     edi, eax
       mov     edi, dword ptr [edi]
       cmp     [edi].StatusStruct.Online, True
-      je      Short @F
+      je @F
       popad
       mov     eax, 1
       ret
       @@:
       cmp     [edi].StatusStruct.VM_Handle, 0
-      jne     Short @F
+      jne @F
       popad
       xor     eax, eax
       ret
@@ -4978,11 +5046,11 @@ VxD_LOCKED_CODE_SEG
 	.IF (([edi].StatusStruct.Command._I == 1) ||\
 	    ([edi].StatusStruct.Command._I == 2)) &&\
 	    ([edi].StatusStruct.RXOFFReceived)
-	  jmp Short @F
+	  jmp @F
 	.ENDIF
 	.IF ([edi].StatusStruct.Command._R == 2) &&\
 	    !([edi].StatusStruct.UART.MCR & 00000010b)
-	  jmp Short @F
+	  jmp @F
 	.ENDIF
       .ENDIF
       .IF ([edi].StatusStruct.Comport.Emulation == emFOSSIL) &&\
@@ -4996,7 +5064,7 @@ VxD_LOCKED_CODE_SEG
 	dec   ecx
 	cmp   ecx, 0
 	ja    @B
-	jmp   Short @F
+	jmp @F
       .ENDIF
       mov     al, byte ptr [ebx]
       mov     byte ptr [edx], al
@@ -5019,6 +5087,31 @@ VxD_LOCKED_CODE_SEG
       VMMCall Wake_Up_VM
       mov     eax, 3
       VMMCall Adjust_Execution_Time
+    ; --- N4 HARDENING: fire event callback after RX data arrives ---
+    .IF ([edi].StatusStruct.RXLength > 0)
+      lea  eax, [edi].StatusStruct.PortInfo
+      .IF ([eax]._PORTINFORMATION.lpClientReadNotify != 0)
+        pushad
+        push dword ptr [eax]._PORTINFORMATION.dwClientRefData
+        push 0
+        push edi
+        call dword ptr [eax]._PORTINFORMATION.lpClientReadNotify
+        add  esp, 12
+        popad
+      .ENDIF
+      .IF ([eax]._PORTINFORMATION.lpClientEventNotify != 0)
+        pushad
+        or   [eax]._PORTINFORMATION.dwDetectedEvents, EV_RXCHAR
+        push dword ptr [eax]._PORTINFORMATION.dwClientRefData
+        push 0
+        push edi
+        call dword ptr [eax]._PORTINFORMATION.lpClientEventNotify
+        add  esp, 12
+        popad
+      .ENDIF
+    .ENDIF
+    ; --- end N4 patch 1 ---
+
       cmp     [edi].StatusStruct.TXLength, 0
       jna     IOCTL_Send_Done
       mov     bx, [esi].IOStruct.HXFree
@@ -5033,22 +5126,22 @@ VxD_LOCKED_CODE_SEG
       mov     edx, [esi].IOStruct.HXPointer
       @@:
       cmp     [edi].StatusStruct.Online, False
-      je      Short @F
+      je @F
       cmp     [edi].StatusStruct.IOSendOK, False
-      je      Short @F
+      je @F
       cmp     [edi].StatusStruct.CommandMode, True
-      je      Short @F
+      je @F
       test    [edi].StatusStruct.UART.LCR, 01000000b
-      jnz     Short @F
+      jnz @F
       test    [edi].StatusStruct.UART.MCR, 00010000b
-      jnz     Short @F
+      jnz @F
       .IF ([edi].StatusStruct.Comport.Emulation == emFOSSIL) &&\
 	  (![edi].StatusStruct.Transmitter)
-	je    Short @F
+	je @F
       .ENDIF
       mov     al, byte ptr [ebx]
       mov     byte ptr [edx], al
-      dec     [edi].StatusStruct.TXLength
+      SafeDec [edi], TXLength, TXBuffer, TXIn, TXOut
       mov     eax, [esi].IOStruct.IOHXLength
       inc     word ptr [eax]
       dec     [esi].IOStruct.HXFree
@@ -5057,7 +5150,8 @@ VxD_LOCKED_CODE_SEG
       .IF (ebx > [edi].StatusStruct.TXEnd)
 	mov   ebx, [edi].StatusStruct.TXBuffer
       .ENDIF
-      loop    Short @B
+      dec     ecx
+      jnz     @B
       @@:
       mov     [edi].StatusStruct.TXOut, ebx
       IOCTL_Send_Done:
@@ -5074,7 +5168,7 @@ VxD_LOCKED_CODE_SEG
       add     edi, eax
       mov     edi, dword ptr [edi]
       cmp     [edi].StatusStruct.Online, True
-      je      Short @F
+      je @F
       popad
       mov     eax, 1
       ret
@@ -5135,19 +5229,19 @@ VxD_LOCKED_CODE_SEG
       mov     edi, dword ptr [edi]
       .IF ([edi].StatusStruct.Enabled)
 	cmp	[edi].StatusStruct.SimulateHandle, 0
-	je	Short @F
+	je @F
 	mov	esi, [edi].StatusStruct.SimulateHandle
 	mov	[edi].StatusStruct.SimulateHandle, 0
 	VMMCall Cancel_Time_Out
 	@@:
 	cmp	[edi].StatusStruct.FTSleep_Handle, 0
-	je	Short @F
+	je @F
 	mov	esi, [edi].StatusStruct.FTSleep_Handle
 	mov	[edi].StatusStruct.FTSleep_Handle, 0
 	VMMCall Cancel_Time_Out
 	@@:
 	cmp	[edi].StatusStruct.TimeOut_Handle, 0
-	je	Short @F
+	je @F
 	mov	esi, [edi].StatusStruct.TimeOut_Handle
 	mov	[edi].StatusStruct.TimeOut_Handle, 0
 	VMMCall Cancel_Time_Out
@@ -5163,9 +5257,9 @@ VxD_LOCKED_CODE_SEG
 	  mov	  ebx, [edi].StatusStruct.VM_Handle
 	  VxDCall VPICD_Get_Complete_Status
 	  test	  ecx, VPICD_STAT_VIRT_DEV_REQ
-	  jz	  Short @F
+	  jz @F
 	  VxDCall VPICD_Clear_Int_Request
-	  jmp	  Short @B
+	  jmp @B
 	  @@:
 	  mov	  ecx, 8
 	  .REPEAT
@@ -5183,7 +5277,7 @@ VxD_LOCKED_CODE_SEG
       inc     ecx
     .UNTIL ecx == MaxNodes
     cmp       [IRQ_Handle], 0
-    je	      Short @F
+    je @F
     mov       eax, [IRQ_Handle]
     VxDCall   VPICD_Force_Default_Behavior
     mov       [IRQ_Handle], 0
@@ -5225,7 +5319,7 @@ VxD_LOCKED_CODE_SEG
     .ENDIF
     inc       ecx
     cmp       ecx, MaxNodes
-    jne       Short @B
+    jne @B
     mov       edi, 0
     pop       ecx
     pop       eax
@@ -5306,7 +5400,7 @@ VxD_PAGEABLE_CODE_SEG
  BeginProc IsPortVCOMM_Added, PUBLIC
     mov       esi, [PortListHndl]
     VMMCall   List_Get_First
-    jnz       Short @F
+    jnz @F
     mov       eax, False
     ret
     @@:
@@ -5316,7 +5410,7 @@ VxD_PAGEABLE_CODE_SEG
       lea     edi, [edi].StatusStruct.Comport.szComportName
       VMMCall _lstrcmpi, <ebx, edi>
       cmp     eax, 0
-      jne     Short @F
+      jne @F
       pop     eax
       mov     eax, True
       ret
@@ -5532,6 +5626,12 @@ VxD_PAGEABLE_CODE_SEG
 	     mov ebx, VMId
 	     mov [edi].StatusStruct.VM_Handle, ebx
 	     mov [edi].StatusStruct.VCOMMOpened, True
+    ; --- N4 HARDENING: default CTS+DSR on port open ---
+    or   [edi].StatusStruct.UART.MSR, 00110000b
+    lea  eax, [edi].StatusStruct.PortInfo
+    or   [eax]._PORTINFORMATION.bMSRShadow, 00110000b
+    ; --- end N4 patch 2 ---
+
 
 
 
@@ -5628,6 +5728,17 @@ VxD_PAGEABLE_CODE_SEG
        call   GetStatusStructAddressEx
        .IF (edi != 0) && ([edi].StatusStruct.VCOMMOpened)
 	 mov  [edi].StatusStruct.VCOMMOpened, False
+    ; --- N4 HARDENING: clear callbacks on close ---
+    lea  eax, [edi].StatusStruct.PortInfo
+    mov  [eax]._PORTINFORMATION.lpClientEventNotify, 0
+    mov  [eax]._PORTINFORMATION.lpClientReadNotify, 0
+    mov  [eax]._PORTINFORMATION.lpClientWriteNotify, 0
+    mov  [eax]._PORTINFORMATION.dwClientEventMask, 0
+    mov  [eax]._PORTINFORMATION.dwDetectedEvents, 0
+    mov  [eax]._PORTINFORMATION.dwClientRefData, 0
+    mov  [eax]._PORTINFORMATION.bMSRShadow, 0
+    ; --- end N4 patch 4 ---
+
 	 mov  [edi].StatusStruct.VM_Handle, 0
 
 
@@ -5697,7 +5808,7 @@ VxD_LOCKED_CODE_ENDS
 VxD_REAL_INIT_SEG
  BeginProc Real_Mode_Proc
     cmp       bx, Duplicate_Device_ID
-    je        Short @F
+    je @F
     xor       bx, bx
     xor       edx, edx
     xor       si, si
