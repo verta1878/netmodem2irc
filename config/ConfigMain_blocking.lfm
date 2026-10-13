@@ -1,0 +1,88 @@
+    { ================================================================
+      NEW TAB: tsBlocking — Add after tsListserv in ConfigMain.lfm
+      ================================================================ }
+    object tsBlocking: TTabSheet
+      Caption = 'Blocking'
+      object lblBlockInfo: TLabel
+        Left = 8
+        Top = 8
+        Caption = 'IP allow/block/forward rules (first match wins):'
+      end
+      object lvBlockList: TListView
+        Left = 8
+        Top = 28
+        Width = 365
+        Height = 200
+        Columns = <
+          item
+            Caption = 'Action'
+            Width = 65
+          end
+          item
+            Caption = 'Pattern'
+            Width = 120
+          end
+          item
+            Caption = 'Forward To'
+            Width = 100
+          end
+          item
+            Caption = 'Comment'
+            Width = 75
+          end
+        >
+        ReadOnly = True
+        RowSelect = True
+        ViewStyle = vsReport
+      end
+      object btnBLAdd: TButton
+        Left = 8
+        Top = 238
+        Width = 65
+        Height = 25
+        Caption = 'Add...'
+        OnClick = btnBLAddClick
+      end
+      object btnBLEdit: TButton
+        Left = 80
+        Top = 238
+        Width = 65
+        Height = 25
+        Caption = 'Edit...'
+        OnClick = btnBLEditClick
+      end
+      object btnBLDelete: TButton
+        Left = 152
+        Top = 238
+        Width = 65
+        Height = 25
+        Caption = 'Delete'
+        OnClick = btnBLDeleteClick
+      end
+      object btnBLMoveUp: TButton
+        Left = 240
+        Top = 238
+        Width = 55
+        Height = 25
+        Caption = 'Up'
+        OnClick = btnBLMoveUpClick
+      end
+      object btnBLMoveDown: TButton
+        Left = 300
+        Top = 238
+        Width = 55
+        Height = 25
+        Caption = 'Down'
+        OnClick = btnBLMoveDownClick
+      end
+      object lblBLDefault: TLabel
+        Left = 8
+        Top = 276
+        Caption = 'Default (no match):'
+      end
+      object cboBLDefault: TComboBox
+        Left = 120
+        Top = 272
+        Width = 80
+      end
+    end

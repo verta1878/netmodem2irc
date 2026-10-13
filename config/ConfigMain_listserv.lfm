@@ -1,0 +1,119 @@
+    { ================================================================
+      NEW TAB: tsListserv — Add after tsPhonebook in ConfigMain.lfm
+      Ported from NETMODEM_CPL__TForm2.dfm (derk's original).
+      ================================================================ }
+    object tsListserv: TTabSheet
+      Caption = 'Listserv'
+      object grpListserv: TGroupBox
+        Left = 8
+        Top = 8
+        Width = 365
+        Height = 225
+        Caption = 'BBS Listserv Information'
+        object lblLSBBSName: TLabel
+          Left = 12
+          Top = 25
+          Caption = '* BBS Name:'
+        end
+        object edtLSBBSName: TEdit
+          Left = 100
+          Top = 21
+          Width = 250
+          MaxLength = 50
+        end
+        object lblLSSoftware: TLabel
+          Left = 12
+          Top = 50
+          Caption = '  Software:'
+        end
+        object edtLSSoftware: TEdit
+          Left = 100
+          Top = 46
+          Width = 250
+          MaxLength = 50
+        end
+        object lblLSSpeed: TLabel
+          Left = 12
+          Top = 75
+          Caption = '  Speed:'
+        end
+        object edtLSSpeed: TEdit
+          Left = 100
+          Top = 71
+          Width = 115
+          MaxLength = 25
+        end
+        object lblLSHostname: TLabel
+          Left = 12
+          Top = 100
+          Caption = '* Hostname:'
+        end
+        object edtLSHostname: TEdit
+          Left = 100
+          Top = 96
+          Width = 210
+          MaxLength = 255
+        end
+        object lblLSIPAddress: TLabel
+          Left = 12
+          Top = 125
+          Caption = '* IP Address:'
+        end
+        object edtLSIPAddress: TEdit
+          Left = 100
+          Top = 121
+          Width = 210
+          MaxLength = 15
+        end
+        object lblLSPort: TLabel
+          Left = 12
+          Top = 150
+          Caption = '  Internet Port:'
+        end
+        object edtLSPort: TEdit
+          Left = 100
+          Top = 146
+          Width = 77
+          MaxLength = 5
+          Text = '23'
+        end
+        object lblLSComment: TLabel
+          Left = 12
+          Top = 175
+          Caption = '  Comment:'
+        end
+        object edtLSComment: TEdit
+          Left = 100
+          Top = 171
+          Width = 250
+          MaxLength = 255
+        end
+      end
+      object lblLSRequired: TLabel
+        Left = 12
+        Top = 240
+        Caption = '* = Required field'
+      end
+      object chkLSEnabled: TCheckBox
+        Left = 12
+        Top = 260
+        Width = 250
+        Caption = 'Enable BBS Listserv registration'
+      end
+      object btnLSRegister: TButton
+        Left = 270
+        Top = 258
+        Width = 100
+        Height = 25
+        Caption = 'Register Now'
+        OnClick = btnLSRegisterClick
+      end
+      object btnLSExport: TButton
+        Left = 270
+        Top = 290
+        Width = 100
+        Height = 25
+        Caption = 'Export Record'
+        OnClick = btnLSExportClick
+      end
+    end

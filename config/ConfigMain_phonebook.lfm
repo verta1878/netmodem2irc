@@ -1,0 +1,83 @@
+    { ================================================================
+      NEW TAB: tsPhonebook — Add after tsFeatures in ConfigMain.lfm
+      Matches existing style: MS Sans Serif, bsDialog, Win98 CPL look.
+      ================================================================ }
+    object tsPhonebook: TTabSheet
+      Caption = 'Phonebook'
+      object lblPhonebookInfo: TLabel
+        Left = 8
+        Top = 8
+        Caption = 'Speed dial entries (ATDS to dial, AT&Z to store):'
+      end
+      object lvPhonebook: TListView
+        Left = 8
+        Top = 28
+        Width = 365
+        Height = 220
+        Columns = <
+          item
+            Caption = '#'
+            Width = 30
+          end
+          item
+            Caption = 'Host'
+            Width = 160
+          end
+          item
+            Caption = 'Port'
+            Width = 50
+          end
+          item
+            Caption = 'Description'
+            Width = 120
+          end
+        >
+        ReadOnly = True
+        RowSelect = True
+        ViewStyle = vsReport
+      end
+      object btnPBAdd: TButton
+        Left = 8
+        Top = 258
+        Width = 65
+        Height = 25
+        Caption = 'Add...'
+        OnClick = btnPBAddClick
+      end
+      object btnPBEdit: TButton
+        Left = 80
+        Top = 258
+        Width = 65
+        Height = 25
+        Caption = 'Edit...'
+        OnClick = btnPBEditClick
+      end
+      object btnPBDelete: TButton
+        Left = 152
+        Top = 258
+        Width = 65
+        Height = 25
+        Caption = 'Delete'
+        OnClick = btnPBDeleteClick
+      end
+      object lblPBFile: TLabel
+        Left = 8
+        Top = 296
+        Caption = 'File:'
+      end
+      object edtPBFile: TEdit
+        Left = 40
+        Top = 292
+        Width = 280
+        Height = 21
+        Text = 'PHONEBOOK.DAT'
+      end
+      object btnPBBrowse: TButton
+        Left = 328
+        Top = 291
+        Width = 45
+        Height = 23
+        Caption = '...'
+        OnClick = btnPBBrowseClick
+      end
+    end

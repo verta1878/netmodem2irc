@@ -1,0 +1,62 @@
+object frmIconLegend: TfrmIconLegend
+  Left = 300
+  Top = 200
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Icon Legend'
+  ClientHeight = 148
+  ClientWidth = 172
+  Position = poScreenCenter
+  object imgGreen: TImage
+    Left = 12
+    Top = 12
+    Width = 16
+    Height = 16
+  end
+  object lblGreen: TLabel
+    Left = 36
+    Top = 14
+    Caption = 'Online — connected'
+  end
+  object imgYellow: TImage
+    Left = 12
+    Top = 36
+    Width = 16
+    Height = 16
+  end
+  object lblYellow: TLabel
+    Left = 36
+    Top = 38
+    Caption = 'Waiting — listening'
+  end
+  object imgRed: TImage
+    Left = 12
+    Top = 60
+    Width = 16
+    Height = 16
+  end
+  object lblRed: TLabel
+    Left = 36
+    Top = 62
+    Caption = 'Offline — disabled'
+  end
+  object imgBlue: TImage
+    Left = 12
+    Top = 84
+    Width = 16
+    Height = 16
+  end
+  object lblBlue: TLabel
+    Left = 36
+    Top = 86
+    Caption = 'Ringing — incoming'
+  end
+  object btnClose: TButton
+    Left = 48
+    Top = 116
+    Width = 75
+    Height = 25
+    Caption = 'Close'
+    ModalResult = mrCancel
+  end
+end
