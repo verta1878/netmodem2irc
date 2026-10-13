@@ -36,6 +36,7 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | NMServer | 5.1M | FPC 3.2.2 | ✅ Linux ELF |
 | NMConfig.exe | 2.0M | FPC 3.2.2 | ✅ compiles |
 | NETMODEM.CPL | 657K | Dedrick Allen | ✅ original binary |
+| NETMODEM.vxd | 31K | JWasm + wlink | ✅ N4+N5 hardened, 0 TODOs |
 
 ### DOS — the FOSSIL driver
 
@@ -63,6 +64,10 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | R3.3 | Binary safety — 37 tests pass | ✅ |
 | R3.4 | Multinode — 25 tests pass (3 simultaneous nodes) | ✅ |
 | R4.1 | Win9x VxD test | ✅ mock passes 39/39, needs Win98 VM for real |
+| N1 | VxD gap audit — diffed nullmodem95 vs NETMODEM.VXD | ✅ 22/22 VCOMM + 34 FOSSIL + 17 IOCTLs |
+| N3 | Engine features — phonebook, blocklist, config GUIs | ✅ 10 files, pushed to repo |
+| N4 | VxD hardening — 4 patches, all 34 FIFO sites guarded | ✅ compiled, 0 errors |
+| N5 | VxD stubs — ATI4-I7 + comm events | ✅ 0 TODOs remaining |
 | R4.2 | NT com0com path — documented | ✅ |
 | R4.3 | NT UMDF2 driver — specified | ✅ |
 | R5.1 | Inno installer packaging | ✅ wine ISCC.exe builds installer |
@@ -97,6 +102,8 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | NetTransport | — | Telnet BINARY negotiation, IAC doubling |
 | NMVxD | — | VxD interface (cross-platform) |
 | NetModemVxD | — | VxD interface (Windows-only) |
+| NM_Phonebook | 225 | Virtual phonebook — 100 slots, CSV, AT&Z/ATDS |
+| NM_BlockList | 309 | IP allow/block/forward — wildcard + CIDR, first-match-wins |
 
 ## DOS FOSSIL Driver
 
@@ -135,6 +142,7 @@ See docs/DEBUGGER_GUIDE.md for the plain English reference.
 | docs/DEBUGGER_GUIDE.md | Plain English debugger reference |
 | docs/R42_com0com_NT_path.md | NT virtual COM port setup guide |
 | docs/R43_UMDF2_virtual_COM.md | UMDF2 driver specification |
+| docs/NETMODEM_VXD_HARDENING.md | VxD N4+N5 patches — 5 items, all compiled |
 | docs/serial_irq_plan.md | ISR + ring buffer plan (implemented) |
 
 74 docs total. See docs/index.htm for the full categorized index.
@@ -167,6 +175,28 @@ fpc -Mobjfpc -dHAS_SYNAPSE tests/test_r34_multinode.pas && ./test_r34_multinode
 fpc -Mobjfpc -dHAS_SYNAPSE tests/test_d5_relay.pas      && ./test_d5_relay
 # D4 FOSSIL conformance: DOS only (ppcross386 -Tgo32v2 -Mtp)
 ```
+
+## VxD Build (driver/build/)
+
+Builds NETMODEM.VXD on Linux natively — no MASM, no DDK, no Wine.
+
+```bash
+cd driver/build
+./build_vxd.sh
+```
+
+Requires:
+- **JWasm** — MASM-compatible assembler ([github.com/JWasm/JWasm](https://github.com/JWasm/JWasm))
+- **wlink** — Open Watcom v2 linker (LE/VxD format)
+
+Toolchain verified byte-exact against reference FOSSIL.VXD before first use.
+
+| Build | Size | SHA256 (first 16) |
+|-------|------|-------------------|
+| Baseline (unpatched) | 27,688 | `739b273a54c30c93` |
+| Final (N4+N5) | 31,921 | `4efa68d821033030` |
+
+See `docs/NETMODEM_VXD_HARDENING.md` for all 5 patches.
 
 ## The Stack
 
@@ -273,6 +303,12 @@ netmodem2irc/
 │   ├── NMConfig.lpr            Config editor entry point
 │   ├── ConfigMain.pas          Config main form
 │   ├── ConfigMain.lfm          Config form layout
+│   ├── ConfigMain_phonebook.pas  Phonebook tab (N3, 172 lines)
+│   ├── ConfigMain_phonebook.lfm  Phonebook form layout
+│   ├── ConfigMain_blocking.pas   Block/allow tab (N3, 119 lines)
+│   ├── ConfigMain_blocking.lfm   Blocking form layout
+│   ├── ConfigMain_listserv.pas   Listserv tab (N3)
+│   ├── ConfigMain_listserv.lfm   Listserv form layout
 │   ├── NMConfig.res            Compiled resources
 │   └── resources/              Icons + bitmaps (30 resource files)
 │
@@ -316,18 +352,25 @@ netmodem2irc/
 │   ├── fpc-sockets-request.md  Socket API request for fpc264irc
 │   └── retired/                Superseded DOS code
 │
-├── driver/                     ── VxD PASCAL PORT ──
-│   ├── pascal-port/             VxD → Pascal port (wrench)
-│   │   ├── NM_VxD_Types.pas    Packed records matching ASM structs (205 lines)
-│   │   ├── VXD_PORT_PLAN.md    6-phase port plan
-│   │   └── vxd_port_test.pas   7-phase test harness (39 tests)
-│   └── src-retired-README.md   Points to attic/driver-vxd-original/
-│       ├── VPICD.INC           Virtual PIC
-│       ├── VWIN32.INC          VWin32 interface
-│       ├── COPYING             Original license
-│       ├── INFO                Driver info
-│       ├── LICENSE-NOTICE.md   License notice
-│       └── README.md           Directory documentation
+├── driver/                     ── VxD SOURCE + BUILD + BINARIES ──
+│   ├── src/                     Hardened VxD source (N4+N5, wrench 2026-10-13)
+│   │   ├── NETMODEM.ASM         5,823L — patched, 0 TODOs
+│   │   ├── NETMODEM.INC         Main include (IRQ_Ready added)
+│   │   ├── NETMODEM.DEF         Module definition
+│   │   ├── NETMODEM.RC          Resource script
+│   │   └── ...                  12 more (DDK includes, license, info)
+│   ├── build/                   JWasm build system (Linux native)
+│   │   ├── build_vxd.sh         Build script (JWasm + wlink)
+│   │   ├── VMM.inc              JWasm-compatible DDK includes (7 files)
+│   │   └── ...                  Shell.inc, VComm.inc, VPICD.inc, etc.
+│   ├── bin/                     Compiled VxDs
+│   │   ├── NETMODEM.vxd         31,921B — N4+N5 hardened
+│   │   ├── NETMODEM-BASELINE.vxd 27,688B — unpatched reference
+│   │   └── SHA256SUMS.txt       Checksums
+│   └── pascal-port/             VxD → Pascal port (wrench)
+│       ├── NM_VxD_Types.pas     Packed records matching ASM structs (205 lines)
+│       ├── VXD_PORT_PLAN.md     6-phase port plan
+│       └── vxd_port_test.pas    7-phase test harness (39 tests)
 │
 ├── libs/                       ── LIBRARIES ──
 │   └── synapse/                Ararat Synapse socket library (18 files)
@@ -364,6 +407,8 @@ netmodem2irc/
 │
 ├── cpl/                        ── CONTROL PANEL APPLET ──
 │   ├── NetModemCPL.pas         CPL source
+│   ├── IconLegend.pas          Status icon legend (N3, 42 lines)
+│   ├── IconLegend.lfm          Icon legend form layout
 │   ├── original_forms/         Dedrick's original Delphi forms (6 .dfm files)
 │   └── resources/              CPL icons
 │

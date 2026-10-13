@@ -1,6 +1,6 @@
 # netmodem2irc — Directory Map
 
-879 files. Revival of Dedrick Allen's NetModem/32 (1997-2001).
+~920 files. Revival of Dedrick Allen's NetModem/32 (1997-2001).
 Virtual modem engine: TCP/Telnet ↔ FOSSIL ↔ BBS door.
 156 tests, 0 failures. GPLv3.
 
@@ -43,6 +43,8 @@ netmodem2irc/
 │   ├── NM_TSRResident.pas           TSR resident code
 │   ├── NM_Listserv.pas              Mailing list server (future)
 │   ├── NM_AutoNews.pas              Auto-news feature
+│   ├── NM_Phonebook.pas             Virtual phonebook — 100 slots, CSV (N3, 225 lines)
+│   ├── NM_BlockList.pas             IP allow/block/forward — wildcard+CIDR (N3, 309 lines)
 │   ├── NM_SeamSender.pas            SEAM packet sender
 │   └── NetTransport.pas             Telnet BINARY negotiation, IAC doubling
 │
@@ -51,6 +53,12 @@ netmodem2irc/
 │   ├── NetModemServer.lpr           Alternate entry point
 │   ├── MainForm.pas                 Main window (node list, debug panel, menus)
 │   └── SplashForm.pas               Splash screen
+│
+├── config/                      ── NMConfig GUI + N3 tabs ──
+│   ├── ConfigMain_phonebook.pas     Phonebook tab (N3, 172 lines)
+│   ├── ConfigMain_blocking.pas      Block/allow tab (N3, 119 lines)
+│   ├── ConfigMain_listserv.pas      Listserv tab (N3)
+│   └── *.lfm                        Form layouts for each tab
 │
 ├── common/                      ── Shared units ──
 │   ├── NMVxD.pas                    VxD interface (cross-platform)
@@ -76,6 +84,10 @@ netmodem2irc/
 │   ├── README.md                    Synapse documentation
 │   └── SYNAPSE_README.md            Upstream readme
 │
+├── cpl/                         ── Control panel + icon legend ──
+│   ├── IconLegend.pas               Status icon legend (N3, 42 lines)
+│   └── IconLegend.lfm               Form layout
+│
 ├── dos/driver/                  ── DOS FOSSIL driver (netfosdl) ──
 │   ├── serial.pas                   Real 16550 UART — Port[] I/O (sysop/0, 203 lines)
 │   ├── serial_irq.pas               ISR + 4KB ring buffer, 8259 PIC (kiddo, 195 lines)
@@ -83,9 +95,9 @@ netmodem2irc/
 │   ├── netfosdl.pas                 INT 14h hook, Keep (TSR), X00 params (323 lines)
 │   └── SERIAL_README.md             Driver documentation
 │
-├── driver/src/                  ── Dedrick Allen's original VxD source (16 files) ──
-│   ├── NETMODEM.ASM                 Original VxD (172K x86 assembly)
-│   ├── NETMODEM.INC                 Main include
+├── driver/src/                  ── Hardened VxD source (N4+N5, 16 files) ──
+│   ├── NETMODEM.ASM                 5,823L hardened VxD (N4+N5, 0 TODOs)
+│   ├── NETMODEM.INC                 Main include (IRQ_Ready field added)
 │   ├── NETMODEM.DEF                 Module definition
 │   ├── NETMODEM.RC                  Resource script
 │   ├── RESOURCE.H                   Resource header
@@ -100,6 +112,16 @@ netmodem2irc/
 │   ├── INFO                         Original info file
 │   ├── LICENSE-NOTICE.md            License notice
 │   └── README.md                    Directory documentation
+│
+├── driver/build/                ── VxD build system (Linux native, 8 files) ──
+│   ├── build_vxd.sh                 JWasm + wlink build script
+│   ├── VMM.inc                      JWasm-compatible DDK includes (7 files)
+│   └── ...                          Shell.inc, VComm.inc, VPICD.inc, etc.
+│
+├── driver/bin/                  ── Compiled VxDs (3 files) ──
+│   ├── NETMODEM.vxd                 31,921B — N4+N5 hardened
+│   ├── NETMODEM-BASELINE.vxd        27,688B — unpatched reference
+│   └── SHA256SUMS.txt               Checksums
 │
 ├── tests/                       ── Test suites (156 tests total) ──
 │   ├── test_binary_safety.pas       R3.3: 37 tests — 8-bit clean transport
@@ -121,6 +143,7 @@ netmodem2irc/
 │   ├── R43_UMDF2_virtual_COM.md     UMDF2 driver specification
 │   ├── serial_irq_plan.md           ISR + ring buffer plan (implemented)
 │   ├── DRIVER_INTERFACE.md          FOSSIL driver interface spec
+│   ├── NETMODEM_VXD_HARDENING.md    VxD N4+N5 patches (5 items, all compiled)
 │   ├── netmodem2irc_recovery.md     vBulletin crash story + source recovery
 │   ├── netmodem2irc_protocols_and_libs.md   Every protocol + library with specs
 │   ├── seeing_the_structure.md      Structural audit method
@@ -161,7 +184,9 @@ netmodem2irc/
 | common/ | 2 | Shared VxD interface |
 | libs/synapse/ | 18 | TCP/IP socket library |
 | dos/driver/ | 5 | DOS FOSSIL driver |
-| driver/src/ | 16 | Dedrick's original VxD |
+| driver/src/ | 16 | Hardened VxD source (N4+N5) |
+| driver/build/ | 8 | JWasm build system |
+| driver/bin/ | 3 | Compiled VxDs |
 | tests/ | 6 | Test suites (156 tests) |
 | docs/ | 64 | Documentation |
 | out/ | 1 | NMServer.exe binary |
