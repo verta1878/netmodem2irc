@@ -27,7 +27,7 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | M2 | Builds on Windows — dual compiler verified | ✅ |
 | M3 | Live connection — 6 tests pass | ✅ |
 | M4 | Virtual COM path (com0com NT + UMDF2 named pipe) | ✅ code written, needs hardware to test |
-| M5 | Tagged installable release (= R5.3) | ⬜ tag netmodem2irc |
+| M5 | Tagged installable release (= R5.3) | ✅ R5.3 tagged 2026-10-14 |
 
 | Binary | Size | Compiler | Status |
 |---|---|---|---|

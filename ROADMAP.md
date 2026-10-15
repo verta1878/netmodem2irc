@@ -122,7 +122,7 @@ The milestone that makes it "NetModem, revived."
 |---|---|---|
 | R5.1 | `netmodem2irc.iss` packages NMServer, NMConfig, NETMODEM.CPL | ✅ wine ISCC builds installer |
 | R5.2 | README + About with honest feature matrix | ⚠️ updated today, moving target |
-| R5.3 | Tag `netmodem2irc` (= M5) | ⬜ |
+| R5.3 | Tag `netmodem2irc` (= M5) | ✅ 2026-10-14 |
 
 ### R6 — Dedrick's unfinished features
 

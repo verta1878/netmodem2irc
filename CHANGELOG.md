@@ -1,5 +1,27 @@
 # Changelog
 
+## R5.3 — 2026-10-14
+
+### VxD — NETMODEM.VXD hardened (N4 + N5)
+- Compiled from source: JWasm v2.12pre + wlink 2.0, Linux native (no MASM/DDK/Wine)
+- N4: 4 hardening patches — event callbacks, CTS/DSR default, SafeDec macro (34 FIFO sites), callback cleanup
+- N5: ATI4-I7 info string stubs + Win32 comm event addressing
+- 0 warnings, 0 errors, 0 TODOs remaining
+- Final: 5,823 lines, 31,921 bytes (SHA256: 4efa68d821033030...)
+
+### Engine — N3 features
+- NM_Phonebook.pas (225L) — 100-slot virtual phonebook, CSV, AT&Z/ATDS
+- NM_BlockList.pas (309L) — IP allow/block/forward, wildcard+CIDR, first-match-wins
+- Config GUI tabs: phonebook, blocking, listserv
+- IconLegend: status icon reference panel
+
+### Tests
+- 156 total (38 engine + 37 binary safety + 6 live + 25 multinode + 50 relay)
+
+### Build
+- VxD build system: driver/build/build_vxd.sh (7 JWasm DDK includes)
+- Toolchain verified byte-exact on FOSSIL.VXD before use
+
 ## 2026-07-25 — licensing, docs audit, output layout
 
 - **Licence split**: GPLv3 for revival work, GPLv2 retained for Dedrick
