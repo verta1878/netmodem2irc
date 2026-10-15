@@ -3,8 +3,28 @@
 ## R5.3 — 2026-10-14
 
 ### VxD — NETMODEM.VXD hardened (N4 + N5)
+
+Hardening means making the driver not crash when things go wrong.
+Derk's original NETMODEM.ASM worked but had no guards — if a buffer
+underflowed, a callback fired after cleanup, or a FIFO counter went
+negative, the driver would corrupt memory or bluescreen.
+
+- **SafeDec macro** — every `dec [counter]` in the driver (34 sites)
+  now checks for zero before decrementing, so a FIFO counter can never
+  go negative and wrap to 65535
+- **Event callbacks** — the driver now notifies Win32 apps when modem
+  status changes (CTS/DSR/DCD), instead of silently changing state
+- **CTS/DSR default high** — BBS software expects these lines asserted
+  on connect; the original code left them low, which made some BBS
+  software think nobody was connected
+- **Callback cleanup on close** — registered callbacks are cleared when
+  the port closes, so Windows doesn't call into freed memory
+
+None of it adds features. It makes the existing features not break
+under real-world conditions.
+
+Additionally:
 - Compiled from source: JWasm v2.12pre + wlink 2.0, Linux native (no MASM/DDK/Wine)
-- N4: 4 hardening patches — event callbacks, CTS/DSR default, SafeDec macro (34 FIFO sites), callback cleanup
 - N5: ATI4-I7 info string stubs + Win32 comm event addressing
 - 0 warnings, 0 errors, 0 TODOs remaining
 - Final: 5,823 lines, 31,921 bytes (SHA256: 4efa68d821033030...)
@@ -21,7 +41,6 @@
 ### Build
 - VxD build system: driver/build/build_vxd.sh (7 JWasm DDK includes)
 - Toolchain verified byte-exact on FOSSIL.VXD before use
-
 ## 2026-07-25 — licensing, docs audit, output layout
 
 - **Licence split**: GPLv3 for revival work, GPLv2 retained for Dedrick

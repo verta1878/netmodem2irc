@@ -71,6 +71,7 @@ Three independent tracks. DOS doesn't feed i386. The installer packages i386.
 | R4.2 | NT com0com path — documented | ✅ |
 | R4.3 | NT UMDF2 driver — specified | ✅ |
 | R5.1 | Inno installer packaging | ✅ wine ISCC.exe builds installer |
+| R5.3 | Tagged release — N3+N4+N5, 156 tests, VxD hardened | ✅ R5.3 tagged 2026-10-14 |
 
 ## Test Results
 

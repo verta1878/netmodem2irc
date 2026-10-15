@@ -1,6 +1,29 @@
-# NETMODEM.VXD Hardening Patches — N4
+# NETMODEM.VXD Hardening Patches — N4 + N5
 
-wrench, 2026-10-12. Four items from N1 gap audit.
+wrench, 2026-10-12 (N4), 2026-10-13 (N5). Four items from N1 gap audit.
+
+## What "Hardening" Means
+
+Hardening means making the driver not crash when things go wrong.
+Derk's original NETMODEM.ASM worked but had no guards — if a buffer
+underflowed, a callback fired after cleanup, or a FIFO counter went
+negative, the driver would corrupt memory or bluescreen.
+
+- **SafeDec macro** — every `dec [counter]` in the driver (34 sites)
+  now checks for zero before decrementing, so a FIFO counter can never
+  go negative and wrap to 65535
+- **Event callbacks** — the driver now notifies Win32 apps when modem
+  status changes (CTS/DSR/DCD), instead of silently changing state
+- **CTS/DSR default high** — BBS software expects these lines asserted
+  on connect; the original code left them low, which made some BBS
+  software think nobody was connected
+- **Callback cleanup on close** — registered callbacks are cleared when
+  the port closes, so Windows doesn't call into freed memory
+
+None of it adds features. It makes the existing features not break
+under real-world conditions.
+
+---
 
 ## 1. Event Callback Firing (IOCTL 0Eh, line ~5010)
 
