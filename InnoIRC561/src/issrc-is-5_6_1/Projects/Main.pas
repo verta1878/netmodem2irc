@@ -1611,8 +1611,15 @@ begin
     OnlyBelowVer := OnlyBelowVersion.NTVersion;
   end
   else begin
+{$IFDEF FPC}
+    { InnoIRC BUG 3: Win95/98/Me use the Win9x part of MinVersion / OnlyBelowVersion again
+      (Inno Setup 5.4); 0 = not on Win9x, as before }
+    MinVer := MinVersion.WinVersion;
+    OnlyBelowVer := OnlyBelowVersion.WinVersion;
+{$ELSE}
     MinVer := 0;
     OnlyBelowVer := 0;
+{$ENDIF}
   end;
   Result := irInstall;
   if MinVer = 0 then
@@ -3456,7 +3463,15 @@ begin
     A WM_QUIT message posted with PostMessage instead of PostQuitMessage will
     not be returned by a GetMessage/PeekMessage call with a message range that
     does not include WM_QUIT. }
+{$IFDEF FPC}
+  { LCL: Application.Run does not end on WM_QUIT (TWin32WidgetSet.AppProcessMessages only
+    re-posts it), so a posted WM_QUIT left Setup running after "Installation process
+    succeeded" (InnoIRC BUG 6). Application.Terminate sets Terminated and posts no WM_QUIT,
+    so the shell32 DDE problem above does not apply. }
+  Application.Terminate;
+{$ELSE}
   PostMessage(0, WM_QUIT, 0, 0);
+{$ENDIF}
 end;
 
 

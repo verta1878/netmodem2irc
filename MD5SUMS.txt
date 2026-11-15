@@ -6,14 +6,15 @@ f856384624b2c1296dab4c543daa986b  ./CHANGELOG.md
 18aa4ce175347c55bf6806524a695ca8  ./CREDITS.md
 32cc8857d0b4613c59e5baa8d741b108  ./DEFERRED-20260725.md
 c9b71246de13d2bb252cb0bf0be8648e  ./DIRECTORY.md
-a986d58847fdbe915e5bd810444af436  ./InnoIRC561/CHANGELOG.md
+83f4175a5d842c208b86b7247c9a83de  ./InnoIRC561/CHANGELOG.md
 ddf6180e1f8d49419858ebf4933e97f9  ./InnoIRC561/FPC264_WINE_FIX.md
-56fc6404ea05d28461a7facf7861ab5e  ./InnoIRC561/INNO_FPC_PORT.md
+13d6674dd547324687fb857804a1d635  ./InnoIRC561/INNOIRC561-FINDINGS.md
+2852551bc93de056f06c526832a900f6  ./InnoIRC561/INNO_FPC_PORT.md
 f9c36c87fbdaec6e3fef7143d215f633  ./InnoIRC561/INNO_ORIGINAL_SOURCE.md
 d4464daea827f0fe644ecf6037fddf99  ./InnoIRC561/LCLDeferredInit.pas
 71a4e844924886a7cfb45ed420eedbeb  ./InnoIRC561/LCL_7182_FIX_PLAN.md
 4eda74b2f647b207b49d77c047e8a33c  ./InnoIRC561/LCL_7182_PATCH.pas
-6a3bae3ba95b4eb798af27a81d025c19  ./InnoIRC561/README.md
+690fee21fc0cfc3ced09c4a1349704f1  ./InnoIRC561/README.md
 d726c2860dc54b702c0cdf7474ccbcfc  ./InnoIRC561/WINE_FIX_PLAN.md
 cde3eed74d2b612c48e46d33882bbe98  ./InnoIRC561/innosetup-5.6.1-ORIGINAL-delphi-not-win98.tar.gz
 4621d68a0f0c0aafcbdfb06889d347b6  ./InnoIRC561/innosetup-5.6.1-fpc-src.tar.gz
@@ -259,7 +260,7 @@ c1f61179f511564b864f66d0ad5f0513  ./InnoIRC561/src/issrc-is-5_6_1/Projects/CompW
 28dc53a535992cb624094d7979c7aaf2  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Compil32.manifest.res
 24dbe796c5091071ae04adb1ec971b84  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Compil32.manifest.txt
 e27022226841a83406eac02e9fdc726c  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Compil32.res
-1edfb36aa8f082de1740eea31a294ef3  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Compile.pas
+d3508fcbafd5b36018e9ca42f9769b32  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Compile.pas
 53b54ac329688700ca38d1b17ecf5b8b  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Compress.pas
 2855f374a3cb3b30ab99d68011d62a06  ./InnoIRC561/src/issrc-is-5_6_1/Projects/CompressZlib.pas
 ee34ec97f4824259f62bf20925d69d12  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Consts.fpas
@@ -341,7 +342,7 @@ e2529d825db73df24e5f668fdab22b46  ./InnoIRC561/src/issrc-is-5_6_1/Projects/InstF
 e4998205ef2e9f436c99fa62672d951b  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Install.pas
 feb9a381549e23917da49f602540bba8  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Int64em.pas
 66cdc7a207309bab824bdaa116b0e57e  ./InnoIRC561/src/issrc-is-5_6_1/Projects/LZMA.pas
-96f01c025a17348212923c48fa6ad2d6  ./InnoIRC561/src/issrc-is-5_6_1/Projects/LZMADecomp.pas
+9efa69babacdcf3cede26a66c037c637  ./InnoIRC561/src/issrc-is-5_6_1/Projects/LZMADecomp.pas
 e2b7315aac90621831cf42baa20183d3  ./InnoIRC561/src/issrc-is-5_6_1/Projects/LZMADecompSmall.pas
 07c37eb507346bdfd35af209f928da54  ./InnoIRC561/src/issrc-is-5_6_1/Projects/LibFusion.pas
 dfc21ba388d42d8557cfd83626b9f615  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Logging.pas
@@ -393,7 +394,7 @@ b847af8278bdb13dfd3365ab3c565ca1  ./InnoIRC561/src/issrc-is-5_6_1/Projects/LzmaD
 1a2c6ec53103b2e785ca9807104bb323  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Main.dfm.txt
 a38c5fd720eb0cf5d0df291c3d017f5c  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Main.lfm
 d1233df8761dee0b666552006c4d2ace  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Main.lrs
-794a5adaf19e623894ff671bff535112  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Main.pas
+bfacbee970679d283de9af2b0038d115  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Main.pas
 d5cab09d724eae336d0eec6bb3d2697e  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Menus.fpas
 b682bcc74fa14655c5d06befb7707371  ./InnoIRC561/src/issrc-is-5_6_1/Projects/MsgIDs.pas
 dd0e211eb6b7725b8709184b5d3b1995  ./InnoIRC561/src/issrc-is-5_6_1/Projects/Msgs.pas
@@ -530,7 +531,7 @@ bee4aba19c819e11c2b1a965f251d226  ./InnoIRC561/src/issrc-is-5_6_1/whatsnew.htm
 54dc3f6ac79e07badcf26c8b652f5912  ./Makefile
 f5bfe37b1c206cccf9d9638d8bcad9d5  ./README.md
 a4154b25694d2f7beb6b5821c273efad  ./RELEASE_NOTES_wrench_20260829.md
-d24cb2a27d9aff79c15015cb055aa102  ./ROADMAP.md
+af7206c7d7bf8858be3fdd74cce69b4f  ./ROADMAP.md
 6201447e925cdfd3012ec0966787392a  ./THIRD_PARTY.md
 32cc8857d0b4613c59e5baa8d741b108  ./attic/DEFERRED-20260725.md
 fee352773254f2d81ee257212662fd9c  ./attic/README.md
@@ -714,7 +715,7 @@ e2eb92038be79bd41291e86154392d60  ./docs/NetTransport.pas
 8fcbc31ea7999b1f2157c4464077a234  ./docs/R42_com0com_NT_path.md
 bd9d5f4ec0fd89112b0a030d868104f5  ./docs/R43_UMDF2_virtual_COM.md
 956192d6cbf3edb8223f1fa100c710cb  ./docs/README.md
-b73d238826621ccdaaba30ee80ddb877  ./docs/ROADMAP.md
+08bd317e91f1c03178bb24bedf498bcc  ./docs/ROADMAP.md
 34c9ce5b453b5f95c8b32d866452b195  ./docs/SYNAPSE_README.md
 1d899607fcc9528c1d95f640a9984fb6  ./docs/THIRD_PARTY.md
 6aeff9a901bb2be0b509a59c32bb6fdc  ./docs/docs-fix-phases.md

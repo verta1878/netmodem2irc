@@ -132,7 +132,7 @@ Packages Track 1. Independent toolchain (fpc264irc).
 | What | Impact | Owner |
 |---|---|---|
 | **153 paths uncommitted** | everything today is working-tree only | next action |
-| **fpc264irc is an empty repo** | i386 + installer build recipes can't run | maintainer |
+| ~~fpc264irc is an empty repo~~ — **resolved** 2026-11-15: back on GitHub, `c78cd59c` builds InnoIRC561 (byte) | i386 + installer build recipes can run again | maintainer |
 | **com0com licensing** | GPLv2 fork question, Win9x `.inf` | maintainer |
 
 ---

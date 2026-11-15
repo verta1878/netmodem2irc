@@ -4,6 +4,32 @@ All notable changes to the FPC port of Inno Setup 5.6.1.
 This is NOT the upstream Inno Setup changelog — it covers only
 the FPC/Lazarus port work for netmodem2irc.
 
+## [Unreleased] — Setup crash, silent exit, Win98 (byte, 2026-11-15)
+
+Found by building with fpc264irc and testing under Wine; details in `INNOIRC561-FINDINGS.md`.
+Built and tested with fpc264irc `c78cd59c` (it has the two fpc264irc fixes InnoIRC needed: BUG-046
+SetLength on i386, BUG-047 LCL win32 "Class does not exist"). Not run on real Windows or Win98 yet.
+
+- **Setup crash at the start of decompression** (`Projects/LZMADecomp.pas`): the `TLZMAISzAlloc`
+  callbacks are now `cdecl` and the 4 decoder externals take `var alloc` - the C decoder expects an
+  `ISzAlloc *` and cdecl callbacks (FPC passed the cdecl `const` record by value, C jumped into code
+  bytes: DEP fault at `LZMAAllocFunc`).
+- **Silent setup did not exit** after "Installation process succeeded" (`Projects/Main.pas`
+  `TerminateApp`): under FPC it calls `Application.Terminate` - the LCL message loop only re-posts a
+  `WM_QUIT`, so `Application.Run` never returned. Delphi build unchanged.
+- **Windows 95/98/Me allowed again** (`Projects/Compile.pas`, `Projects/Main.pas`
+  `InstallOnThisVersion`), as in Inno Setup 5.4, FPC build only: the Win9x part of `MinVersion` is
+  accepted by the compiler and checked by Setup. Opt-in per script - the default stays `MinVersion=0,5.0`;
+  a Win98 + NT setup says `MinVersion=4.1,5.0`.
+- `README.md`, `INNO_FPC_PORT.md`: `-Fu` order (Lazarus folders first), fpc264irc is back on GitHub;
+  `ROADMAP.md` + `docs/ROADMAP.md`: the "fpc264irc is an empty repo" blocker marked resolved.
+- Tested (Wine, normal and Win98 mode): ISCC compiles; `/VERYSILENT` and `/SILENT` install, exit by
+  themselves (exit code 0), uninstall; a `MinVersion=5.0` setup is refused in Win98 mode, a
+  `MinVersion=4.1,5.0` setup installs there.
+- Open: run on real Win98 (the non-kernel32 imports are not checked against Win98's DLLs yet);
+  `installer/netmodem32.iss` still `MinVersion=0,5.0` and `installer/Output/netmodem32_setup.exe` is still
+  the stock Delphi build; `innosetup-5.6.1-fpc-src.tar.gz` is the old source (not updated).
+
 ## [Unreleased] — R2/Inno Phase 10 Fix
 
 ### Root Cause: ISCmplr.dll + Setup.exe Access Violation (c0000005)

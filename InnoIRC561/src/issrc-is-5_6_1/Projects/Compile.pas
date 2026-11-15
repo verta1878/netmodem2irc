@@ -4050,8 +4050,13 @@ begin
     ssMinVersion: begin
         if not StrToVersionNumbers(Value, SetupHeader.MinVersion) then
           Invalid;
+{$IFNDEF FPC}
         if SetupHeader.MinVersion.WinVersion <> 0 then
           AbortCompileOnLine(SCompilerMinVersionWinMustBeZero);
+{$ENDIF}
+        { InnoIRC (FPC): Win95/98/Me are allowed again - the Win9x part of MinVersion (e.g.
+          MinVersion=4.1,5.0 = Windows 98 or NT 5.0) is checked by Setup as in Inno Setup 5.4.
+          0 (the default) still means "not on Win9x". InnoIRC BUG 3. }
         if SetupHeader.MinVersion.NTVersion < $05000000 then
           AbortCompileOnLineFmt(SCompilerMinVersionNTTooLow, ['5.0']);
       end;

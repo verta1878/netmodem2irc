@@ -150,7 +150,7 @@ LCL=/path/to/fpc264irc/bin/lazarus/units/i386-win32
 TOOLS=/path/to/fpc264irc/bin/tools/i386-win32
 
 FLAGS="-Twin32 -Mdelphi \
-  -Fu$RTL -Fu$LCL/lazutils -Fu$LCL/lcl -Fu$LCL/lcl/win32 \
+  -Fu$LCL/lcl/win32 -Fu$LCL/lcl -Fu$LCL/lazutils -Fu$RTL \
   -Fu../Components -FU. -FE../../out \
   -FD$TOOLS"
 
@@ -161,12 +161,18 @@ $FPC $FLAGS ISCmplr.dpr
 $FPC $FLAGS Compil32.dpr
 ```
 
+`-Fu` order (byte, 2026-11-15): the Lazarus folders come **before** the main unit folder (fpc264irc
+`toolkit/SEGMAP.TXT`). With the main folder first, Free Vision's `Menus` and `AvgLvlTree` are found instead of the
+LCL ones and `ppc386` stops on `Setup.dpr` with `EListError : List index exceeds bounds (265)`. Use an empty `-FU`
+folder for each build (stale `.ppu` files are picked up before a changed source is recompiled). Needs fpc264irc
+`c78cd59c` or later (BUG-046 SetLength, BUG-047 LCL win32). On a Linux host: `chmod +x bin/ppc386`, file names are
+case-sensitive (lower-case links needed), and `fpcres` must be on PATH. See `INNOIRC561-FINDINGS.md`.
+
 ## Toolchain
 
-**fpc264irc is currently an empty repository** — zero refs, zero
-commits, nothing to clone. The build recipe above cannot be run as
-written until it is restored. Stock FPC 3.2.2 is the only working
-compiler on hand; see below.
+**fpc264irc is back on GitHub** (byte, 2026-11-15): https://github.com/verta1878/fpc264irc —
+commit `c78cd59c` or later builds all 5 targets with the recipe above. (Until 2026-11 the repository
+was empty; this note replaced the old "empty repository" warning.)
 
 fpc264irc r3.1 Phase 9 is required. It supplies 587 RTL PPUs and 301
 LCL PPUs with consistent checksums, plus `Ctl3D`/`ParentCtl3D` on
