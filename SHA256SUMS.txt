@@ -6,9 +6,9 @@ b556e739b2d31b5aa20906b37b530591bb2c2954999acf6e8524fe9bd73a4429  ./.github/desc
 e558abaa3a5a545d180c78f72ea538f62f4b2fcbe8e2cf40c6b31a6dcf53a132  ./CREDITS.md
 e0ee3ae2d69d11321d28081e573734962690f447fdc3de46b96253cd55229b3b  ./DEFERRED-20260725.md
 9fcb2adc1b3a07c513db485503aefc6e8aecc8fb3798d78d1aee776c8b90e310  ./DIRECTORY.md
-05fee33ddf5b513a7f2a364de6b6a2b40b9a96d668352ad8b2464cf5aa6dea00  ./InnoIRC561/CHANGELOG.md
+1714555cc22414a8e4624f4c339ab27b46ff7ab820b79d333b6bd8a60d34bc28  ./InnoIRC561/CHANGELOG.md
 3558483051ca6a8d464e766fc14cfd8229bd7ceb52a91a7302361776a74a5b6f  ./InnoIRC561/FPC264_WINE_FIX.md
-a07a4011b46e4b639bdba62d2b350814fd62a65f9ba12c1e5044ff6a9f77ba36  ./InnoIRC561/INNOIRC561-FINDINGS.md
+e4c068aca4f73a202e5c7a4337ca540aec2a8f4cb4e4a39853d6fdcc4a5b1fa7  ./InnoIRC561/INNOIRC561-FINDINGS.md
 ed7edfdf24caaf193759aa5b82ca7fb39618f9d96cdf949083ceb4146cefaf8a  ./InnoIRC561/INNO_FPC_PORT.md
 3a8a72f8dc9d2c050e67c38d2a1999ae7a9be73a3c333bd37043fa30b98c4624  ./InnoIRC561/INNO_ORIGINAL_SOURCE.md
 2b9fb31639e8839cd8a892ac38b390186be8195eb4bee7615000fcd912553d01  ./InnoIRC561/LCLDeferredInit.pas
@@ -404,7 +404,7 @@ ff8ee3d305ed6ecef933d132916843625b54b2246600fbff972414abadd029e4  ./InnoIRC561/s
 2fb1d802b7df659784eaa74adc11937f5e5e94df1c10777c565f2517ec1288ce  ./InnoIRC561/src/issrc-is-5_6_1/Projects/NewDisk.lrs
 7d35befd345997a630fbdc5c7e97572d883c6799745d4a542fcba4f7905da006  ./InnoIRC561/src/issrc-is-5_6_1/Projects/NewDisk.pas
 cd83e405081c0a8ea55f269c4949e1b636ccfb8750a7e2123230329265fb2fae  ./InnoIRC561/src/issrc-is-5_6_1/Projects/PascalScript.inc
-e5325d872d5ba475350c9c0a7e3f75f8d17beebae75753c8f430e5ebc9caf388  ./InnoIRC561/src/issrc-is-5_6_1/Projects/PascalScriptFPC.inc
+a0e81b81922443c5474a6f5d677e21a93a2cecadb197c1e0d47b0ebab62f1895  ./InnoIRC561/src/issrc-is-5_6_1/Projects/PascalScriptFPC.inc
 ebcd1f3d7c0bd7dd9dad926487ca1b54d31b7915e145587a888e58abb3fd8ab2  ./InnoIRC561/src/issrc-is-5_6_1/Projects/RedirFunc.pas
 7da007a9aa0166c391546aac5cccf143a3f12ceafd781a193b9cbb95c4a82275  ./InnoIRC561/src/issrc-is-5_6_1/Projects/RegDLL.pas
 b2b1fd4c607d229242963b01dee0cec179afc3f30b694316ec5462216d995931  ./InnoIRC561/src/issrc-is-5_6_1/Projects/RegSvr.pas
@@ -417,7 +417,7 @@ f1bb3c6db7b52fa50ec93610c7499c096a098ab6dba39c5b50a61d38fc68e5b3  ./InnoIRC561/s
 2e5106a4c4170edba48f0bd540ba76f6eb04b8a1c98335cea48ae2721de1820e  ./InnoIRC561/src/issrc-is-5_6_1/Projects/ScriptDlg.pas
 0aa5adf03ac71aeb3212869633c819cb8ac0321262abc1d05b1055531972ca79  ./InnoIRC561/src/issrc-is-5_6_1/Projects/ScriptFunc.pas
 08ad6d4cb731be7d781abc389b55ba2303124edb00992bfa3b92b9cf0e869384  ./InnoIRC561/src/issrc-is-5_6_1/Projects/ScriptFunc_C.pas
-53c2d34f413cc1cafa9edb32f44f8359484d975c91c377981c792318c4a7031b  ./InnoIRC561/src/issrc-is-5_6_1/Projects/ScriptFunc_R.pas
+61ba246605b42f3a7ab3466d4f83a228499df638cbd25b307006910f078168b1  ./InnoIRC561/src/issrc-is-5_6_1/Projects/ScriptFunc_R.pas
 cae7453d69a0f7d0be889c4febc9f020e4e055a6758762bb1f5c2a92325fd3b1  ./InnoIRC561/src/issrc-is-5_6_1/Projects/ScriptRunner.pas
 82c6410ba480c5abee6a672b3948c0d455dea5a74b5f67b460628654538946ad  ./InnoIRC561/src/issrc-is-5_6_1/Projects/SecurityFunc.pas
 139b397c4af1550fa51706bfd947d91b503bc570489f96508fa89fa6fd35fda8  ./InnoIRC561/src/issrc-is-5_6_1/Projects/SelFolderForm.dfm
@@ -488,7 +488,7 @@ ea4017920add9f1155ddd47bba12597d0c4c295fd96654500beebc8da8c9d731  ./InnoIRC561/s
 6780b890bf327a09a5947cd2f148e384de31e1d084b469b771890f41ddfc215a  ./InnoIRC561/src/issrc-is-5_6_1/Projects/eDefines.inc
 5a07d45df9f57134c41afd37e490478ab652d5fe276c6b2c6e2395fb683c1783  ./InnoIRC561/src/issrc-is-5_6_1/Projects/powerpc.inc
 cdb316a228ce14109dfd5fb01ed33bdde4c9c2037fd9943a01bfe2399befd093  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSC_classes.pas
-090921c2be04c747e6c00c33429d88bb0dbfbcf223738ab25f8e1fdcd50103a1  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSC_comobj.pas
+27229984e331704cfbcade6bdf9abc1f895e9854697fc41aa2db0078962b23ad  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSC_comobj.pas
 26b1eca67b7a4d04f384a45e16ccd78e850746f07c80ca58aa16727513d48b56  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSC_controls.pas
 ab188d47c6341fee089a967cc05a51124c0a678d40f34f5735cacfbf91f5a3d6  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSC_dll.pas
 30421ce0da89d4d5d5274d1ccaca27dca1b17a55ba4eb2514fd9c95daf0b73e5  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSC_extctrls.pas
@@ -507,7 +507,7 @@ b259bb1de604ad6136e71fff5cb37ac08333c71611b2f75e58514584bfbd363f  ./InnoIRC561/s
 99f43483dff1e0d9bb8adf0132d7b9e5445dd229276f096fc38b4a531d6658c8  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSR_graphics.pas
 439f817475fe4783f1d3b4352181aa8fa6d39cc037fee3a9b7d5f02b7aaebdc2  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSR_std.pas
 e52ceb9aa1c274710cb4a32e1af030e63730bd564dbcd9dc8676684e47f4c2e2  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSR_stdctrls.pas
-c82b903d8c512eb5c5c32268136b45eb7e68c197d11f580376b506a04864d5f8  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSRuntime.pas
+20d2d369af195dbf39f085212aa52bbcc2784b80ddbe06cfd8bb8d06deda2e1e  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSRuntime.pas
 6f3d473b2698a4dc7a8631ffbe8f2749a02ea7d1637e31c7e4e8dc6d67345ce3  ./InnoIRC561/src/issrc-is-5_6_1/Projects/uPSUtils.pas
 fc4ac19bbd1aeb0bf963b3a3463508c45d0e9bdacfd1264cc2f3a47934be5be6  ./InnoIRC561/src/issrc-is-5_6_1/Projects/x64.inc
 616ce3f1862b467ad92a8c9db4c0645756bbdddb68412384c914eaeaf8a2002b  ./InnoIRC561/src/issrc-is-5_6_1/Projects/x86.inc

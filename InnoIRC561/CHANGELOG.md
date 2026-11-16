@@ -4,6 +4,25 @@ All notable changes to the FPC port of Inno Setup 5.6.1.
 This is NOT the upstream Inno Setup changelog — it covers only
 the FPC/Lazarus port work for netmodem2irc.
 
+## [Unreleased] — [Code] sections, OLE automation, GetExceptionMessage (byte, 2026-11-15)
+
+Found by building fpc264irc's `installer/fpc264irc.iss` with InnoIRC; details in `INNOIRC561-FINDINGS.md`
+(bugs 8 - 10).
+
+- **No script with a `[Code]` section compiled** ("Column 1:" and no message) - bug 8.
+  `PascalScriptFPC.inc` switched IDispatch off for every FPC target, and `uPSC_comobj.pas` still registered
+  `CreateOleObject` / `GetActiveOleObject`. Now IDispatch is on for Windows (`PS_NOIDISPATCH` only when not
+  `MSWINDOWS`); `uPSC_comobj.pas` registers the two only with IDispatch; `uPSRuntime.pas` builds its IDispatch code
+  with FPC (`Variants.VarType`, FPC's `TExcepInfo.Source` / `Description`). OLE automation works
+  (`CreateOleObject`, method calls, property set, errors).
+- **`GetExceptionMessage` was always "(There is no current exception)"** (`Projects/ScriptFunc_R.pas`) - bug 9:
+  FPC uses `LastEx` / `LastExObject` / `LastExParam`, as the Unicode build.
+- **Script compile errors without text** - bug 10: an fpc264irc RTL bug (BUG-049, `S := S` emptied a string), fixed
+  there; build with that fpc264irc.
+- Tested (Wine, normal and Win98 mode): `[Code]` scripts, OLE with `Scripting.FileSystemObject` and `WScript.Shell`,
+  `GetExceptionMessage`; fpc264irc's own setup (114 MB, 12,717 files, with its PATH `[Code]`) builds, installs and
+  uninstalls.
+
 ## [Unreleased] — Setup crash, silent exit, Win98 (byte, 2026-11-15)
 
 Found by building with fpc264irc and testing under Wine; details in `INNOIRC561-FINDINGS.md`.

@@ -9345,7 +9345,12 @@ begin
   RegisterDelphiFunction(@VarIsEmpty, 'VARISEMPTY', cdRegister);
   RegisterDelphiFunction(@Null, 'NULL', cdRegister);
   RegisterDelphiFunction(@VarIsNull, 'VARISNULL', cdRegister);
+{$IFDEF FPC}
+  { InnoIRC BUG 8: with ActiveX in uses (IDispatch on), VarType is ActiveX's VARTYPE type - use the Variants function }
+  RegisterDelphiFunction(@Variants.VarType, 'VARTYPE', cdRegister);
+{$ELSE}
   RegisterDelphiFunction(@VarType, 'VARTYPE', cdRegister);
+{$ENDIF}
   {$IFNDEF PS_NOIDISPATCH}
   RegisterDelphiFunction(@IDispatchInvoke, 'IDISPATCHINVOKE', cdregister);
   {$ENDIF}
@@ -12626,7 +12631,11 @@ begin
        if not Succeeded(i) then
        begin
          if i = DISP_E_EXCEPTION then
+           {$IFDEF FPC} { FPC's TExcepInfo: Source / Description (WideString, freed by the compiler) }
+           raise Exception.Create(ExceptInfo.Source+': '+ExceptInfo.Description)
+           {$ELSE}
            raise Exception.Create(ExceptInfo.bstrSource+': '+ExceptInfo.bstrDescription)
+           {$ENDIF}
          else
            raise Exception.Create(SysErrorMessage(i));
        end;

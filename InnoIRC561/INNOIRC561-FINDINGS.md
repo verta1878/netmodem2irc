@@ -14,9 +14,15 @@ share in `bbses/netmodem2irc/InnoIRC561` is identical). Built with fpc264irc Git
 | 4 | Build on Linux: file name case, `-Fu` order, `fpcres` | build notes | worked around |
 | 5 | LCL win32 "Failed to create win32 control, error 1411: Class does not exist" (GLOBALS G-017) | **fpc264irc LCL**, commit `3cc25923` "U-1 Win9x ANSI" | **fixed in fpc264irc** `c78cd59c` (BUG-047) — nothing to do in InnoIRC |
 | 6 | After "Installation process succeeded" the silent setup does not exit | `Projects/Main.pas` `TerminateApp` | **fixed** (this change, 2026-11-15) |
+| 8 | No script with a `[Code]` section compiles ("Column 1:" and no message) | `Projects/uPSC_comobj.pas`, `PascalScriptFPC.inc`, `uPSRuntime.pas` | **fixed** (2026-11-15, second change) - OLE automation works too |
+| 9 | `GetExceptionMessage` always "(There is no current exception)" | `Projects/ScriptFunc_R.pas` | **fixed** (2026-11-15, second change) |
+| 10 | Script compile errors show no text ("Column 3:" and nothing) | **fpc264irc RTL** (BUG-049: `S := S` emptied the string) | **fixed in fpc264irc** (BUG-049) - nothing to do in InnoIRC |
 | — | The working `netmodem32_setup.exe` | `installer/Output/` | built with **stock Delphi** Inno 5.6.1, not InnoIRC |
 
-Changes in this tree (byte, 2026-11-15): **3 files** — `Projects/LZMADecomp.pas` (bug 1), `Projects/Main.pas` (bugs 6 and 3),
+Second change (byte, 2026-11-15): **4 files** for bugs 8 and 9 - `Projects/PascalScriptFPC.inc`, `uPSC_comobj.pas`,
+`uPSRuntime.pas`, `ScriptFunc_R.pas`; needs fpc264irc with BUG-049 for the error texts (bug 10).
+
+First change (byte, 2026-11-15): **3 files** — `Projects/LZMADecomp.pas` (bug 1), `Projects/Main.pas` (bugs 6 and 3),
 `Projects/Compile.pas` (bug 3). Against GitHub `2562cd6` only these three source files changed. The Delphi
 build is unchanged (all changes are `{$IFDEF FPC}` / `{$IFNDEF FPC}`, except bug 1, which is a plain fix).
 
@@ -87,10 +93,12 @@ s := 'abc' + IntToStr(1);  t := s;  SetLength(s, 0);  writeln(Length(s));   { pr
   `S` still points at it — wrong length *and* a reference that is no longer counted (can become use-after-free).
 - Affects every i386 target of fpc264irc (win32, linux, go32v2, os2, freebsd, darwin), not only InnoIRC.
 
-Fix belongs in fpc264irc: the assembler decr_ref must clear `S` on every path (as the Pascal version), then the i386
-`system` units are rebuilt. Fixed in fpc264irc `c78cd59c` (BUG-046): all 6 i386 targets rebuilt with their kits - only `system` changes
-(same checksums); the 3-line test prints 0 on i386-linux, i386-win32 (Wine) and go32v2 (DOSBox). In SECompressedBlockRead a workaround
-would be `S := '';` before `SetLength`, but the RTL fix is the real one.
+Fix belongs in fpc264irc. First fixed in `c78cd59c` (BUG-046) by making the assembler decr_ref clear `S` on every
+path; that turned out to be the wrong side of the mismatch (it made `S := S` empty a string, BUG-049). Final fix
+(BUG-049): `fpc_ansistr_decr_ref` clears `S` only when it frees the string, as in FPC 2.6.4, the i386 assembler is
+back to its original, and `SetLength(S, 0)` sets `S := nil` itself (as official 2.6.4 does). The 3-line test prints 0
+and `S := S` keeps the string, on i386 and x86_64. In SECompressedBlockRead a workaround would be `S := '';` before
+`SetLength`, but the RTL fix is the real one.
 
 ## Result with bugs 1, 2 and 5 fixed (byte's sandbox, Wine)
 
@@ -153,6 +161,48 @@ begin
 end;
 ```
 The Delphi build is unchanged. The other `WM_QUIT` users (`Uninstall.pas` own loop, `DebugClient.pas`) need nothing.
+
+## BUG 8 — `[Code]` sections do not compile; OLE automation
+
+Symptom: any script with a `[Code]` section - even one empty procedure - stops: `Error on line N: Column 1:` and no
+message. Found with fpc264irc's own `installer/fpc264irc.iss` (its PATH check). Every InnoIRC build had it.
+
+Cause: `PascalScriptFPC.inc` defines `PS_NOIDISPATCH` for every FPC target, so the Pascal Script compiler has no
+`IDispatch` type. `uPSC_comobj.pas` still registers `CreateOleObject` / `GetActiveOleObject` (return `IDispatch`);
+that registration fails before the script is read (error 36, "Unable to register function ..."), so no script compiles.
+
+Fix (4 small changes, FPC only, Delphi build unchanged):
+- `PascalScriptFPC.inc`: `PS_NOIDISPATCH` only when not Windows (`{$IFNDEF MSWINDOWS}`) - IDispatch on for win32/win64.
+- `uPSC_comobj.pas`: the two registrations inside `{$IFNDEF PS_NOIDISPATCH}` (for non-Windows builds).
+- `uPSRuntime.pas` (the IDispatch code that was switched off): `@Variants.VarType` (with ActiveX in uses, `VarType` is
+  ActiveX's `VARTYPE` type); FPC's `TExcepInfo` has `Source` / `Description` (WideString), not `bstrSource` ...
+
+Tested (Wine, normal and Win98 mode): `[Code]` with `InitializeSetup`, `CurStepChanged`, `RegQueryStringValue`, `Pos`,
+`ExpandConstant`; OLE: `CreateOleObject('Scripting.FileSystemObject')` - `BuildPath`, `CreateTextFile` + `WriteLine` +
+`Close`, `FileExists`, `GetFile(P).Size`, `FolderExists`; `CreateOleObject('WScript.Shell')` - `ExpandEnvironmentStrings`,
+property set `CurrentDirectory := ...` and read back; an unknown method raises "Unknown method" (catchable).
+Notes for script writers (not bugs of this change):
+- A COM Boolean is -1: stored in a script `Boolean` it is 255, so `if B = True then` is false. Use `if B then` /
+  `if not B then` (both work). Delphi converts a Boolean variant the same way.
+- Wine's `WScript.Shell.ExpandEnvironmentStrings` returns the string with its terminating #0 counted (a plain FPC
+  program gets the same) - a Wine detail, not InnoIRC.
+
+## BUG 9 — `GetExceptionMessage` always empty
+
+Symptom: `try RaiseException('x'); except Log(GetExceptionMessage); end;` logs `(There is no current exception)`.
+Cause: `ScriptFunc_R.pas` reads `ExceptionCode` / `ExceptionObject` in the ANSI build, but this Pascal Script clears
+them when the `except` block starts; the exception is still on its exception stack (`LastEx` / `LastExObject` /
+`LastExParam`, which the Unicode build uses). Fix: FPC uses the `LastEx*` functions too
+(`{$IF DEFINED(UNICODE) OR DEFINED(FPC)}`). Tested: logs `my test error`; an OLE error logs `Unknown method`.
+
+## BUG 10 — script compile errors without text: fpc264irc BUG-049
+
+Symptom: a script error shows only `Column 3:` - the text ("Semicolon (';') expected") is missing.
+Cause - fpc264irc, not InnoIRC: Pascal Script's `ShortMessageToString` ends with `Result := Result;`, and with
+fpc264irc a string assigned to itself became empty (`S := S` -> ''), on i386 and x86_64 (official FPC 2.6.4 / 3.2.2:
+correct). fpc264irc's RTL had FPC 3.x's `astrings.inc`, whose `fpc_ansistr_decr_ref` clears `S` every time; the 2.6.4
+compiler calls `decr_ref(S)` and then reads `S` again for `S := S`. Fixed in fpc264irc (BUG-049): `decr_ref` clears `S`
+only when it frees the string, as in 2.6.4. Rebuild InnoIRC with that fpc264irc to get the messages.
 
 ## BUG 3 — Win98 refused by 5.6.1 itself
 

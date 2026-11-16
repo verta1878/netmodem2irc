@@ -32,8 +32,13 @@ begin
   cl.AddDelphiFunction('function CreateComObject(const ClassID: TGUID): IUnknown;');
 {$ENDIF}
 {$ENDIF}
+{$IFNDEF PS_NOIDISPATCH}
+  { InnoIRC BUG 8 (FPC): PascalScriptFPC.inc defines PS_NOIDISPATCH, so the compiler has no IDispatch type and
+    these two registrations failed - every [Code] section stopped with an empty "Column 1:" error. Without
+    IDispatch they are left out: scripts that call CreateOleObject / GetActiveOleObject do not compile. }
   cl.AddDelphiFunction('function CreateOleObject(const ClassName: String): IDispatch;');
   cl.AddDelphiFunction('function GetActiveOleObject(const ClassName: String): IDispatch;');
+{$ENDIF}
 end;
 
 end.

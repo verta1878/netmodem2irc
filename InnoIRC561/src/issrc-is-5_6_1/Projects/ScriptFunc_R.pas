@@ -1539,16 +1539,18 @@ function OtherProc(Caller: TPSExec; Proc: TPSExternalProcRec; Global, Stack: TPS
     Code: TPSError;
     E: TObject;
   begin
-    Code := Caller.{$IFDEF UNICODE} LastEx {$ELSE} ExceptionCode {$ENDIF};
+    { InnoIRC BUG 9 (FPC): this Pascal Script clears ExceptionCode when the except block starts, so the ANSI path
+      always said "(There is no current exception)" - FPC uses LastEx* (the exception stack), as the Unicode build }
+    Code := Caller.{$IF DEFINED(UNICODE) OR DEFINED(FPC)} LastEx {$ELSE} ExceptionCode {$IFEND};
     if Code = erNoError then
       Result := '(There is no current exception)'
     else begin
-      E := Caller.{$IFDEF UNICODE} LastExObject {$ELSE} ExceptionObject {$ENDIF};
+      E := Caller.{$IF DEFINED(UNICODE) OR DEFINED(FPC)} LastExObject {$ELSE} ExceptionObject {$IFEND};
       if Assigned(E) and (E is Exception) then
         Result := Exception(E).Message
       else
         Result := String(PSErrorToString(Code, Caller.
-          {$IFDEF UNICODE} LastExParam {$ELSE} ExceptionString {$ENDIF}));
+          {$IF DEFINED(UNICODE) OR DEFINED(FPC)} LastExParam {$ELSE} ExceptionString {$IFEND}));
     end;
   end;
 

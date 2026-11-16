@@ -1,7 +1,8 @@
   
   {$DEFINE PS_HAVEVARIANT}
   {$DEFINE PS_DYNARRAY}
-  {$DEFINE PS_NOIDISPATCH}
+  { InnoIRC BUG 8: IDispatch (OLE automation) on Windows too - was off for every FPC target }
+  {$IFNDEF MSWINDOWS}{$DEFINE PS_NOIDISPATCH}{$ENDIF}
   {.$if (fpc_version=2) and (fpc_release>=3) and (fpc_patch>=1)}
   {$if (fpc_version=2) and ((fpc_release=2) and (fpc_patch>=4)) or (fpc_release>2)}
     {$UNDEF FPC_OLD_FIX}

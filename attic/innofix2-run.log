@@ -1,0 +1,9 @@
+netmodem2irc innofix2 Sun 11/15/2026 22:48:09.99 
+CHECK zip MD5 OK 21362710d91e895269db8ea0f6d7cf2f 
+UNZIPPED netmodem2irc-innofix2-2026-11-15.zip 
+REPLACED Projects PascalScriptFPC.inc uPSC_comobj.pas uPSRuntime.pas ScriptFunc_R.pas, CHANGELOG.md INNOIRC561-FINDINGS.md, MD5SUMS.txt SHA256SUMS.txt 
+CHECK uPSRuntime.pas MD5 OK 217608da73b4e78bd151610b386c190d 
+CHECK FINDINGS.md MD5 OK 4c9616ac281fe9e21a1dce7240c61f50 
+CHECK MD5SUMS.txt MD5 OK 306aff50f8c1d4652c54bf52c1ad941c 
+DELETED InnoIRC561\innofix2.ok marker 
+DONE 
