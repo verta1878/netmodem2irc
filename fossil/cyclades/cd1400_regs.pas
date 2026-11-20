@@ -276,6 +276,40 @@ const
   CY_BAUD_230400 = 19;
   CY_BAUD_COUNT  = 20;
 
+{ --------------------------------------------------------------- }
+{ Baud Rate Prescaler Tables                                       }
+{ From byte's cyfossil.asm — verified against working hardware.    }
+{ Index by CY_BAUD_xxx constants above.                            }
+{                                                                   }
+{ To set baud: write BaudCO_xx[idx] to CyTCOR+CyRCOR (clock       }
+{   option), write BaudBPR_xx[idx] to CyTBPR+CyRBPR (prescaler).  }
+{ --------------------------------------------------------------- }
+
+var
+  { 25 MHz clock tables (CD1400 Rev G) — 18 entries, idx 0..17 }
+  BaudCO_25MHz:  array[0..17] of Byte = (
+    $04, $04, $04, $04, $04, $04, $03, $03,
+    $03, $02, $02, $02, $01, $01, $00, $00,
+    $00, $00
+  );
+  BaudBPR_25MHz: array[0..17] of Byte = (
+    $F5, $A3, $6F, $5C, $51, $41, $F5, $A3,
+    $51, $A3, $6D, $51, $A3, $51, $A3, $51,
+    $36, $1B
+  );
+
+  { 60 MHz clock tables (CD1400 Rev J) — 20 entries, idx 0..19 }
+  BaudCO_60MHz:  array[0..19] of Byte = (
+    $00, $00, $00, $04, $04, $04, $04, $04,
+    $03, $03, $03, $02, $02, $01, $01, $00,
+    $00, $00, $00, $00
+  );
+  BaudBPR_60MHz: array[0..19] of Byte = (
+    $00, $82, $21, $FF, $DB, $C3, $92, $62,
+    $C3, $62, $41, $C3, $62, $C3, $62, $C3,
+    $82, $62, $41, $21
+  );
+
 implementation
 
 end.

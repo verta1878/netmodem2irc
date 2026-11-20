@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-11-20 — wrench (Cyclades + installer)
+
+### Installer — Win98 enabled
+- `installer/netmodem32.iss`: MinVersion changed from `0,5.0` to `4.1,5.0`
+  — Win98/ME installs now allowed, matching the script's existing Win9x
+  components (FOSSIL.VXD, IsWin9x check, SYSTEM.INI registration).
+  Requires InnoIRC561 with byte's bug 3 fix (commit ab9787f).
+
+### Cyclades — CD1400 baud rate tables added
+- `fossil/cyclades/cd1400_regs.pas`: added 25 MHz (Rev G) and 60 MHz
+  (Rev J) prescaler/clock-option lookup tables from byte's cyfossil.asm
+  (verified against working hardware). Ready for Dell hardware test.
+
+### InnoIRC561 bug impact audit
+- `NETMODEM2IRC-INNO-AUDIT.md`: documents impact of byte's 6 InnoIRC561
+  fixes (ab9787f + 48ffd5b) on both installer scripts. Key findings:
+  LZMA crash, silent exit hang, and [Code] section breakage all affected
+  netmodem32.iss; MinVersion change unlocks the fix.
+
 ## R5.3 — 2026-10-14
 
 ### VxD — NETMODEM.VXD hardened (N4 + N5)
