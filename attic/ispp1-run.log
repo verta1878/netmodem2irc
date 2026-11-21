@@ -1,0 +1,11 @@
+netmodem2irc ispp1 Fri 11/20/2026 22:04:01.48 
+CASE VERSION.INC ok (case1 done) 
+CHECK zip MD5 OK 6f4d9cd0ad5f2dcc21a5c8b93b53fd53 
+UNZIPPED netmodem2irc-ispp1-2026-11-21.zip 
+NEW 4 (out ISPP.dll ISPPBuiltins.iss, tests ispp-test.iss ispp-test-inc.iss); REPLACED 15 (ISPP source 5, installer 2, InnoIRC561 docs 4, CHANGELOG AUDIT, MD5SUMS SHA256SUMS) 
+CHECK ISPP.dll MD5 OK 2705fdd5f409ff6e7e2ced4d16362ea8 
+CHECK IsppTranslate.pas MD5 OK 5a55e8dd398570db29d112ec0619d2ff 
+CHECK netmodem32.iss MD5 OK b2532f1716c04b1bea68ba2987e2f551 
+CHECK MD5SUMS.txt MD5 OK f02f6c98aeec25de4c0dfd885e52fc2d 
+DELETED InnoIRC561\ispp1.ok marker 
+DONE 
