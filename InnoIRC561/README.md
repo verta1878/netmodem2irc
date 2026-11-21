@@ -85,6 +85,7 @@ All carry Win98-compatible PE headers: min OS 4.0, DllCharacteristics
 | Setup.exe | 3.6M | GUI | ⚠️ Builds, AV at form init |
 | SetupLdr.exe | 316K | GUI | ✅ Builds |
 | Compil32.exe | 3.2M | GUI | ✅ Builds |
+| ISPP.dll | 655K | DLL | ✅ Builds; `#define`/`#include`/`#if` work (Wine, 2026-11-21); needs `ISPPBuiltins.iss` beside ISCC.exe |
 
 `.e32` files are the pre-patch copies from before the CONSOLE→GUI
 subsystem patch was applied.

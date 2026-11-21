@@ -7,7 +7,7 @@ unit IsppFuncs;
 
 interface
 
-{$I ..\Version.inc}
+{$I ..\VERSION.INC}
 
 uses Windows, Classes, IsppVarUtils, IsppIntf, IsppTranslate, IsppParser;
 
@@ -30,7 +30,9 @@ begin
     Preprocessor.SourcePath));
 end;
 
-{$IF RTLVersion < 18}  { < Delphi 2006 }
+{ fpc264irc/InnoIRC561 (byte, 2026-11-21): FPC has FileAge(name, out TDateTime) and does not know RTLVersion }
+{$IFDEF FPC}{$DEFINE ISPP_HAVE_FILEAGE}{$ELSE}{$IF RTLVersion >= 18}{$DEFINE ISPP_HAVE_FILEAGE}{$IFEND}{$ENDIF}
+{$IFNDEF ISPP_HAVE_FILEAGE}  { < Delphi 2006 }
 function FileAge(const FileName: string; out FileDateTime: TDateTime): Boolean;
 var
   Handle: THandle;
@@ -54,7 +56,7 @@ begin
     end;
   end;
 end;
-{$IFEND}
+{$ENDIF}
 
 function CheckParams(const Params: IIsppFuncParams;
   Types: array of TIsppVarType; Minimum: Byte; var Error: TIsppFuncResult): Boolean;

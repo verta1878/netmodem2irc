@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-11-21 — byte (InnoIRC561 ISPP + installers)
+
+### InnoIRC561 — ISPP preprocessor
+- `InnoIRC561/out/ISPP.dll` + `ISPPBuiltins.iss`: InnoIRC561 now has Inno's preprocessor, so `#define` scripts compile
+  (they stopped with "To install ISPP, reinstall Inno Setup"). Source changes in `Projects/ISPP` (FPC only);
+  `Version.inc`, `Int64em.pas`, `ISPP.res` renamed to the case the code uses (Linux builds without links).
+  `InnoIRC561/tests/ispp-test.iss`. See `InnoIRC561/CHANGELOG.md`.
+
+### Installer — Win98 fix where it belongs
+- The 2026-11-20 `MinVersion=4.1,5.0` change was made in a copy at the repo root (`netmodem32.iss`, whose paths only
+  work under `installer/`); that copy is now `attic/netmodem32.iss` and the change is in `installer/netmodem32.iss`.
+- `installer/netfosdl.iss`: `MinVersion=4.1,5.0` too (it has the Win9x FOSSIL.VXD component, which `0,5.0` blocked);
+  `LicenseFile=Docs\LICENSE.TXT` (was `..\docs\LICENSE.TXT`, which does not exist).
+- Both keep their `#define`s and build with InnoIRC561 + ISPP; tested under Wine (Win2000 + Win98 mode): install,
+  uninstall. Real Win98: open.
+- `MD5SUMS.txt` / `SHA256SUMS.txt` regenerated for every file (were from 2026-09-04).
+
 ## 2026-11-20 — wrench (Cyclades + installer)
 
 ### Installer — Win98 enabled

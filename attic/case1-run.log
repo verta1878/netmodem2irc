@@ -1,0 +1,20 @@
+netmodem2irc case1 Fri 11/20/2026 22:02:29.45 
+CHECK Version.inc MD5 OK 9f536c1769447a02e592a2020e37b4b1 
+CHECK Int64em.pas MD5 OK feb9a381549e23917da49f602540bba8 
+CHECK ISPP.res MD5 OK 18edc4cf2ffd516d7bc585a931faf11f 
+MOVED InnoIRC561\src\issrc-is-5_6_1\Projects\Version.inc to case1-hold 
+MOVED InnoIRC561\src\issrc-is-5_6_1\Projects\Int64em.pas to case1-hold 
+MOVED InnoIRC561\src\issrc-is-5_6_1\Projects\ISPP\ISPP.res to case1-hold 
+PART 1 DONE 
+netmodem2irc case1 Fri 11/20/2026 22:02:43.57 
+COPIED case1-hold\Version.inc to InnoIRC561\src\issrc-is-5_6_1\Projects\VERSION.INC 
+COPIED case1-hold\Int64em.pas to InnoIRC561\src\issrc-is-5_6_1\Projects\Int64Em.pas 
+COPIED case1-hold\ISPP.res to InnoIRC561\src\issrc-is-5_6_1\Projects\ISPP\ISPP.RES 
+CHECK VERSION.INC MD5 OK 9f536c1769447a02e592a2020e37b4b1 
+CHECK Int64Em.pas MD5 OK feb9a381549e23917da49f602540bba8 
+CHECK ISPP.RES MD5 OK 18edc4cf2ffd516d7bc585a931faf11f 
+NAME VERSION.INC 
+NAME Int64Em.pas 
+NAME ISPP\ISPP.RES 
+PART 2 DONE 
+DONE 

@@ -22,10 +22,13 @@ DefaultGroupName=netmodem2irc
 OutputBaseFilename=netfosdl-setup
 Compression=lzma2
 SolidCompression=yes
-; NT-family only for the Windows components; DOS driver is copied for the
-; sysop to move to the DOS/PCBoard machine.
-MinVersion=0,5.0
-LicenseFile=..\docs\LICENSE.TXT
+; Windows 98/ME get the ring-0 driver (FOSSIL.VXD, IsWin9x), Windows 2000+ the Win32 components (IsWinNT); the DOS
+; driver is copied for the sysop to move to the DOS/PCBoard machine.
+; byte, 2026-11-21: was MinVersion=0,5.0 (Win9x blocked, so the win9x component could never install) - 4.1 = Win98+,
+; needs InnoIRC561 with the bug 3 fix (ab9787f). LicenseFile was ..\docs\LICENSE.TXT, which does not exist (the
+; licence is installer\Docs\LICENSE.TXT, as in netmodem32.iss) - ISCC stopped on it.
+MinVersion=4.1,5.0
+LicenseFile=Docs\LICENSE.TXT
 
 [Types]
 Name: "full";   Description: "Full installation"

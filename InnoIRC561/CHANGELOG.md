@@ -4,6 +4,19 @@ All notable changes to the FPC port of Inno Setup 5.6.1.
 This is NOT the upstream Inno Setup changelog — it covers only
 the FPC/Lazarus port work for netmodem2irc.
 
+## [Unreleased] — ISPP preprocessor; file name case (byte, 2026-11-21)
+
+- **ISPP ported**: `Projects/ISPP` (upstream, never built) builds with fpc264irc `ppc386` into `ISPP.dll`; with
+  `ISPPBuiltins.iss` next to `ISCC.exe` (`InnoIRC561/out`) scripts with `#define` / `#include` / `#if` / `#sub` /
+  `#for` / built-in functions compile. FPC changes: `QueryInterface(constref ...)` (IsppIdentMan, IsppTranslate),
+  `FileAge` only for old Delphi (IsppFuncs), `Windows.GetEnvironmentVariable` (IsppTranslate). Details:
+  `INNOIRC561-FINDINGS.md` "ISPP".
+- **File name case**: `Version.inc` -> `VERSION.INC`, `Int64em.pas` -> `Int64Em.pas`, `ISPP/ISPP.res` -> `ISPP.RES`
+  (how the code names them; ISPP's 4 `{$I ..\Version.inc}` -> `..\VERSION.INC`). The tree builds on Linux without links.
+- `tests/ispp-test.iss`: self-checking ISPP test (`#error` on any wrong result).
+- Tested (Wine, Windows 2000 and Windows 98 mode): the ISPP test; `installer/netmodem32.iss` + `netfosdl.iss` (with
+  `#define`) build and install silently, uninstall. Real Win98: open (hardware coming).
+
 ## [Unreleased] — [Code] sections, OLE automation, GetExceptionMessage (byte, 2026-11-15)
 
 Found by building fpc264irc's `installer/fpc264irc.iss` with InnoIRC; details in `INNOIRC561-FINDINGS.md`

@@ -78,7 +78,7 @@ type
     procedure FreeItem(Item: Pointer);
     function MacroIdents: IIdentManager;
   protected
-    function QueryInterface(const IID: TGUID; out Obj): HRESULT; stdcall;
+    function QueryInterface({$IFDEF FPC}constref{$ELSE}const{$ENDIF} IID: TGUID; out Obj): HRESULT; stdcall;
   public
     constructor Create(const CustomIdents: IIdentManager; FuncSender: Longint);
     destructor Destroy; override;
@@ -947,7 +947,7 @@ begin
   end;
 end;
 
-function TIdentManager.QueryInterface(const IID: TGUID; out Obj): HRESULT;
+function TIdentManager.QueryInterface({$IFDEF FPC}constref{$ELSE}const{$ENDIF} IID: TGUID; out Obj): HRESULT;
 begin
   if GetInterface(IID, Obj) then Result := 0 else Result := E_NOINTERFACE;
 end;

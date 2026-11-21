@@ -16,6 +16,7 @@ per-phase detail.
 | Setup.exe (installer GUI) | 3.6M | ⚠️ Builds; AV at form init |
 | SetupLdr.exe (setup loader) | 316K | ✅ |
 | Compil32.exe (IDE) | 3.2M | ✅ |
+| ISPP.dll (preprocessor, 2026-11-21) | 655K | ✅ Wine (Win2000 + Win98 mode); real Win98 open |
 
 ## Phases
 
@@ -154,7 +155,14 @@ $FPC $FLAGS Setup.dpr
 $FPC $FLAGS SetupLdr.dpr
 $FPC $FLAGS ISCmplr.dpr
 $FPC $FLAGS Compil32.dpr
+
+# ISPP.dll (2026-11-21): no LCL; from its own folder, with an empty -FU folder.
+# Copy ../../Files/ISPPBuiltins.iss next to ISCC.exe as well.
+(cd ISPP && $FPC -Twin32 -Mdelphi -Fu$RTL -FU<empty dir> -FE../../../out ISPP.dpr)
 ```
+
+File name case: since 2026-11-21 (`VERSION.INC`, `Int64Em.pas`, `ISPP/ISPP.RES` renamed to how the code names them)
+the tree builds on a case-sensitive Linux file system without links.
 
 `-Fu` order (byte, 2026-11-15): the Lazarus folders come **before** the main unit folder (fpc264irc
 `toolkit/SEGMAP.TXT`). With the main folder first, Free Vision's `Menus` and `AvgLvlTree` are found instead of the

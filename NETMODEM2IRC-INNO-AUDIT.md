@@ -41,3 +41,15 @@ byte's fixes are all in InnoIRC561's compiler/runtime Pascal source, not
 in .iss scripts. The scripts compile and run correctly with the fixed
 InnoIRC561 without modification — EXCEPT the MinVersion change above,
 which is a one-line policy change to take advantage of bug 3's fix.
+
+### Update — byte, 2026-11-21
+
+- The MinVersion change above was made in a copy of `netmodem32.iss` at the repo root (its `Win32\`, `Win9x\`,
+  `DOS\`, `Docs\` paths only exist under `installer/`); that copy is now `attic/netmodem32.iss`, and
+  `installer/netmodem32.iss` has `MinVersion=4.1,5.0`.
+- `installer/netfosdl.iss` had the same block (`0,5.0` with a Win9x component) and a licence path that does not
+  exist - both fixed.
+- Neither script could be built with InnoIRC561 at all: they use `#define` (ISPP), which InnoIRC561 did not have.
+  ISPP is now ported (`InnoIRC561/out/ISPP.dll`); both build unchanged. The setups in `installer/Output` were made
+  with stock Inno Setup.
+- Tested under Wine, Windows 2000 and Windows 98 mode: both build, install silently, uninstall. Real Win98: open.

@@ -11,7 +11,7 @@ interface
 uses Windows, SysUtils, Classes, CompPreprocInt, IniFiles, Registry, IsppIntf,
   IsppBase, IsppStacks, IsppIdentMan, IsppParser;
 
-{$I ..\Version.inc}
+{$I ..\VERSION.INC}
 
 function GetTempFileName(const Original: string): string;
 
@@ -103,7 +103,7 @@ type
       NonISS: Boolean): Integer;
     function ParseFormalParams(Parser: TParser; var ParamList: PParamList): Integer;
     { IUnknown }
-    function QueryInterface(const IID: TGUID; out Obj): HRESULT; stdcall;
+    function QueryInterface({$IFDEF FPC}constref{$ELSE}const{$ENDIF} IID: TGUID; out Obj): HRESULT; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
     { IIdentManager }
@@ -176,7 +176,7 @@ var
 begin
   SetLength (Result, 255);
   repeat
-    Res := GetEnvironmentVariable(PChar(EnvVar), PChar(Result), Length(Result));
+    Res := Windows.GetEnvironmentVariable(PChar(EnvVar), PChar(Result), Length(Result));
     if Res = 0 then begin
       Result := '';
       Break;
@@ -1290,7 +1290,7 @@ begin
   Result := -1;
 end;
 
-function TPreprocessor.QueryInterface(const IID: TGUID; out Obj): HRESULT;
+function TPreprocessor.QueryInterface({$IFDEF FPC}constref{$ELSE}const{$ENDIF} IID: TGUID; out Obj): HRESULT;
 begin
   if GetInterface(IID, Obj) then Result := 0 else Result := E_NOINTERFACE
 end;

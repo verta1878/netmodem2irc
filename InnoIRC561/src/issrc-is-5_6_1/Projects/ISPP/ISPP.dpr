@@ -7,7 +7,7 @@
 library ISPP;
 
 {$IMAGEBASE $01800000}
-{$I ..\Version.inc}
+{$I ..\VERSION.INC}
 {$R *.RES}
 
 uses

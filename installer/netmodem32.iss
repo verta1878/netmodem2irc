@@ -35,7 +35,11 @@ DefaultGroupName=NetModem32
 OutputBaseFilename=netmodem32_setup
 Compression=lzma2/max
 SolidCompression=yes
-MinVersion=0,5.0
+; Win98 enabled — requires InnoIRC561 with byte's bug 3 fix (ab9787f).
+; 4.1 = Win98+, 5.0 = Win2000+ (dual-platform MinVersion format).
+; Was 0,5.0 (Win9x blocked) before the InnoIRC fix re-enabled it. (byte, 2026-11-21: the 2026-11-20 change was made
+; in a copy at the repo root, which could not compile there - that copy is now attic/netmodem32.iss.)
+MinVersion=4.1,5.0
 LicenseFile=Docs\LICENSE.TXT
 SetupIconFile=mainicon.ico
 UninstallDisplayIcon={app}\{#SrvExe}

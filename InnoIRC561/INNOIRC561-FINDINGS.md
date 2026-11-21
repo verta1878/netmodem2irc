@@ -251,11 +251,37 @@ still Wine's. On real Win98 every imported function must exist in Win98's DLLs o
   list - to be checked against the DLLs of a real Win98 (`C:\WINDOWS\SYSTEM`), then run on Win98.
 - PE headers (min OS 4.0, no DEP/ASLR flags) are right.
 
+## ISPP — the preprocessor (ported 2026-11-21)
+
+Symptom: any script with `#define` / `#include` / `#if` stopped with "To install ISPP, reinstall Inno Setup and enable
+the ISPP option" - including `installer/netmodem32.iss` and `installer/netfosdl.iss` (they were built with stock Inno,
+see above). The source (`Projects/ISPP/`, ~7,000 lines, `ISPP.dpr` = `ISPP.dll`) was in the tree unchanged from upstream
+and never built. `Compile.pas` loads `ISPP.dll` from the compiler's folder (`ISPreprocessScriptA`).
+
+FPC changes (each `{$IFDEF FPC}`, Delphi build unchanged):
+- `IsppIdentMan.pas`, `IsppTranslate.pas`: `QueryInterface(constref IID ...)` - FPC's `IUnknown` declaration.
+- `IsppFuncs.pas`: its own `FileAge(name, out TDateTime)` only for Delphi < 2006; FPC has it (and no `RTLVersion`).
+- `IsppTranslate.pas`: `Windows.GetEnvironmentVariable` (SysUtils has a 1-parameter one of the same name).
+- `{$I ..\VERSION.INC}` (case, above).
+
+Build (fpc264irc `bin/ppc386`, no LCL): `cd Projects/ISPP; ppc386 -Twin32 -Mdelphi -Fu<fpc264irc>/bin/units/i386-win32
+-FU<empty dir> -FE<out> ISPP.dpr` -> `ISPP.dll` (655 KB, min OS 4.0, DllCharacteristics 0, imports advapi32 kernel32
+oleaut32 user32 version); two builds byte-identical. It also needs `Files/ISPPBuiltins.iss` next to `ISCC.exe`
+(`AddBackslash` and the other built-in macros). Both are in `InnoIRC561/out`.
+
+Tested (Wine 9, Windows 2000 and Windows 98 mode): `tests/ispp-test.iss` (`#include`, `#ifndef`/`#if`/`#else`,
+`/DMode=nt`, `GetFileVersion`, `#sub` + `#for`, each check an `#error`; a wrong expected value stops it) compiles in all
+4 combinations; `installer/netmodem32.iss` and `installer/netfosdl.iss` with their `#define`s build, and both setups
+install with `/VERYSILENT` (Win98 mode: FOSSIL.VXD + SYSTEM.INI `device=`; Win2000 mode: the Win32 programs) and
+uninstall. Not run on real Windows / Win98 yet.
+
 ## Build notes (Linux host)
 
-- **File name case**: the tree mixes `VERSION.INC` / `Version.inc`, `Int64Em` / `Int64em.pas`, `BidiCtrls.pas` ...
-  Windows does not care; Linux FPC finds a file only as written, lower case or upper case. Lower-case links (or
-  consistent names) needed.
+- **File name case** (fixed 2026-11-21): three files did not match how the code names them - `Version.inc` (33
+  `{$I VERSION.INC}`), `Int64em.pas` (`uses Int64Em`, 25 places), `ISPP/ISPP.res` (`{$R *.RES}`). Renamed to
+  `VERSION.INC`, `Int64Em.pas`, `ISPP.RES`; the 4 `{$I ..\Version.inc}` in ISPP now `..\VERSION.INC`. All 5 targets
+  and ISPP build on Linux from a plain copy, no links (the tree before: `Can't open include file "VERSION.INC"`).
+  Windows did not care either way.
 - **`-Fu` order** (fpc264irc `toolkit/SEGMAP.TXT`): Lazarus folders first —
   `-Fu$L/lcl/win32 -Fu$L/lcl -Fu$L/lazutils -Fu$RTL`. With the README order Free Vision's `Menus` (main folder) and
   `AvgLvlTree` clash with the LCL ones; `ppc386` itself then dies on `Setup.dpr` with
@@ -271,5 +297,6 @@ still Wine's. On real Win98 every imported function must exist in Win98's DLLs o
 ## Test kit used (byte's sandbox)
 
 `ISCC.exe`, `ISCmplr.dll`, `Setup.exe` → `Setup.e32`, `SetupLdr.exe` → `SetupLdr.e32` + the helper DLLs, bitmaps and
-`Default.isl` from `InnoIRC561/out`. Test script: one file, one icon, `Compression=lzma`, `MinVersion=5.0`;
-`setup.exe /VERYSILENT /SUPPRESSMSGBOXES /LOG=...` under Wine + Xvfb.
+`Default.isl` from `InnoIRC561/out`, + `ISPP.dll` and `ISPPBuiltins.iss` (2026-11-21). Test script: one file, one icon,
+`Compression=lzma`, `MinVersion=5.0`; `setup.exe /VERYSILENT /SUPPRESSMSGBOXES /LOG=...` under Wine + Xvfb. If every
+setup stops with "Failed to create win32 control, error 1400", the X display is gone (Xvfb died): start a new one.

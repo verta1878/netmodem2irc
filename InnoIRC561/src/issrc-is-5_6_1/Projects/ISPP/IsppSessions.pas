@@ -18,7 +18,7 @@ procedure QueueFileForDeletion(const FileName: string);
 
 implementation
 
-{$I ..\Version.inc}
+{$I ..\VERSION.INC}
 
 uses SysUtils, Classes, IsppStacks {$IFDEF IS_D12}, Windows{$ENDIF};
 
